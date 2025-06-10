@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <title>Simulated-Economic-World</title></head>
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<body>
+<div>
+    <style>* {
+        box-sizing: border-box;
+    }
+
+    input[type="checkbox"] {
+        display: inline-block; /* Ensure checkboxes are displayed */
+    }
+
+    body {
+        margin: 0;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Roboto, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "Microsoft Jhenghei", sans-serif;
+    }
+
+    .panel {
+        color: rgb(51, 51, 51);
+        font-weight: 100;
+    }
+
+    .logo path {
+        pointer-events: none;
+        fill: none;
+        stroke-linecap: round;
+        stroke-width: 7;
+        stroke: rgb(255, 255, 255);
+    }
+
+    .description {
+        text-align: center;
+        font-size: 1em;
+        font-weight: 500;
+        line-height: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .wechat-group {
+        text-align: center;
+        padding-bottom: 10px;
+    }
+
+    .wechat-group img {
+        max-width: 220px;
+        height: auto;
+        border-radius: 8px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .welcome-img img {
+        width: 100%;
+    }
+
+    .c9601 {
+        padding: 10px;
+        text-align: center;
+        justify-content: center; /* 水平居中 */
+    }
+
+    .btn1 {
+        background-color: cornflowerblue; /* 背景颜色 */
+        color: white; /* 文字颜色 */
+        border: none; /* 无边框 */
+        padding: 10px 20px; /* 内边距 */
+        text-align: center; /* 文字居中 */
+        text-decoration: none; /* 去除文字下划线 */
+        display: inline-block; /* 行内块元素 */
+        font-size: 16px; /* 字体大小 */
+        margin: 4px 2px; /* 外边距 */
+        cursor: pointer; /* 鼠标指针样式 */
+        border-radius: 5px; /* 边框圆角 */
+    }
+
+    .btn1:hover {
+        background-color: lightskyblue; /* 悬停时的背景颜色 */
+    }
+
+    .flash {
+        background-color: cornflowerblue; /* 背景颜色 */
+        color: white; /* 文字颜色 */
+        border: none; /* 无边框 */
+        padding: 10px 20px; /* 内边距 */
+        text-align: center; /* 文字居中 */
+        text-decoration: none; /* 去除文字下划线 */
+        display: inline-block; /* 行内块元素 */
+        font-size: 16px; /* 字体大小 */
+        margin: 4px 4px; /* 外边距 */
+        cursor: pointer; /* 鼠标指针样式 */
+        border-radius: 5px; /* 边框圆角 */
+
+    }
+
+    .flash.error {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #ebccd1;
+    }
+
+    .flash.success {
+        color: #3c763d;
+        background-color: #dff0d8;
+        border-color: #d0e9c6;
+    }
+
+    .btn2 {
+        background-color: lightblue; /* 背景颜色 */
+        color: white; /* 文字颜色 */
+        border: none; /* 无边框 */
+        padding: 5px 5px; /* 内边距 */
+        text-align: center; /* 文字居中 */
+        text-decoration: none; /* 去除文字下划线 */
+        display: inline-block; /* 行内块元素 */
+        font-size: 16px; /* 字体大小 */
+        margin: 4px 2px; /* 外边距 */
+        cursor: pointer; /* 鼠标指针样式 */
+        border-radius: 5px; /* 边框圆角 */
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+        display: inline-block; /* Ensure the checkbox is visible */
+        margin-right: 10px;
+    }
+
+
+    ul {
+        list-style-type: none; /* 去除小黑点 */
+        padding: 0; /* 去除内边距 */
+        margin: 0; /* 去除外边距 */
+        max-width: 400px;
+        width: 100%;
+        margin: auto; /* 自动外边距以实现居中 */
+    }
+
+    li {
+        display: flex; /* 使用 Flexbox */
+        margin: 5px 0; /* 每个列表项之间的间隔 */
+        justify-content: space-between; /* 两端对齐 */
+    }
+
+    chart-container {
+        width: 100%; /* 设置宽度 */
+        height: 1260px; /* 设置高度 */
+        background-color: lightgrey; /* 背景颜色以便查看 */
+    }
+
+
+    </style>
+
+    <div id="default-editor-page__placeholder" class="panel">
+
+        <section class="wrapper bg-gradient-primary">
+            <div class="container py-18 pt-md-14 pb-md-14">
+                <div class="row text-center">
+                    <div class="col-lg-9 col-xxl-7 mx-auto">
+                        <iframe src="../../static/html/welcome_word.html" width="890px" height="160px"></iframe>
+                    </div>
+                    <div class="col-lg-9 col-xxl-7 mx-auto">
+                        <h2>A Scalable AI Testbed with Diverse Economic Tasks</h2>
+                        <br>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center"><span></span><span></span></div><!-- /div -->
+
+<!--                <h3 style="text-align:center">Please Upload Your Model File</h3>-->
+<!--                <div class="row text-center">-->
+<!--                    <div class="c9601">-->
+<!--                        <form action="/upload" method="post" enctype="multipart/form-data">-->
+<!--                            <label for="gov_actor">Government Model File</label>-->
+<!--                            <input type="file" id="gov_actor" name="gov_actor" accept=".pt"><br><br>-->
+<!--                            <label for="household_actor">Household Model File</label>-->
+<!--                            <input type="file" id="household_actor" name="household_actor" accept=".pt"><br><br>-->
+<!--                            <button class="btn1" type="submit">Upload Model Files</button>-->
+<!--                        </form>-->
+
+<!--                        &lt;!&ndash; Display Flash Messages &ndash;&gt;-->
+<!--                        {% with messages = get_flashed_messages(with_categories=True) %}-->
+<!--                        {% if messages %}-->
+<!--                        {% for category, message in messages %}-->
+<!--                        <div class="flash {{ category }}">{{ message }}</div>-->
+<!--                        {% endfor %}-->
+<!--                        {% endif %}-->
+<!--                        {% endwith %}-->
+
+<!--                        &lt;!&ndash; Display Uploaded File Names &ndash;&gt;-->
+<!--                        {% if filenames %}-->
+<!--                        <h4>Uploaded Model:</h4>-->
+<!--                        <ul>-->
+<!--                            {% if filenames.gov_actor %}-->
+<!--                            Government Model : {{ filenames.gov_actor }}-->
+<!--                            <br>-->
+<!--                            {% endif %}-->
+<!--                            {% if filenames.household_actor %}-->
+<!--                            Household Model : {{ filenames.household_actor }}-->
+<!--                            {% endif %}-->
+<!--                        </ul>-->
+<!--                        {% endif %}-->
+
+<!--                    </div>-->
+<!--                    <br/>-->
+<!--                </div>-->
+<!--                -->
+<!--                <h3 style="text-align:center">Select Parameters</h3>-->
+<!--                <div class="row text-center">-->
+<!--                    <div class="c9601">-->
+<!--                        <form action="/generate_data" method="post" enctype="multipart/form-data">-->
+<!--                            <label for="household_num">Number of Households:</label>-->
+<!--                            <select id="household_num" name="household_num">-->
+<!--                                <option value="100">100</option>-->
+<!--                                <option value="1000">1000</option>-->
+<!--                                <option value="10000">10000</option>-->
+<!--                            </select>-->
+<!--                            <label for="gov_alg">Policy of Government:</label>-->
+<!--                            <select id="gov_alg" name="gov_alg">-->
+<!--                                <option value="ppo">ppo</option>-->
+<!--                                <option value="data_based">data_based</option>-->
+<!--                                <option value="rule_based">rule_based</option>-->
+<!--                                <option value="ddpg">ddpg</option>-->
+<!--                                <option value="llm">llm</option>-->
+<!--                            </select>-->
+
+<!--                            <label for="household_alg">Policy of Households:</label>-->
+<!--                            <select id="household_alg" name="household_alg">-->
+<!--                                <option value="real">real</option>-->
+<!--                                <option value="ppo">ppo</option>-->
+<!--                                <option value="bc">bc</option>-->
+<!--                                <option value="data_based">data_based</option>-->
+<!--                                <option value="rule_based">rule_based</option>-->
+<!--                                <option value="ddpg">ddpg</option>-->
+<!--                                <option value="llm">llm</option>-->
+<!--                            </select>-->
+
+<!--                            <button class="btn1" type="submit">Generate Data</button>-->
+<!--                        </form>-->
+<!--                    </div>-->
+
+
+<!--                </div>-->
+
+
+                <h3 style="text-align:center">Upload Strategy Data Files:</h3>
+                <form action="/upload_data" method="post" enctype="multipart/form-data"
+                      style="text-align:center; margin-top:20px;">
+                    <input type="file" name="file" accept=".json" required>
+                    <input class="btn2" type="submit" value="Upload">
+                </form>
+
+                <h3 style="text-align:center">Strategy Data Files:</h3>
+                <ul>
+                    {% for file in files %}
+                    <li>
+                        {{ file }}
+                        <form action="/delete/{{ file }}" method="post" style="display: inline;">
+                            <input class="btn2" type="submit" value="Delete">
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+
+                <h3 style="text-align:center">Select Charts to Generate:</h3>
+
+                <form action="/generate_charts" method="post" style="text-align:center; margin-top:20px;">
+                    <select id="charts" name="charts[]" multiple size="16" style="width: 450px;">
+                        <option value="1_GDP">1_GDP</option>
+                        <option value="2_Wealth Gini">2_Wealth Gini</option>
+                        <option value="3_Income Gini">3_Income Gini</option>
+                        <option value="4_Social Welfare">4_Social Welfare</option>
+                        <option value="5_Government Spending">5_Government Spending</option>
+                        <option value="6_Government Tax Income">6_Government Tax Income</option>
+                        <option value="7_Households Income Tax">7_Households Income Tax</option>
+                        <option value="8_Households Wealth Tax">8_Households Wealth Tax</option>
+                        <option value="9_Households Income">9_Households Income</option>
+                        <option value="10_Households Wealth">10_Households Wealth</option>
+                        <option value="11_Households Consumption">11_Households Consumption</option>
+                        <option value="12_Households Work Hours">12_Households Work Hours</option>
+                        <option value="13_Households Reward">13_Households Reward</option>
+                        <option value="14_Households WageRate">14_Households WageRate</option>
+                        <option value="15_Households Distribution">15_Households Distribution</option>
+                        <option value="16_Households Pension">16_Households Pension</option>
+                    </select><br><br>
+
+                    <button class='btn1' type="button" onclick="generateChart()">Generate Chart</button>
+                    <div id="chart-container" ,style="margin-left: 60px;"></div>
+                </form>
+
+
+                <!--                <form class="c9601">-->
+                <!--                    <button class='btn1' type="button" onclick="generateChart()">Generate Chart</button>-->
+                <!--                    <div id="chart-container"></div>-->
+                <!--                </form>-->
+
+                <div class="row mt-10">
+                    <div class="col-lg-8 mx-auto">
+                        <figure><img src="../../static/img/i12.png" alt="" class="img-fluid"/></figure>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!--        <section class="wrapper bg-gradient-primary">-->
+        <!--            <div class="container pt-14 pb-8">-->
+        <!--                <div class="row text-center">-->
+        <!--                    <div class="col-lg-9 col-xxl-7 mx-auto"><h2 class="display-1 mb-4">扫描二维码加入交流群</h2>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </section>-->
+        <!--        <div class="wechat-group pb-12"><img src="../../static/img/wechat-group-3.jpeg"/></div>-->
+        <!--        <div class="description">© 2023 Lapus. 版权所有</div>-->
+    </div>
+
+
+    <link rel="stylesheet" href="../../static/css/plugins.css"/>
+    <link rel="stylesheet" href="../../static/css/style.css"/>
+
+    <script src="../../static/js/plugins.js"></script>
+    <script src="../../static/js/theme.js"></script>
+    <script src="../../static/js/app.js"></script>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+# Q4: How to set optimal bank rate spreads?
+
+## ​1. Introduction
+
+### 1.1 Net Interest Margin of Commercial Banks
+
+**Net Interest Margin​**​​ (​**NIM**) is the difference between the average interest rate a commercial bank earns on loans and the average rate it pays to depositors. It constitutes one of the bank’s core profit sources. According to data from the **Bank for International Settlements**​​ (​BIS) and the People’s Bank of China, China’s large commercial banks have recorded an average NIM of approximately 1.8%–2.2% in recent years, whereas U.S. banks’ margins have averaged around 2.5%–3.0%. During periods of monetary easing or abundant liquidity, banks often face margin compression, which can dampen their lending incentives and threaten financial stability.
+
+### 1.2 Impact of NIM on the Macroeconomy and Micro Agents
+
+NIM influences both banks’ willingness to lend and firms’ and households’ ability to afford financing costs. Excessively wide margins may suppress investment and consumption, while overly narrow margins can undermine bank profitability and increase financial risk. At the micro level, NIM shapes spending decisions of households and firms; at the macro level, it affects credit expansion, employment, tax revenues, and wealth distribution.
+
+### 1.3 Research Questions
+
+This study uses a multi-agent economic simulation platform where commercial banks act as financial intermediaries adjusting lending behavior according to specified NIM settings. We focus on:
+
+* **Government tax revenue:** How does NIM affect lending activity, corporate profits, consumption, and the size of the tax base?
+* **GDP​ level:** Do high margins constrain investment and consumption, reducing aggregate demand and output, while low margins impair banks’ capacity to extend credit?
+* **Income inequality:** How does NIM influence financing accessibility, with high margins potentially creating barriers for low- and middle-income households and exacerbating income disparities?
+
+### 1.4 Research Significance
+
+* **Benchmarking Bank Behavior:**  By simulating credit expansion capacity, profitability, and social feedback under different NIM regimes, the study provides quantitative guidance for banks’ rate-setting and risk assessment.
+* **Simulation-Based Evaluation of Interest-Rate Liberalization:**  As interest rates become more market-determined, understanding how margin fluctuations impact the broader economy can help regulators design more flexible monetary policy and financial supervision strategies.
+
+---
+
+## 2. Selected Economic Roles
+
+As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
+
+| Social Role            | Selected Type                | Role Description                                                                                                                                                                  |
+| ------------------------ | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Individual             | Ramsey Model                 | Simulate household consumption and saving decisions under varying financing costs, analyzing heterogeneous effects of credit availability and interest‐margin on income cohorts. |
+| Government             | Central Bank                 | Set benchmark interest‐rate policy and regulate net interest margins.                                                                                                            |
+| Firm                 | Perfect Competition | Firms decide investment and production based on borrowing costs, reflecting how margin changes transmit through price and output mechanisms in the real economy.                  |
+| Bank | Commercial Banks             | Make credit‐intermediation decisions by setting net interest margins, influencing credit supply, bank profitability, and the efficiency of financial transmission.               |
+
+### Individual → Ramsey Model
+
+* The Ramsey model simulates households’ optimal consumption and saving decisions under different net interest margins.
+* When loan rates are high, low-income groups face greater borrowing constraints, affecting their welfare and intertemporal resource allocation—making this model ideal for capturing the micro-level distributional effects of margin changes.
+
+### Government → Central Bank
+
+* Represented by the central bank, the government sets policy rates (e.g., refinancing rate, reserve requirement rate) that form the basis for commercial-bank rate-setting.
+* Although the central bank does not directly control net interest margins, it indirectly guides them through its monetary-policy framework, serving as the starting point and benchmark for margin regulation.
+
+### Firm → Perfect Competition 
+
+* In a perfectly competitive market, firms make production and hiring decisions based on price signals and financing costs.
+* Changes in net interest margins affect loan rates, which directly influence firms’ marginal cost of capital, thereby determining output, employment, and price dynamics.
+
+### Bank → Commercial Banks
+
+* Commercial banks must balance profit maximization with risk control.
+* Their behavior shapes the pace of credit supply, households’ financing costs, and firms’ investment efficiency, making them the core of the margin transmission mechanism.
+
+---
+
+## 3. Selected Agent Algorithms
+
+*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+
+| Social Role            | AI Agent Type          | Role Description                                                                                                                             |
+| ------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Individual             | Behavior Cloning Agent | Replicate sensitivity differences of various income groups to interest-rate changes, reflecting realistic saving and consumption behaviors.  |
+| Government             | Rule-Based Agent       | Set benchmark rates and policy rules to control the permissible range of interest-margin fluctuations.                                       |
+| Firm                 | Rule-Based Agent       | Simulate firms’ direct responses to changes in financing costs, consistent with the perfect-competition assumption.                         |
+| Bank  | Rule-Based Agent       | Commercial banks set margins according to preset strategies, facilitating the assessment of systemic effects under different margin regimes. |
+
+### Individual → BC Agent
+
+* BC Agent can **replicate actual heterogeneity​​**​ in household responses to interest-rate changes​, especially the savings rigidity of low-income groups. Compared with rule-based or RL methods, the BC Agent better captures authentic behavioral traits and avoids deviations caused by pure strategy optimization.
+
+### Government → Rule-Based Agent
+
+* As the central bank setting the interest-rate path, a Rule-Based Agent can explicitly codify policy constraints such as the benchmark rate and margin floors, ensuring monetary-policy stability and interpretability. While RL offers adaptability, it is ill-suited for the stability demands of policy formulation.
+
+### Firm → Rule-Based Agent
+
+* In a perfectly competitive market, firms determine investment’s marginal returns based on financing costs. A Rule-Based Agent can specify fixed production functions and cost curves to accurately simulate how margin changes transmit to output, prices, and capital formation, maintaining the clarity of market-response structure.
+
+### Bank → Rule-Based Agent
+
+* Commercial banks, as core financial intermediaries, adjust lending and deposit rates and credit volumes via preset rules, forming margin-strategy behaviors. This design offers flexibility and transparency, aiding clear assessment of how margin settings affect credit supply, profitability, and macroeconomic feedback.
+
+---
+
+## 4. Illustrative Experiment
+
+### Experiment 1: Impact of Net Interest Margin on the Real Economy
+
+* **Experiment Description:**  Simulate commercial banks autonomously adjusting their net interest margin according to preset rules (e.g., a 1.5% reduction) and compare against a baseline scenario to observe how changes in market interest rates affect core economic indicators.
+* **Involved Social Roles:**
+  * *Individual: ​*Ramsey Model
+  * *Government:* Central Bank
+  * *Bank: ​*Commercial Banks
+* **AI**​**​ Agents:**
+  * *Individual:* Behavior Cloning Agent
+  * *Government: ​*Rule-Based Agent
+  * *Bank: ​*Rule-Based Agent
+* **Experimental Variables:**
+  * Commercial banks’ net interest margin (baseline margin vs. margin reduced by 1.5%)
+  * Government tax revenue
+  * Aggregate GDP level
+  * Income and wealth inequality
+* **Visualized Experimental Results：**
+
+![Monetary Q4 P1](../img/Monetary%20Q4%20P1.png)
+
+![Monetary Q4 P2](../img/Monetary%20Q4%20P2.png)
+
+**Figure 1 & Figure 2:** When commercial banks proactively lower their net interest margin (yellow line), GDP growth is stimulated in both the short run and the medium-to-long run.
+
+![Monetary Q4 P3](../img/Monetary%20Q4%20P3.png)
+
+![Monetary Q4 P4](../img/Monetary%20Q4%20P4.png)
+**Figure 3 & Figure 4:** A reduction in the net interest margin (yellow line) contributes to a narrowing of both income inequality (income Gini coefficient, Figure 3) and wealth inequality (wealth Gini coefficient, Figure 4), although the degree of reduction is limited.
+
+![Monetary Q4 P5](../img/Monetary%20Q4%20P5.png)
+
+**Figure 5:** Lowering the net interest margin (yellow line) leads to a marked decrease in total government tax revenue.
+
+* Proactive NIM reductions by banks help boost aggregate economic output and modestly reduce income and wealth disparities.
+* However, lower margins significantly erode government tax receipts.
+* Therefore, when calibrating the net interest margin, policymakers must balance the goals of preserving fiscal revenue and enhancing social equity.
+

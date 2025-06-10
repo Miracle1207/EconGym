@@ -1,0 +1,238 @@
+expr_name: test
+log_dir: ./logs
+device_num: 0
+wandb: True
+
+Environment:
+  env_core:
+    problem_scene: "estate_tax"
+    consumption_tax_rate: 0.0
+    interest_rate: 0.04
+    gini_weight: 1
+    financial_crisis: False
+    disasters: False
+    tax_moudle: "ai_agent"
+    estate_tax_rate: 0.
+    estate_tax_exemption: 13610000
+    screen: False   # For rendering
+    episode_length: 300
+    step_cnt: 0
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "central_bank"
+          type_list: [ 'tax', 'pension', 'central_bank' ]
+          tau: 0.263
+          xi: 0.049
+          tau_a: 0.0
+          xi_a: 0.0
+          Gt_prob: 0.189
+          retire_age: 65
+          contribution_rate: 0.08
+          pension_growth_rate: 0.01
+          base_interest_rate: 0.03
+          reserve_requirement: 0.08
+          gov_task: "gdp"
+          tax_type: "ai_agent"
+        tax:
+          type: "tax"
+          action_dim: 5
+          action_space:
+            low: -1e-3
+            high: 1e-3
+            dtype: float32
+          initial_action:
+            tau: 0.263
+            xi: 0.049
+            tau_a: 0.0
+            xi_a: 0.0
+            Gt_prob: 0.189
+          real_action_max: [0.6, 2, 0.05, 2., 1.0]
+          real_action_min: [0., 0., 0.0, 0., 0.0]
+        pension:
+          type: "pension"
+#          action_dim: 3
+          action_dim: 2
+          action_space:
+            low: -0.05
+            high: 0.05
+            dtype: float32
+          initial_action:
+            retire_age: 67
+            contribution_rate: 0.08
+            pension_growth_rate: 0.01
+#          real_action_max: [75, 0.2, 0.05]
+#          real_action_min: [50, 0.05, 0.001]
+          real_action_max: [ 70, 0.2]
+          real_action_min: [ 60, 0.05]
+        central_bank:
+          type: "central_bank"
+          action_dim: 2
+          action_space:
+            low: -0.01
+            high: 0.01
+            dtype: float32
+          initial_action:
+            base_interest_rate: 0.03
+            reserve_requirement: 0.08
+          real_action_max: [0.1, 0.2]
+          real_action_min: [-0.02, 0.0]
+    - entity_name: 'household'
+      entity_args:
+        params:
+          type: 'ramsey'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 100
+          CRRA: 1
+          IFE: 1
+          eta: 0
+          stock_alpha: 0.1
+          private_info_dim: 3
+          action_dim: 2
+          e_p: 2.2e-6
+          e_q: 0.990
+          rho_e: 0.982
+          sigma_e: 0.200
+          super_e: 504.3
+          at_min: -1e6
+          h_max: 2512
+          real_action_max: [1.0, 2512]
+          real_action_min: [-0.5, 0.0]
+          action_space:
+            low: 0
+            high: 1
+            dtype: float32
+        OLG:
+          birth_rate: 0.011   # US
+#          die_rate: 0.05
+          initial_working_age: 24
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"
+          type_list: ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+          alpha: 0.25
+          Z: 10.0
+          sigma_z: 0.0038
+          epsilon: 0.5
+          real_action_max: [1e8]
+          real_action_min: [1e-4]
+        perfect:
+          type: "perfect"
+          firm_n: 1
+          action_dim: 0
+          action_space:
+            low: -0.2
+            high: 0.2
+            dtype: float32
+          initial_action: null
+        monopoly:
+          type: "monopoly"
+          action_dim: 2
+          firm_n: 1
+          action_space:
+            low: -0.2
+            high: 0.2
+            dtype: float32
+          initial_action:
+            price: 1
+            WageRate: 1
+        monopolistic_competition:
+          type: "monopolistic_competition"
+          action_dim: 2
+          firm_n: 10
+          action_space:
+            low: -0.2
+            high: 0.2
+            dtype: float32
+          initial_action:
+            price: 1
+            WageRate: 1
+        oligopoly:
+          type: "oligopoly"
+          action_dim: 2
+          firm_n: 2
+          action_space:
+            low: -0.2
+            high: 0.2
+            dtype: float32
+          initial_action:
+            price: 1
+            WageRate: 1
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'
+          type_list: ['non_profit', 'commercial']
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+          real_action_max: [1.0, 0.20]
+          real_action_min: [0.0, -1e-3]
+          action_space:
+            low: -0.001
+            high: 0.001
+            dtype: float32
+        non_profit:
+          type: "non_profit"
+          action_dim: 0
+          initial_action: null
+        commercial:
+          type: "commercial"
+          action_dim: 2
+          initial_action: [0.10, 0.003]
+
+
+Trainer:
+  log_std_min: -20
+  log_std_max: 2
+  hidden_size: 128
+  cuda: False
+  q_lr: 3e-4
+  p_lr: 3e-4
+  buffer_size: 1e6
+  env_name: 'wealth_distribution'
+  init_exploration_policy: 'gaussian'
+  n_epochs: 10
+  epoch_length: 300
+  update_cycles: 100
+  target_update_interval: 1
+  display_interval: 1
+  batch_size: 64
+  gamma: 0.975
+  tau: 0.95
+  eval_episodes: 5
+  init_exploration_steps: 1000
+  ppo_tau: 0.95
+  ppo_gamma: 0.99
+  eps: 1e-5
+  update_epoch: 20
+  clip: 0.1
+  vloss_coef: 0.5
+  ent_coef: 0.01
+  max_grad_norm: 0.5
+  update_freq: 10
+  initial_train: 10
+  noise_rate: 0.01
+  epsilon: 0.1
+  save_interval: 10
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  update_each_epoch: 20
+  seed: 1
+  wandb: False
+  aligned: False
+  best_response: False
+  entropy_coef: 0.025
+  bc: False
+  heterogeneous_house_agent: False
+  heter_house_alg: "real"
+  heter_house_rate: 0
+  economic_shock: null
+  test: False

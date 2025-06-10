@@ -1,0 +1,36 @@
+
+Environment:
+  env_core:
+    problem_scene: "estate_tax"
+    estate_tax_rate: 0.0
+    estate_tax_exemption: 13610000
+    episode_length: 300
+
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+
+    - entity_name: 'household'
+      entity_args:
+        params:
+          type: 'OLG'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 100
+          action_dim: 2
+          real_action_max: [1.0, 2512]
+          real_action_min: [-0.5, 0.0]
+        OLG:
+          birth_rate: 0.011
+          initial_working_age: 24
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+
