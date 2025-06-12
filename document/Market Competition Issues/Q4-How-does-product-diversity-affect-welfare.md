@@ -118,17 +118,17 @@ function calculate_CES_utility(consumption_list, epsilon):
     return utility
 ```
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=ZmFkNGY2ZDA0N2Q5MDA2NmUxNzkzYzQ3ODBhYmMxZjRfMFFma0x5SXJzVlY5NEI3THFvdEpLZndqVHFQSjFPUEJfVG9rZW46R0Y3QWJkRzNZb2o1VG14M3p1dGNqamZ3bnhmXzE3NDk3MzAyMjQ6MTc0OTczMzgyNF9WNA)
+![Market Q4 P1](../img/Market%20Q4%20P1.png)
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=YTliNWY1ZmI0YjAyMzE5ZDVjNGQ1NDRlMDNkZTBkZWJfOW5YNkpIM0h5dUJZbHdiOHBuNTNRQ2RCckFVRXZTdVhfVG9rZW46RmVEcmJKTk5Eb1ZHZHB4eHphRmN3ZUV4bkxjXzE3NDk3MzAyMjQ6MTc0OTczMzgyNF9WNA)
+![Market Q4 P2](../img/Market%20Q4%20P2.png)
 
 ​**Figure 1 and Figure 2**​: Comparison of consumer wealth levels across different numbers of firms in the market (with different colors representing households from various wealth tiers). As the number of firms increases from two (rightmost bar) to eight (middle bar), there is a noticeable increase in consumer wealth. However, as the number of firms continues to rise, such as when there are ten firms (second bar from the left), the average household wealth actually declines.
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MmRlNmE0NDU1M2I4NmM1Y2RmMmI1MWUwNWYwZDNlMTNfMmxQVzRYTEZwdzBZcmdnM3hYZk1zVnRPTjc3U1ZqejlfVG9rZW46TWk0UGJjOWpKb09NcmN4OThOTmNqVTg3bm5lXzE3NDk3MzAyMjQ6MTc0OTczMzgyNF9WNA)
+![Market Q4 P3](../img/Market%20Q4%20P3.png)
 
 **​​ Figure 3：​**Comparison of social welfare levels, with the following ranking: firm number (N = 8) > (N = 10) >( N = 6) > (N = 4) > (N = 2), indicating that social welfare is highest when there are eight firms and lowest when there are two firms.
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=N2Q2ZmZkYWM2NTFlNjRmYzljYTY3MDBlN2QwNDk0ODlfRGdWdnRXQzlFRUtlT1k2RDM3YnQ0YlY5UWVjaGJpQ3VfVG9rZW46TE5vMWJkalZOb29jaDd4TXNiSWNNbGZYbnp4XzE3NDk3MzAyMjQ6MTc0OTczMzgyNF9WNA)
+![Market Q4 P4](../img/Market%20Q4%20P4.png)
 
 ​**Figure 4**​: Long-term GDP growth trends under different numbers of firms in the market. When the number of firms is 10 (green line) or 8 (yellow line), the long-term GDP growth rate is significantly higher.
 
@@ -166,15 +166,15 @@ effects = [
 ]
 ```
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=NTJkNmM5MzVjNmUzOTU1MjAyNjU4YWQ4NmE0ZmI4MTVfVkNjOVRSTXZqb0tlT1pGNkF5Nmw3T2NXWG90UllWSlRfVG9rZW46SFpQM2JqV09pb1NjWTl4Y2d5RWNXeEEybjJnXzE3NDk3MzAyMjQ6MTc0OTczMzgyNF9WNA)
+![Market Q4 P5](../img/Market%20Q4%20P5.png)
 
 ​**Figure 5**​: The impact of product substitution elasticity on the consumption of households from different wealth tiers, with Firm = 8 fixed. When ϵ=2, the substitution elasticity is at its lowest, indicating that consumers are less willing to change their purchasing behavior due to price factors, leading to the highest consumption levels (right chart). When ϵ=8, consumers show the lowest consumption levels (left chart).
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MDBlYTMxODZiNjM5NGNhMWQyZDc5MzBiY2Q3Mzc3ZDVfM1FwZE92d2J1bUdMZWRLZzdoRTd5c3dBTUh6NWZhMEhfVG9rZW46QUh5R2IwcXR4b3JqWEd4aTM3Z2NQaGpCbnVlXzE3NDk3MzAyMjQ6MTc0OTczMzgyNF9WNA)
+![Market Q4 P6](../img/Market%20Q4%20P6.png)
 
 ​**Figure 6**​: Comparison of household utility across different wealth tiers under different consumption elasticities. The effect of consumption elasticity on household utility is not significant. When ϵ=2 (right chart), the average utility of households across different income levels is slightly higher.
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MjU1OTBmYzdmMzUyNmY1MzVlNWVlNDY0ZDhhZTE3NzRfWE9TNE1oSDVENXBVN3FkWnJGckc2OWlzZm9jSjdNemlfVG9rZW46V2FFQ2J1eGxib01KNXN4aGp1RWMxeHRqbkxiXzE3NDk3MzAyMjQ6MTc0OTczMzgyNF9WNA)
+![Market Q4 P7](../img/Market%20Q4%20P7.png)
 
 ​**Figure 7**​: Changes in social welfare levels under different consumption elasticities. When ϵ=2(yellow line), social welfare is noticeably higher and continues to improve over time.
 
