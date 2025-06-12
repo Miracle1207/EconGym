@@ -106,21 +106,21 @@ As an example, we selected the following roles from the social role classificati
   * Nominal interest rate or money-supply growth rate
   * Macro outcomes: GDP, inflation rate, wealth Gini coefficient
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=OTRhZjllODg0ZWZkMDBhMGEyNTg5MjY1MTI4MDhlYWJfUDhBc3g0eThubnEzMmxLY3hYWW5rZk1CSjJsNmxUM2FfVG9rZW46STJzcGJ6b1k3b295bXp4aWFEQ2NyOUI3blBwXzE3NDk3MTgyMTg6MTc0OTcyMTgxOF9WNA)
+![Monetary Q5 P1](../img/Monetary%20Q5P1.png)
 
 **Figure 1:** Compared the effects of separate operations by the Treasury Department or the Central Bank with the coordination of their policies (blue line, green line, and yellow line represent Treasury only, Central Bank only, and coordinated policy respectively). Despite the fact that, in the short term, single-department operations achieve higher GDP growth rates (blue line, green line), coordinated policy implementation leads to a longer-lasting simulation economy and results in better long-term GDP growth.
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MzY1YmUyMzU4MDAyM2RhOThmNGUwNzM4M2VmZmY2MTNfdmhIYUdNMWRHbGlha2FoMGtBN3E3cVY0bmduUjhIWTdfVG9rZW46SXMxZWJoTlNDb0Z2MFN4YU9hdWNXRk9oblZoXzE3NDk3MTgyMTg6MTc0OTcyMTgxOF9WNA)
+![Monetary Q5 P2](../img/Monetary%20Q5P2.png)
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MzI3NTk5ZGU1MGQ5MTA1ODI4MDc1NjcxNjg0NzNhMTlfMTFzVEwzUHV6dE5wM3kwNVg3NnRZQklQUnVHNlZTZ05fVG9rZW46TjBpQmJDcFVYb1h2ckN4R0Y2dGN6RzRGbnNmXzE3NDk3MTgyMTg6MTc0OTcyMTgxOF9WNA)
+![Monetary Q5 P3](../img/Monetary%20Q5P3.png)
 
 Figure 2 and Figure 3: Under the coordinated policies of the Treasury and the Central Bank, the wealth Gini coefficient in the short term is higher compared to single-sector policies (yellow line). However, after the 60th year, thanks to more stable long-term economic growth, the wealth disparity under policy coordination is smaller than under single-sector policies. When examining a specific year (e.g., Year 25), the coordinated policies result in wealth being more concentrated among the middle-aged and younger population (green and orange-yellow lines), whereas single-sector policies lead to a relatively equal distribution of wealth across youth to middle-aged groups.
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MzY4NGVjODQzNjRkMjY1NjRmOTY0OGRhM2JjYTRjZDVfZmdmZ3czTjR2eENkdTdCR2FEY1lKZlVEdTJyREF1cmRfVG9rZW46S092SmJsZlhob0JhVVp4cUFZMWNLSHZ2blJmXzE3NDk3MTgyMTg6MTc0OTcyMTgxOF9WNA)
+![Monetary Q5 P4](../img/Monetary%20Q5P4.png)
 
 Figure 4: The coordination between the Treasury and the Central Bank has no significant short-term impact on the income Gini coefficient (yellow line). In the long term, the income disparity under policy coordination is significantly smaller than under the Treasury-only policy, but still notably higher than under the Central Bank-only policy.
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=YjcxMTA4OGI1YWMwYzI0YWI5MGM5ZTk5OWI5OTFkZTJfMkFBY252cllTdUVwZXFNYU1MbkU1aWFwZVdFRzU5WFdfVG9rZW46VDBRa2JKUHZJb2RlUVd4QTdGeWNWN3AybkFoXzE3NDk3MTgyMTg6MTc0OTcyMTgxOF9WNA)
+![Monetary Q5 P5](../img/Monetary%20Q5P5.png)
 
 Figure 5: The collaboration between the Treasury Department and the Central Bank (yellow line) significantly reduces the overall social welfare.
 
