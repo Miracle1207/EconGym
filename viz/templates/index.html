@@ -2,8 +2,10 @@
 <html lang='en'>
 <head>
     <meta charset='utf-8'>
-    <title>Simulated-Economic-World</title></head>
+    <title>EconGym</title></head>
 <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+
 <body>
 <div>
     <style>* {
@@ -160,13 +162,78 @@
 
     </style>
 
+<script src="https://registry.npmmirror.com/echarts/5.5.1/files/dist/echarts.min.js"></script>
+<script>
+  const dom = document.getElementById('animated-title');
+  const myChart = echarts.init(dom, null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+
+  const option = {
+    graphic: {
+      elements: [
+        {
+          type: 'text',
+          left: '50%',
+          top: '50%',
+          style: {
+            text: 'Welcome To EconGym',
+            fontSize: 60,
+            fontWeight: 'bold',
+            lineDash: [0, 200],
+            lineDashOffset: 0,
+            fill: 'transparent',
+            stroke: '#000',
+            lineWidth: 1,
+            textAlign: 'center',
+            textVerticalAlign: 'middle'
+          },
+          keyframeAnimation: {
+            duration: 3000,
+            loop: true,
+            keyframes: [
+              {
+                percent: 0.7,
+                style: {
+                  fill: 'transparent',
+                  lineDashOffset: 200,
+                  lineDash: [200, 0]
+                }
+              },
+              {
+                percent: 0.8,
+                style: {
+                  fill: 'transparent'
+                }
+              },
+              {
+                percent: 1,
+                style: {
+                  fill: 'black'
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  };
+
+  myChart.setOption(option);
+  window.addEventListener('resize', () => myChart.resize());
+</script>
+
+
     <div id="default-editor-page__placeholder" class="panel">
 
         <section class="wrapper bg-gradient-primary">
             <div class="container py-18 pt-md-14 pb-md-14">
                 <div class="row text-center">
                     <div class="col-lg-9 col-xxl-7 mx-auto">
-                        <iframe src="../../static/html/welcome_word.html" width="890px" height="160px"></iframe>
+                        <iframe src="../../static/html/welcome_word.html"
+                                style="width: 100%; max-width: 900px; height: 160px; border: none; display: block; margin: 0 auto;">
+                        </iframe>
                     </div>
                     <div class="col-lg-9 col-xxl-7 mx-auto">
                         <h2>A Scalable AI Testbed with Diverse Economic Tasks</h2>

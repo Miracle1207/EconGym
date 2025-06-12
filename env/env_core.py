@@ -259,15 +259,15 @@ class EconomicSociety:
             np.mean(self.households.at_next),  # 0
             np.mean(self.households.income),
             np.mean(self.households.e),
-            float(len(private_obs)),
-            getattr(self, "inflation_rate", 0.0),  # 4
-            getattr(self, "wealth_gini", 0.0),
-            getattr(self.main_gov, "GDP", 0.0),
-            getattr(self.main_gov, "growth_rate", 0.0),
-            getattr(self.main_gov, "Bt_next", 0.0) / getattr(self.main_gov, "GDP", 1.0),  # 避免除以 0
-            getattr(self.main_gov, "tau", 0.0),  # 9
-            getattr(self.main_gov, "xi", 0.0),
-            getattr(self.main_gov, "Gt_prob", 0.0),
+            # float(len(private_obs)),
+            # getattr(self, "inflation_rate", 0.0),  # you can set global observation here
+            # getattr(self, "wealth_gini", 0.0),
+            # getattr(self.main_gov, "GDP", 0.0),
+            # getattr(self.main_gov, "growth_rate", 0.0),
+            # getattr(self.main_gov, "Bt_next", 0.0) / getattr(self.main_gov, "GDP", 1.0),  # 避免除以 0
+            # getattr(self.main_gov, "tau", 0.0),  # 9
+            # getattr(self.main_gov, "xi", 0.0),
+            # getattr(self.main_gov, "Gt_prob", 0.0),
 
         ])
 

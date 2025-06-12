@@ -15,10 +15,7 @@ Environment:
           action_dim: 2
           real_action_max: [1.0, 2512]
           real_action_min: [-0.5, 0.0]
-        OLG:
-          birth_rate: 0.04
-          die_rate: 0.05
-          initial_working_age: 24
+
     - entity_name: 'market'
       entity_args:
         params:
@@ -43,7 +40,7 @@ Environment:
 
 Trainer:
   house_alg: "bc"
-  gov_alg: "ppo"
+  gov_alg: "us_federal"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1

@@ -98,4 +98,4 @@ As an example, we selected the following roles from the social role classificati
 * **Experimental Variables:**
   * Different tax-rate structures and tax brackets
   * Macro indicators: GDP, wealth Gini coefficient, government deficit
-
+  

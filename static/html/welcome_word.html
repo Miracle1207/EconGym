@@ -1,82 +1,71 @@
-<!--
-	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=graphic-stroke-animation
--->
 <!DOCTYPE html>
-<html lang="en" style="height: 100%">
+<html lang="en" style="height: 100%; width: 100%">
 <head>
   <meta charset="utf-8">
 </head>
-<body style="height: 100%; margin: 0">
-  <div id="container" style="height: 100%"></div>
+<body style="margin: 0; height: 100%; width: 100%; display: flex; align-items: center; justify-content: center;">
+  <div id="container" style="height: 100%; width: 100%"></div>
 
-
-  <script type="text/javascript" src="https://registry.npmmirror.com/echarts/5.5.1/files/dist/echarts.min.js"></script>
-
-
+  <script src="https://registry.npmmirror.com/echarts/5.5.1/files/dist/echarts.min.js"></script>
   <script type="text/javascript">
-    var dom = document.getElementById('container');
-    var myChart = echarts.init(dom, null, {
+    const dom = document.getElementById('container');
+    const myChart = echarts.init(dom, null, {
       renderer: 'canvas',
       useDirtyRect: false
     });
-    var app = {};
 
-    var option;
-
-    option = {
-  graphic: {
-    elements: [
-      {
-        type: 'text',
-        left: 'center',
-        top: 'center',
-        style: {
-          text: 'Welcome To EconGym',
-          fontSize: 60,
-          fontWeight: 'bold',
-          lineDash: [0, 200],
-          lineDashOffset: 0,
-          fill: 'transparent',
-          stroke: '#000',
-          lineWidth: 1
-        },
-        keyframeAnimation: {
-          duration:3000,
-          loop: true,
-          keyframes: [
-            {
-              percent: 0.7,
-              style: {
-                fill: 'transparent',
-                lineDashOffset: 200,
-                lineDash: [200, 0]
-              }
+    const option = {
+      graphic: {
+        elements: [
+          {
+            type: 'text',
+            left: 'center',
+            top: 'center',
+            style: {
+              text: 'Welcome To EconGym',
+              fontSize: 60,
+              fontWeight: 'bold',
+              lineDash: [0, 200],
+              lineDashOffset: 0,
+              fill: 'transparent',
+              stroke: '#000',
+              lineWidth: 1,
+              textAlign: 'center',         // ⬅️ 水平居中
+              textVerticalAlign: 'middle'  // ⬅️ 垂直居中
             },
-            {
-              // Stop for a while.
-              percent: 0.8,
-              style: {
-                fill: 'transparent'
-              }
-            },
-            {
-              percent: 1,
-              style: {
-                fill: 'black'
-              }
+            keyframeAnimation: {
+              duration: 3000,
+              loop: true,
+              keyframes: [
+                {
+                  percent: 0.7,
+                  style: {
+                    fill: 'transparent',
+                    lineDashOffset: 200,
+                    lineDash: [200, 0]
+                  }
+                },
+                {
+                  percent: 0.8,
+                  style: {
+                    fill: 'transparent'
+                  }
+                },
+                {
+                  percent: 1,
+                  style: {
+                    fill: 'black'
+                  }
+                }
+              ]
             }
-          ]
-        }
+          }
+        ]
       }
-    ]
-  }
-};
+    };
 
-    if (option && typeof option === 'object') {
-      myChart.setOption(option);
-    }
-
-    window.addEventListener('resize', myChart.resize);
+    myChart.setOption(option);
+    window.addEventListener('resize', () => myChart.resize());
   </script>
 </body>
 </html>

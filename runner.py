@@ -84,8 +84,8 @@ class Runner:
         if self.wandb:
             wandb.init(
                 config=self.args,
-                project="MACRO",
-                entity="ai_tax",
+                project="EconGym",
+                entity="econgym",
                 name=self.model_path.parent.parent.parent.name + "_" + self.model_path.name + '_' + str(
                     self.households_n) + "_" + self.envs.gov_task + "_seed=" + str(self.args.seed),
                 dir=str(self.model_path),
@@ -330,7 +330,7 @@ class Runner:
             "wealth_gini": self.eval_env.wealth_gini,
             "WageRate": self.eval_env.market.WageRate,
             "total_labor": self.eval_env.market.Lt,
-            "house_consumption": self.eval_env.households.consumption_ij,
+            "house_consumption": self.eval_env.households.consumption,
             "house_work_hours": self.eval_env.households.ht,
             "gov_spending": self.eval_env.main_gov.Gt_prob * self.eval_env.main_gov.GDP,
             "house_age": self.eval_env.households.age,
