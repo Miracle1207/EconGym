@@ -106,7 +106,7 @@ As an example, we selected the following roles from the social role classificati
   * Nominal interest rate or money-supply growth rate
   * Macro outcomes: GDP, inflation rate, wealth Gini coefficient
 
-![Monetary Q5 P1](../img/Monetary%20Q5P1.png)
+![Monetary Q5P1](../img/Monetary%20Q5P1.png)
 
 **Figure 1:** Compared the effects of separate operations by the Treasury Department or the Central Bank with the coordination of their policies (blue line, green line, and yellow line represent Treasury only, Central Bank only, and coordinated policy respectively). Despite the fact that, in the short term, single-department operations achieve higher GDP growth rates (blue line, green line), coordinated policy implementation leads to a longer-lasting simulation economy and results in better long-term GDP growth.
 
