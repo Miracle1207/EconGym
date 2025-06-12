@@ -92,16 +92,38 @@ As an example, we selected the following roles from the social role classificati
 * **Experiment Description:**
   In the simulated economy, allow the Treasury and the Central Bank to learn optimal coordination strategies via RL Agents. Under different objective functions (e.g., “stability priority” vs. “growth priority”), evaluate the impact of coordinated policies on key macro indicators such as GDP, inflation, and the Gini coefficient.
 * **Involved Social Roles:**
-  * *Individual:* Ramsey Model
-  * *Government:* Fiscal Authority & Central Bank
-* **AI Agents:**
-  * *Invidual:* RL Agent
+  * *Households:* Ramsey Model
+  * *Government:* Treasury Department & Central Bank
+* **AI**​**​ Agents:**
+  * *Households:* RL Agent
   * *Government:* RL Agent
-  * *Firm: ​*Rule-Based Agent
-  * *Bank: ​*Rule-Based Agent
+  * *Market: ​*Rule-Based Agent
+  * *Financial Institutions: ​*Rule-Based Agent
 * **Core Experimental Variables:**
+  * The fiscal and monetary policy departments, calibrated through economic modeling, were designed as follows: the Treasury Department implemented the **Saez Tax** system, while the Central Bank adopted the **Taylor Rule** as its behavioral logic.
   * Scale of fiscal spending
   * Income-tax rate & government-debt ceiling
   * Nominal interest rate or money-supply growth rate
   * Macro outcomes: GDP, inflation rate, wealth Gini coefficient
+
+![Monetary Q5 P1](../img/Moneraty%20Q5%20P1.png)
+
+**Figure 1:** Compared the effects of separate operations by the Treasury Department or the Central Bank with the coordination of their policies (blue line, green line, and yellow line represent Treasury only, Central Bank only, and coordinated policy respectively). Despite the fact that, in the short term, single-department operations achieve higher GDP growth rates (blue line, green line), coordinated policy implementation leads to a longer-lasting simulation economy and results in better long-term GDP growth.
+
+![Monetary Q5 P2](../img/Moneraty%20Q5%20P2.png)
+
+![Monetary Q5 P3](../img/Moneraty%20Q5%20P3.png)
+
+Figure 2 and Figure 3: Under the coordinated policies of the Treasury and the Central Bank, the wealth Gini coefficient in the short term is higher compared to single-sector policies (yellow line). However, after the 60th year, thanks to more stable long-term economic growth, the wealth disparity under policy coordination is smaller than under single-sector policies. When examining a specific year (e.g., Year 25), the coordinated policies result in wealth being more concentrated among the middle-aged and younger population (green and orange-yellow lines), whereas single-sector policies lead to a relatively equal distribution of wealth across youth to middle-aged groups.
+
+![Monetary Q5 P4](../img/Moneraty%20Q5%20P4.png)
+
+Figure 4: The coordination between the Treasury and the Central Bank has no significant short-term impact on the income Gini coefficient (yellow line). In the long term, the income disparity under policy coordination is significantly smaller than under the Treasury-only policy, but still notably higher than under the Central Bank-only policy.
+
+![Monetary Q5 P5](../img/Moneraty%20Q5%20P5.png)
+
+Figure 5: The collaboration between the Treasury Department and the Central Bank (yellow line) significantly reduces the overall social welfare.
+
+* The coordination between fiscal policy (executed by the Treasury) and monetary policy (executed by the Central Bank) produces complex macroeconomic effects. However, in the long run, policy coordination enhances the long-term growth vitality of the simulated economy, with no significant difference in wealth inequality compared to the single-policy scenarios. Analyzing wealth distribution supports this conclusion (e.g., the wealth is more concentrated among middle-aged and younger generations).
+* Moreover, policy coordination leads to a noticeable decline in social welfare, which may be due to the higher efficiency of market mechanisms under the coordinated policies.
 
