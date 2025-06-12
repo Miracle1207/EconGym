@@ -106,21 +106,21 @@ As an example, we selected the following roles from the social role classificati
   * Nominal interest rate or money-supply growth rate
   * Macro outcomes: GDP, inflation rate, wealth Gini coefficient
 
-![Monetary Q5 P1](../img/Monetary%20Q5P1.png)
+![Monetary Q5 P1](../img/Monetary%20Q5%20P1.png)
 
 **Figure 1:** Compared the effects of separate operations by the Treasury Department or the Central Bank with the coordination of their policies (blue line, green line, and yellow line represent Treasury only, Central Bank only, and coordinated policy respectively). Despite the fact that, in the short term, single-department operations achieve higher GDP growth rates (blue line, green line), coordinated policy implementation leads to a longer-lasting simulation economy and results in better long-term GDP growth.
 
-![Monetary Q5 P2](../img/Monetary%20Q5P2.png)
+![Monetary Q5 P2](../img/Monetary%20Q5%20P2.png)
 
-![Monetary Q5 P3](../img/Monetary%20Q5P3.png)
+![Monetary Q5 P3](../img/Monetary%20Q5%20P3.png)
 
 Figure 2 and Figure 3: Under the coordinated policies of the Treasury and the Central Bank, the wealth Gini coefficient in the short term is higher compared to single-sector policies (yellow line). However, after the 60th year, thanks to more stable long-term economic growth, the wealth disparity under policy coordination is smaller than under single-sector policies. When examining a specific year (e.g., Year 25), the coordinated policies result in wealth being more concentrated among the middle-aged and younger population (green and orange-yellow lines), whereas single-sector policies lead to a relatively equal distribution of wealth across youth to middle-aged groups.
 
-![Monetary Q5 P4](../img/Monetary%20Q5P4.png)
+![Monetary Q5 P4](../img/Monetary%20Q5%20P4.png)
 
 Figure 4: The coordination between the Treasury and the Central Bank has no significant short-term impact on the income Gini coefficient (yellow line). In the long term, the income disparity under policy coordination is significantly smaller than under the Treasury-only policy, but still notably higher than under the Central Bank-only policy.
 
-![Monetary Q5 P5](../img/Monetary%20Q5P5.png)
+![Monetary Q5 P5](../img/Monetary%20Q5%20P5.png)
 
 Figure 5: The collaboration between the Treasury Department and the Central Bank (yellow line) significantly reduces the overall social welfare.
 
