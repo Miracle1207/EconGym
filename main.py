@@ -94,7 +94,7 @@ if __name__ == '__main__':
     if test_mode:
         heter_house_agent = None
         if config['Trainer'].get('heterogeneous_house_agent', False):
-            heter_house_agent = select_agent(config['Trainer']['heter_house_alg'], "households", env, config['Trainer'])
+            heter_house_agent = select_agent(config['Trainer']['heter_house_alg'], "household", env, config['Trainer'])
         
         runner = Runner(
             env,

@@ -57,8 +57,10 @@ class ppo_agent:
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
+        
+        env_agent_name = "households" if agent_name == "household" else agent_name
 
-        self.agent = getattr(self.envs, agent_name)
+        self.agent = getattr(self.envs, env_agent_name)
         self.obs_dim = self.agent.observation_space.shape[0]
         self.action_dim = self.agent.action_space.shape[-1]
 
