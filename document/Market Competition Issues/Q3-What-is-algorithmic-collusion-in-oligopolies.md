@@ -112,31 +112,27 @@ At each time step t:
 ```
 
 ### **Experiment 1: Pricing Behavior of Firms in an ​**​**Oligopoly**​**​ Market**
-
-* **Experiment Description:**  In an oligopoly market consisting of multiple firms, introduce RL-based pricing algorithms and observe whether firms evolve into high-price behaviors with significant consistency without explicit communication.
+* **Experiment Description:**
+  In an oligopoly market consisting of multiple firms, introduce RL-based pricing algorithms and observe the pricing strategies that emerge under reinforcement learning as well as their impact on consumers.
 * **Involved Social Roles:**
-  * ​*Firm*​: Oligopoly Firms
-  * ​*Individual*​: Immortal Heterogeneous Model
-* **AI Agents:**
-  * *Firm: ​*RL Agent
-  * *Individual: ​*BC Agent
+  * ​*Market*​**:** Oligopoly Firms
+  * ​*Households*​**:** Immortal Heterogeneous Model
+* **AI**​**​ Agents:**
+  * *Market: ​*RL Agent
+  * *Households: ​*BC Agent
 * **Experimental Variables:**
-  * Market Type (Oligopoly Firms)
+  * Market Type (Oligopoly Firms&Perfect competition)
   * Market Price (P)
+* **​ Visualized Experimental Results：**
 
----
+![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=Y2UyYjRiZGVlNmMwMmJkYzgyYjkxY2NlYTUyNjUwMzlfS3VEZ0lRY2Y2Sm0xUnR2angxaTB1M3gzVGtaZzJjN0xfVG9rZW46VFBEeGJrR0Vlb2VnMkF4azNMamNuVWg2bmtiXzE3NDk4MTc5MTM6MTc0OTgyMTUxM19WNA)
 
-### **Experiment 2: Social Impact of ​**​**Oligopoly**​**​ Market Pricing**
+​**Figure 1**​: Comparison of household income under perfect competition and oligopoly collusion algorithms. Under oligopolistic collusion, the average income of households increases significantly (right chart), particularly evident among the lower-income groups (yellow bar). The income level of the impoverished population under oligopoly is about three times that in the perfect competition market.
 
-* **Experiment Description:**  Investigate whether algorithmic collusion exacerbates social income inequality, lowers consumption levels, and reduces market vitality. Introduce government intervention variables to evaluate the effect of policies.
-* **Involved Social Roles:**
-  * ​*Firm*: Oligopoly Firms
-  * ​*Individual*​: Ramsey Model
-* **AI Agents:**
-  * *Firm:* RL Agent
-  * *Individual: ​*BC Agent
-* **Experimental Variables:**
-  * Social Production Level (GDP)
-  * Product Price Volatility
-  * Household Income Distribution (Gini Coefficient)
+![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=ODM2MTAzNjEyNzQzYmM2ZTU1MmI0OTFmNTJhMmIzMmVfU2pta3JmQndUSzlVUjZDV0NpRHpXTUZHTU85a0xlVHpfVG9rZW46V0JNM2I1S2FHb3JWcnp4aktUYWNpaWg3bm1oXzE3NDk4MTc5MTM6MTc0OTgyMTUxM19WNA)
+
+​**Figure 2**​: Comparison of household consumption under the two market structures. The oligopolistic market (right chart) exhibits a clear consumption-suppressing effect, particularly on wealthy and middle-income households.
+
+* In the oligopolistic market, firms adopt reinforcement learning strategies to "collude" on pricing in pursuit of maximizing profits and market share. As a result, in the simulated economy, this pricing behavior leads to a noticeable suppression of consumption among wealthy and middle-class households, while simultaneously increasing the average income of low-income households.
+
 
