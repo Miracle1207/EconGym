@@ -120,13 +120,13 @@ As an example, we selected the following roles from the social role classificati
   * Household wealth level
   * Household utility
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=NDlhMDQ1YmRmZmIxMDliYTRmODk5NTM2YzA0ZWI2MTRfUHZPMnRrT1R6dlkyN244Y2NRY0pqcTRTbmpQS0h4TGdfVG9rZW46SlNXT2JIRkJib0xNdVR4N2pvWWNLY1V3bjJnXzE3NDk4MTk3MTc6MTc0OTgyMzMxN19WNA)
+![Individual Q6 P1](../img/Individual%20Q6%20P1.png)
 
 **Figure 1:** The impact of different market structures on household wealth. From left to right are Monopoly, Monopolistic Competition, Perfect Competition, and Oligopoly markets. Different colored bars represent households from different income groups. At year 50, households in the Monopolistic Competition market show significantly higher average wealth, especially among the affluent group (blue bars). In contrast, households in the Monopoly market have the lowest average wealth.
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=ZDViMzBjYzc0NzY2MDhmNDA3ZGY4OTUwZGMyOGFkY2JfWG1SZ05OQlRrc3o3ZzlqRHNkTExDTnNuSjZzdzNVRVJfVG9rZW46SXdubWJ4T0U5b1V1SWt4azF0WWNYeU9JbkFoXzE3NDk4MTk3MTc6MTc0OTgyMzMxN19WNA)
+![Individual Q6 P2](../img/Individual%20Q6%20P2.png)
 
-**Figure 3:** The impact of different market structures on household utility. From left to right are Monopoly, Monopolistic Competition, Perfect Competition, and Oligopoly markets. Different colored bars represent households from different income groups. At year 50, household utility is highest in the Monopolistic Competition market, though the difference compared to other market structures is relatively small.
+**Figure 2:** The impact of different market structures on household utility. From left to right are Monopoly, Monopolistic Competition, Perfect Competition, and Oligopoly markets. Different colored bars represent households from different income groups. At year 50, household utility is highest in the Monopolistic Competition market, though the difference compared to other market structures is relatively small.
 
 * Household wealth varies significantly across different market structures, whereas differences in household utility are less pronounced. Overall, the monopolistic competition market achieves the highest average household wealth as well as the highest household utility.
 
