@@ -94,12 +94,32 @@ As an example, we selected the following roles from the social role classificati
 * **Experiment Description:**
   Create two simulated economies: one permits households to engage in front-loading consumption via credit overdrafts, the other restricts consumption to current income. Compare macro-indicators (GDP, aggregate wealth, saving rate, financial-system stability) to assess how borrowing-enabled consumption trades off short-term stimulus against long-term sustainability.
 * **Involved Social Roles:**
-  * *Firm:* Perfect Competition
-  * *Individual: ​*Overlapping Generations (OLG) Model
-* **AI Agents:**
-  * *Firm: ​*Rule-Based Agent
-  * *Individual:* Rule-Based Agent
+  * *Market:* Perfectly Competitive Market
+  * *Households: ​*Overlapping Generations (OLG) Model
+* **AI**​**​ Agents:**
+  * *Market: ​*Rule-Based Agent
+  * *Households:* Rule-Based Agent
 * **Experimental Variables:**
   * Degree of front-loading propensity in the population
-  * Macro-economic indicators of each simulated economy (GDP, total wealth, saving rate, financial stability metrics)
+  * Wealth levels, consumption, and working hours of households across different age and wealth groups under the influence of front-loading consumption
+  * GDP level
+
+![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MjA5MDQzNDNiOGM3OTQxYTU0ZWU0YzgzOWE5YjljMzNfMEYzVkJQMWh6Z0VsM3JzVkhmTDFFZHlydnJvV3BRWjVfVG9rZW46RE9BY2JieXB2b0o4MmF4UE9TemNkYmNUbk5jXzE3NDk4MTg5Nzg6MTc0OTgyMjU3OF9WNA)
+
+​**Figure 1**​: Comparison of household consumption distribution between front-loading (overdraft-enabled) and normal consumption groups. From the age perspective (left chart), young households in the front-loading group show significantly higher consumption (green bar); from the income perspective (right chart), front-loading consumption notably increases the average consumption of poor households (yellow bar).
+
+![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=ZTY2MjM4MjI1ZDRkMTU1YWM1MTQ3OWRkMGQ5Y2EyOWFfV0Uxc1I5RDFEYVhkdm5hTGlmVG5pZnJBd2d2d3luMTJfVG9rZW46SjRiSWJJVExXb1M4NWJ4cWE2YmNaTjVwbnlmXzE3NDk4MTg5Nzg6MTc0OTgyMjU3OF9WNA)
+
+​**Figure 2**​: Comparison of household working hours between front-loading (overdraft-enabled) and normal consumption groups. Front-loading consumption does not significantly alter household labor supply.
+
+![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=OTI2YjA0NjQ5MTBkMWVlNmEyNmYyM2UyMzcwNTZiY2ZfOFhEZVpHZHk4SnhiTDU2eExaa2Z5Rlc1bkZTaXBLVUJfVG9rZW46RFhSQmJucUg0b2IzbHF4SjN1YmNhcTZkbmZiXzE3NDk4MTg5Nzg6MTc0OTgyMjU3OF9WNA)
+
+​**Figure 3**​: Comparison of individual utility between front-loading (overdraft-enabled) and normal consumption groups. The overall impact of front-loading consumption on individual utility is not significant; however, from an age-based perspective, it leads to a slight increase in utility for younger households (left chart, green bar).
+
+![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=OWJiNTE3YjViZjE3NjVmZGYxNDBhZGY1OWVlMWU2NTZfRkZFSjF4dUNXMXRjcU1XWTNUS2wyVjcxU3ZZQlI0aGZfVG9rZW46UzFuU2JtNU8zb2NOR1l4eEJ6TWNtcjBSbmdmXzE3NDk4MTg5Nzg6MTc0OTgyMjU3OF9WNA)
+
+​**Figure 4**​: Comparison of GDP trends between the two simulated economies. Overall, front-loading consumption promotes higher long-term GDP growth (blue line).
+
+* In the simulated economy under the front-loading consumption assumption, household consumption, individual utility, and aggregate output differ from those in the normal economy. While front-loading significantly increases consumption among younger households, the corresponding improvement in their utility is less pronounced. Under moderate front-loading behavior, the overall economy exhibits relatively higher GDP growth.
+
 
