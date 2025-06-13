@@ -386,7 +386,7 @@ class Household(BaseEntity):
             
             self.variables_to_sort = [
                 'age', 'at', 'e', 'at_next', 'income', 'e_array', 'accumulated_pension_account', 'working_years',
-                'stock_holdings', 'ht', 'consumption_ij', 'income_tax', 'asset_tax', 'pension',
+                'stock_holdings', 'ht', 'consumption', 'consumption_ij', 'income_tax', 'asset_tax', 'pension',
                 'post_income',
             ]
             total_wealth_deceased = 0
@@ -419,6 +419,7 @@ class Household(BaseEntity):
                 n_accumulated_pension_account = np.zeros((born_n, 1))
                 n_income = np.zeros((born_n, 1))
                 n_consumption_ij = np.zeros((born_n, 1))
+                n_consumption = np.zeros((born_n, 1))
                 n_incoem_tax = np.zeros((born_n, 1))
                 n_asset_tax = np.zeros((born_n, 1))
                 n_pension = np.zeros((born_n, 1))
@@ -434,6 +435,7 @@ class Household(BaseEntity):
                     'working_years': n_working_years,
                     'stock_holdings': np.full((born_n, 1), newborn_stock_holdings),  # 新增 stock_holdings
                     'ht': n_ht,
+                    'consumption': n_consumption,
                     'consumption_ij': n_consumption_ij,
                     'income_tax': n_incoem_tax,
                     'asset_tax': n_asset_tax,
