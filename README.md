@@ -143,7 +143,14 @@ Available options include: "multi_government" and "dbl_government".
 
 ### 🧪 Option 2: Define Your Own Economic Scenario (Advanced Users)
 
-You can fully customize the problem and agent setup.
+Advanced users can fully customize the problem setup by modifying parameters in a YAML file. You may also create a new file named `"task_name.yaml"` under the `cfg/` directory and run:
+
+```bash
+python main.py --problem_scene "task_name"
+```
+
+The most important configurations in the YAML file are the **economic roles** and **agent algorithms**. Other parameters can be tailored to your needs and are explained in more detail in our paper.
+
 
 #### 1. Configure Economic Roles in YAML
 
