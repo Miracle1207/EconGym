@@ -371,3 +371,9 @@ EconGym/
 │   ├── normalizer.py       # Data normalization
 │   └── seeds.py            # Random seed control
 ```
+
+
+## Acknowledgments
+
+We sincerely thank [Prof. Bo Li](https://liboecon.com/) from Peking University for his valuable discussions and feedback throughout the development of this project.  
+As an outstanding economist, Prof. Bo Li provided critical guidance on the theoretical foundations of the economic models in EconGym, significantly enhancing the rigor and realism of the platform.
