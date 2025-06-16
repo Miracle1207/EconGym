@@ -48,7 +48,7 @@ class CentralBankGovernment(BaseEntity):
         self.Bt = copy.copy(self.Bt_next)
 
         policy_actions = actions[:self.policy_action_len]
-        self.base_interest_rate, self.reserve_requirement = policy_actions
+        self.base_interest_rate, self.reserve_ratio = policy_actions
 
     def step(self, society):
         pass

@@ -32,7 +32,7 @@ Environment:
           contribution_rate: 0.08
           pension_growth_rate: 0.01
           base_interest_rate: 0.03
-          reserve_requirement: 0.08
+          reserve_ratio: 0.08
           gov_task: "gdp"
           tax_type: "ai_agent"
         tax:
@@ -75,7 +75,7 @@ Environment:
             dtype: float32
           initial_action:
             base_interest_rate: 0.03
-            reserve_requirement: 0.08
+            reserve_ratio: 0.08
           real_action_max: [0.1, 0.2]
           real_action_min: [-0.02, 0.0]
     - entity_name: 'household'

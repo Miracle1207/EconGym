@@ -41,7 +41,7 @@ def load_config(problem_scene):
     scene_cfg = OmegaConf.load(scene_config_path)
     
     # For special scenes, use scene config directly
-    if problem_scene in {"multi_government", "dbl_government", "sgl_government"}:
+    if problem_scene in {"tre_government", "dbl_government", "sgl_government"}:
         return scene_cfg
     
     # Otherwise, merge base config with scene-specific config

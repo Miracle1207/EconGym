@@ -11,6 +11,8 @@ from utils.config import load_config
 import os
 import argparse
 from runner import Runner
+from entities.central_bank_gov import CentralBankGovernment
+from entities.pension_gov import PensionGovernment
 
 
 def select_agent(alg, agent_name, env, trainer_config):
@@ -25,7 +27,7 @@ def select_agent(alg, agent_name, env, trainer_config):
         "saez": rule_agent,
         "us_federal": rule_agent,
     }
-    
+
     if alg not in agent_constructors:
         raise ValueError(f"Unsupported algorithm: {alg}")
     if alg == "saez" or alg == "us_federal":
@@ -37,7 +39,7 @@ def setup_government_agents(config, env):
     """
     Initialize multiple government agents based on config if problem_scene is multi_gov.
     """
-    if config.Environment.env_core.problem_scene not in {"multi_government", "dbl_government", "sgl_government"}:
+    if config.Environment.env_core.problem_scene not in {"tre_government", "dbl_government", "sgl_government"}:
         return {
             "government_agent": select_agent(config['Trainer']['gov_alg'], "government", env,
                                              config['Trainer']) if 'gov_alg' in config['Trainer'] else None,
@@ -55,47 +57,52 @@ def setup_government_agents(config, env):
         if 'central_bank_gov_alg' in config['Trainer']:
             agents["central_bank_gov_agent"] = select_agent(config['Trainer']['central_bank_gov_alg'],
                                                             "central_bank_gov", env, config['Trainer'])
-        
+
         if 'tax_gov_alg' in config['Trainer']:
             agents["tax_gov_agent"] = select_agent(config['Trainer']['tax_gov_alg'], "tax_gov", env, config['Trainer'])
-        
+
         if 'pension_gov_alg' in config['Trainer']:
             agents["pension_gov_agent"] = select_agent(config['Trainer']['pension_gov_alg'], "pension_gov", env,
                                                        config['Trainer'])
-        
+
         return agents
 
 
 if __name__ == '__main__':
     os.environ['OMP_NUM_THREADS'] = '1'
     os.environ['MKL_NUM_THREADS'] = '1'
-    
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--problem_scene", type=str, default='delayed_retirement', help="Problem scene to simulate")
+    parser.add_argument("--problem_scene", type=str, default='inflation_control', help="Problem scene to simulate")
     args = parser.parse_args()
-    
+
     config = load_config(args.problem_scene)
     set_seeds(config['Trainer']['seed'], cuda=config['Trainer']['cuda'])
     os.environ['CUDA_VISIBLE_DEVICES'] = str(config['device_num'])
-    
-    env = EconomicSociety(config['Environment'])
-    
+
+    if 'pension_gov_alg' not in config['Trainer']:
+        env = EconomicSociety(config['Environment'], invalid_gov="pension_gov")
+    elif 'central_bank_gov_alg' not in config['Trainer']:
+        env = EconomicSociety(config['Environment'], invalid_gov="central_bank_gov")
+    else:
+        env = EconomicSociety(config['Environment'])
+
     house_agent = select_agent(config['Trainer']['house_alg'], "household", env, config['Trainer'])
     firm_agent = select_agent(config['Trainer']['firm_alg'], "market", env, config['Trainer'])
     bank_agent = select_agent(config['Trainer']['bank_alg'], "bank", env, config['Trainer'])
-    
+
     gov_agents = setup_government_agents(config, env)
-    
+
     print(f"Problem Scene: {env.problem_scene}")
     print(f"Households_n: {env.households.households_n}")
-    
+
     test_mode = config.get('Trainer', {}).get('test', False)
-    
+
     if test_mode:
         heter_house_agent = None
         if config['Trainer'].get('heterogeneous_house_agent', False):
             heter_house_agent = select_agent(config['Trainer']['heter_house_alg'], "household", env, config['Trainer'])
-        
+
         runner = Runner(
             env,
             config['Trainer'],

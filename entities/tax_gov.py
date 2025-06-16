@@ -43,7 +43,6 @@ class TaxGovernment(BaseEntity):
         self.GDP = self.per_household_gdp * households_n
         self.Bt_next = real_debt_rate * self.GDP
 
-
         # Initialize Gt_prob_j as an empty array or with a default value to avoid AttributeError
         self.Gt_prob_j = np.ones((firm_n, 1)) * self.Gt_prob if self.action_dim > self.action_dim else 1
 
@@ -85,13 +84,13 @@ class TaxGovernment(BaseEntity):
         }
         return annuity_factors.get(age, 56)
 
-    def tax_function(self, households):
+    def tax_function(self, income, asset):
         """Compute taxes based on government policies."""
-        income = households.income
-        asset = households.at
-        if households.type == "personal_pension":
-            pension = self.calculate_pension(households)
-            income = income + pension
+
+        # 个人养老金
+        # if households_type == "personal_pension":
+        #     pension = self.calculate_pension(households)
+        #     income = income + pension
 
         def tax_formula(x, tau, xi):
             x = np.maximum(x, 0)
@@ -130,40 +129,22 @@ class TaxGovernment(BaseEntity):
         asset_tax = np.zeros_like(asset)
         return income_tax, asset_tax
 
-    def compute_tax(self, households):
-        households_type = households.type
-        income = households.income
-        asset = households.at
+    def compute_tax(self, income, asset):
         """Compute income and asset taxes based on the tax policy."""
-        # TODO: 个人养老金有问题，待改
-        if households_type == "personal_pension":
-            if self.tax_type == "us_federal":
-                income_tax, asset_tax = self.calculate_taxes(income, asset)
-            elif self.tax_type == "saez":
-                self.saez_gov.saez_step()
-                self.saez_gov.update_saez_buffer(income)
-                income_tax = np.array(self.saez_gov.tax_due(income)).reshape(-1, 1)
-                asset_tax = np.zeros_like(income_tax)
-            elif self.tax_type == "ai_agent":
-                income_tax, asset_tax = self.tax_function(households)
-            else:
-                print("Free market policy: no taxes applied.")
-                income_tax = np.zeros_like(income)
-                asset_tax = np.zeros_like(asset)
+        if self.tax_type == "us_federal":
+            income_tax, asset_tax = self.calculate_taxes(income, asset)
+        elif self.tax_type == "saez":
+            self.saez_gov.saez_step()
+            self.saez_gov.update_saez_buffer(income)
+            income_tax = np.array(self.saez_gov.tax_due(income)).reshape(-1, 1)
+            asset_tax = np.zeros_like(income_tax)
+        elif self.tax_type == "ai_agent":
+            income_tax, asset_tax = self.tax_function(income, asset)
         else:
-            if self.tax_type == "us_federal":
-                income_tax, asset_tax = self.calculate_taxes(income, asset)
-            elif self.tax_type == "saez":
-                self.saez_gov.saez_step()
-                self.saez_gov.update_saez_buffer(income)
-                income_tax = np.array(self.saez_gov.tax_due(income)).reshape(-1, 1)
-                asset_tax = np.zeros_like(income_tax)
-            elif self.tax_type == "ai_agent":
-                income_tax, asset_tax = self.tax_function(households)
-            else:
-                print("Free market policy: no taxes applied.")
-                income_tax = np.zeros_like(income)
-                asset_tax = np.zeros_like(asset)
+            print("Free market policy: no taxes applied.")
+            income_tax = np.zeros_like(income)
+            asset_tax = np.zeros_like(asset)
+
         return income_tax, asset_tax
 
     def calculate_pension(self, households):

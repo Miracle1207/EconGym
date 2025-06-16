@@ -104,7 +104,7 @@ class llm_agent:
                      1. Base interest rate (`base_interest_rate`) ∈ [-0.02,0.2]
                           → Controls borrowing costs and savings incentives
 
-                     2. Reserve requirement (`reserve_requirement`) ∈ [0,0.5]
+                     2. Reserve requirement (`reserve_ratio`) ∈ [0,0.5]
                           → Affects banks' lending capacity and money supply
 
 
@@ -120,7 +120,7 @@ class llm_agent:
                     ```json
                     {{
                       "base_interest_rate": ...    // e.g., 1.5 or 2.0
-                      "reserve_requirement": ...   // e.g., 0.10
+                      "reserve_ratio": ...   // e.g., 0.10
                     }}
                     ```'''
             return prompt
@@ -327,8 +327,8 @@ class llm_agent:
             if self.agent_name == "government":
                 if self.envs.government.type == "central_bank":
                     base_interest_rate = float(decision["base_interest_rate"])
-                    reserve_requirement = float(decision["reserve_requirement"])
-                    return np.array([base_interest_rate, reserve_requirement])
+                    reserve_ratio = float(decision["reserve_ratio"])
+                    return np.array([base_interest_rate, reserve_ratio])
 
                 elif self.envs.government.type == "pension":
                     retire_age = float(decision["retire_age"])
@@ -354,8 +354,8 @@ class llm_agent:
 
             elif self.agent_name == "central_bank_gov":
                 base_interest_rate = float(decision["base_interest_rate"])
-                reserve_requirement = float(decision["reserve_requirement"])
-                return np.array([base_interest_rate, reserve_requirement])
+                reserve_ratio = float(decision["reserve_ratio"])
+                return np.array([base_interest_rate, reserve_ratio])
 
 
         except Exception as e:

@@ -146,9 +146,9 @@ class rule_agent:
                 phi_g = 0.5
     
                 interest_rate = r_star + pi_t + phi_pi * (pi_t - pi_star) + phi_g * (g_t - g_star)
-                reserve_requirement = gov_agent.reserve_requirement
+                reserve_ratio = gov_agent.reserve_ratio
     
-                action = np.array([interest_rate, reserve_requirement])
+                action = np.array([interest_rate.cpu().numpy(), reserve_ratio])
                 noise_scale = np.array([0.002, 0.02])
                 action += np.random.normal(0, noise_scale)
                 return action

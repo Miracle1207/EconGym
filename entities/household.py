@@ -16,7 +16,7 @@ from gym.spaces import Box
 
 class Household(BaseEntity):
     name = 'household'
-    
+
     def __init__(self, entity_args):
         super().__init__()
         self.entity_args = entity_args
@@ -25,10 +25,10 @@ class Household(BaseEntity):
             self.action_dim += 1
         self.policy_action_len = copy.copy(self.action_dim)
         self.households_init()
-        
+
         if 'OLG' in self.type or 'personal_pension' in self.type:
             self.__dict__.update(entity_args.OLG)
-        
+
         self.best_loss = 100
 
     def e_initial(self, n):
@@ -38,10 +38,10 @@ class Household(BaseEntity):
         self.e_array[:, 0] = (random_set > self.e_p).astype(int) * self.e_init.flatten()  # Set to 0 if less than e_p
         self.e_array[:, 1] = (random_set < self.e_p).astype(int)  # Set to 1 if less than e_p
         self.e = np.sum(self.e_array, axis=1, keepdims=True)
-    
+
         self.e_0 = copy.copy(self.e)
         self.e_array_0 = copy.copy(self.e_array)
-    
+
     def generate_e_ability(self):
         """
         Generates n current ability levels for a given time step t.
@@ -75,7 +75,7 @@ class Household(BaseEntity):
                     self.e_array[i, 1] = 0
                     self.e_array[i, 0] = random.uniform(self.e_array[:, 0].min(), self.e_array[:, 0].max())
         self.e = np.sum(self.e_array, axis=1, keepdims=True)
-    
+
     def reset_action_space(self):
         original_low = self.action_space.low
         original_high = self.action_space.high
@@ -84,7 +84,7 @@ class Household(BaseEntity):
         new_low = original_low[:self.households_n, :]
         new_high = original_high[:self.households_n, :]
         self.action_space = Box(low=new_low, high=new_high, shape=new_shape, dtype=np.float32)
-    
+
     def generate_c_init(self, age):
         self.c_init = np.zeros_like(age, dtype=float)
         # Forward consumption: increase consumption ratio
@@ -99,7 +99,7 @@ class Household(BaseEntity):
                 self.c_init[i] = 0.6 + np.random.normal(0, 0.05)  # Consumption starts to decline
             else:
                 self.c_init[i] = 0.4 + np.random.normal(0, 0.05)  # Elderly consume even less
-    
+
     def reset(self, **custom_cfg):
         self.households_n = self.entity_args.params.households_n  # Reset number of households
         self.e = copy.deepcopy(self.e_0)
@@ -143,7 +143,8 @@ class Household(BaseEntity):
     def households_init(self):
         data = self.get_real_data()
         self.real_e = data[1]
-        self.at_init, self.e_init, self.it_init, self.age_init, self.work_init, self.c_init, self.investment_init = self.sample_real_data(data)
+        self.at_init, self.e_init, self.it_init, self.age_init, self.work_init, self.c_init, self.investment_init = self.sample_real_data(
+            data)
         self.generate_c_init(self.age_init)
         self.saving_init = 1 - self.c_init
         self.e_initial(self.households_n)
@@ -159,7 +160,8 @@ class Household(BaseEntity):
 
         columns = ['ASSET', 'EDUC', 'INCOME', 'AGE', 'LF']
         data = [df[col].values for col in columns]
-        consumption_p = (df['FOODHOME'].values + df['FOODAWAY'].values + df['FOODDELV'].values + df['RENT'].values + df['TPAY'].values + 0.0001) / (df['ASSET'].values + 0.0001)
+        consumption_p = (df['FOODHOME'].values + df['FOODAWAY'].values + df['FOODDELV'].values + df['RENT'].values + df[
+            'TPAY'].values + 0.0001) / (df['ASSET'].values + 0.0001)
         invest_p = df['FIN'].values / (df['ASSET'].values + 0.0001)
         data.append(consumption_p)
         data.append(invest_p)
@@ -168,13 +170,13 @@ class Household(BaseEntity):
         data.append(WGT)
 
         return data
-    
+
     def sample_real_data(self, data):
         probabilities = data[-1]
         # index = np.random.choice(range(len(data[0])), self.households_n, replace=False, p=probabilities)
         index = np.random.choice(range(len(data[0])), self.households_n, replace=True, p=probabilities)
         return [d[index].reshape(self.households_n, 1) for d in data[:-1]]
-    
+
     def get_action(self, actions, firm_n):
         self.generate_e_ability()
         self.at = copy.copy(self.at_next)  # Reset at to latest value
@@ -235,7 +237,6 @@ class Household(BaseEntity):
         self.at_next = savings * (1 + society.bank.deposit_rate) + self.stock_holdings * self.stock_price
         self.at_next_write = copy.copy(self.at_next)
         self.age_write = copy.copy(self.age)
-        
 
     def compute_ces_consumption(self, epsilon: float):
         if epsilon == 1.0:
@@ -246,22 +247,22 @@ class Household(BaseEntity):
             ces_sum = np.sum(ces_inner, axis=1)  # shape: (N,)
             consumption = np.power(ces_sum, 1 / rho)[:, np.newaxis]  # shape: (N, 1)
         return consumption
-    
+
     def update_action_space(self):
         original_low = self.action_space.low
         original_high = self.action_space.high
-        
+
         new_shape = (self.households_n, self.action_dim)
-        
+
         households_n_old = original_low.shape[0]
         if households_n_old < self.households_n:
             last_row_low = original_low[-1].reshape(1, -1)
             last_row_high = original_high[-1].reshape(1, -1)
-            
+
             repeat_times = self.households_n - households_n_old
             new_rows_low = np.tile(last_row_low, (repeat_times, 1))
             new_rows_high = np.tile(last_row_high, (repeat_times, 1))
-            
+
             new_low = np.vstack((original_low, new_rows_low))
             new_high = np.vstack((original_high, new_rows_high))
         elif households_n_old > self.households_n:
@@ -270,9 +271,9 @@ class Household(BaseEntity):
         else:
             new_low = original_low
             new_high = original_high
-        
+
         self.action_space = Box(low=new_low, high=new_high, shape=new_shape, dtype=np.float32)
-    
+
     def update_stock_market(self, savings):
         """
         封装股市投资和价格更新逻辑。
@@ -280,45 +281,45 @@ class Household(BaseEntity):
         """
         # 计算目标投资金额
         target_investment = self.investment_p * savings  # (n_households, 1)
-        
+
         # 计算当前股票市值
         current_stock_value = self.stock_holdings * self.stock_price  # (n_households, 1)
-        
+
         # 决定买入或卖出
         buy_sell_amount = target_investment - current_stock_value  # >0, 买入; <0, 卖出
-        
+
         # 更新股票持有量
         self.stock_holdings += buy_sell_amount / self.stock_price  # 买入
-        
+
         total_buy = np.sum(buy_sell_amount[buy_sell_amount > 0])  # 总买入
         total_sell = np.sum(np.abs(buy_sell_amount[buy_sell_amount < 0]))  # 总卖出
         # 计算成交量（所有交易的绝对值之和）
         total_volume = np.sum(np.abs(buy_sell_amount))
         imbalance = np.sum(buy_sell_amount)  # 净买入卖出量
-        
+
         # 更新股票价格
         total_stock_value = np.sum(self.stock_holdings) * self.stock_price  # 总股票市值
         if total_stock_value > 0:
             self.stock_price *= (1 + self.stock_alpha * imbalance / total_stock_value)
-    
+
     import numpy as np
-    
+
     # 假设 self.e_array 是你的二维数组，born_n 是需要选择的行数
     def select_newborn_data(self, born_n):
         if born_n > self.e_array.shape[0]:
             raise ValueError("born_n is larger than the number of available rows in e_array.")
-        
+
         # 生成不重复的行索引
         selected_indices = np.random.choice(self.e_array.shape[0], size=born_n, replace=False)
-        
+
         # 根据选择的索引提取对应的行，并 reshape 成 (born_n, 1) 的形式
         newborn_e_array = self.e_array[selected_indices].reshape(born_n, self.e_array.shape[1])
-        
+
         # newborn_accumulated_pension_account = self.accumulated_pension_account[selected_indices].reshape(born_n, self.accumulated_pension_account.shape[1])
         newborn_accumulated_pension_account = np.zeros((born_n, 1))
-        
+
         return newborn_e_array, newborn_accumulated_pension_account
-    
+
     def OLG_step(self, society, t):
         """Calculate households' income, assets, and consumption."""
         # Classify households as young or old based on age
@@ -331,23 +332,23 @@ class Household(BaseEntity):
         self.old_n = np.sum(self.is_old)
         # self.ht[:self.old_n] = np.zeros_like(self.ht[:self.old_n])
         self.ht[self.is_old] = 0
-        
+
         # Calculate income, taxes, and post-income for all households
         labor_income = self.e * np.dot(self.ht * self.h_ij_ratio, society.market.WageRate)
         labor_income[self.is_old] = 0
-        
+
         capital_income = society.bank.deposit_rate * self.at
         self.income = labor_income + capital_income
         self.income_tax, self.asset_tax = society.main_gov.compute_tax(self.income, self.at)
         self.post_income = self.income - self.income_tax
         self.post_asset = self.at - self.asset_tax
-        
+
         self.pension = society.main_gov.calculate_pension(self)
         self.accumulated_pension_account[~self.is_old] -= self.pension[~self.is_old]
         total_wealth = self.post_income + self.post_asset + self.pension
-        
+
         self.working_years[~self.is_old] += 1
-        
+
         # Consumption
         # money_for_consumption = self.consumption_p * total_wealth / ( 1 + society.consumption_tax_rate)  # 消费比例 = 消费/总财富。 之前版本是 比例=消费/收入
         money_for_consumption = self.consumption_p * (self.post_income + self.pension) / (
@@ -357,33 +358,33 @@ class Household(BaseEntity):
             raise ValueError("Price contains zero values, which can cause division by zero.")
         self.consumption_ij = (money_for_consumption * self.c_ij_ratio) / society.market.price.T
         self.consumption = self.compute_ces_consumption(epsilon=society.market.epsilon)  # Dixit–Stiglitz
-        
+
         # 计算储蓄（理财部分）
         all_money_investment = total_wealth - money_for_consumption  # (n_households, 1)
-        
+
         # 调用股市更新函数
         self.update_stock_market(all_money_investment)
-        
+
         # 更新下一期财富
         savings = all_money_investment - (self.investment_p * all_money_investment)  # 储蓄
         self.at_next = savings * (
                 1 + society.bank.deposit_rate) + self.stock_holdings * self.stock_price  # 下一期的财富 = 储蓄以及利息 + 风险投资收益
-        
+
         self.at_next_write = copy.copy(self.at_next)
         self.age_write = copy.copy(self.age)
-        
+
         # Age update
         self.age += 1
         if t != 0:
             
             self.birth_rate = self.entity_args['OLG'].birth_rate
             born_n = int(self.households_n * self.birth_rate)  # Number of newborn households
-            
+
             die_total, all_eliminate_indices = self.sample_deaths_by_probability(
                 age_array=self.age,
                 max_age=102
             )
-            
+
             self.variables_to_sort = [
                 'age', 'at', 'e', 'at_next', 'income', 'e_array', 'accumulated_pension_account', 'working_years',
                 'stock_holdings', 'ht', 'consumption', 'consumption_ij', 'income_tax', 'asset_tax', 'pension',
@@ -453,7 +454,7 @@ class Household(BaseEntity):
                     if total_wealth_deceased > 0 and self.stock_price > 0:
                         stock_proportion = deceased_stock_value / total_wealth_deceased
                         self.stock_holdings += (assignment_assets * stock_proportion) / self.stock_price
-        
+
         # Update population count
         self.households_n = len(self.age)
         self.is_old = self.age >= retire_age
@@ -506,7 +507,6 @@ class Household(BaseEntity):
 
         estate_tax = np.sum(at_die) - total_inherited
         return total_inherited, estate_tax
-
 
     def get_reward(self, consumption=None, working_hours=None, alpha=6.68e-6):
         """Compute household utility based on CRRA utility of consumption and disutility of labor."""

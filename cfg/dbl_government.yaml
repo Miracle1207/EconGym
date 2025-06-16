@@ -28,7 +28,7 @@ Environment:
           tax_type: "ai_agent"
 
           base_interest_rate: 0.05
-          reserve_requirement: 0.1
+          reserve_ratio: 0.1
 
           action_dim: 2
           action_space:
@@ -37,7 +37,7 @@ Environment:
             dtype: float32
           initial_action:
             base_interest_rate: 0.05
-            reserve_requirement: 0.1
+            reserve_ratio: 0.1
           real_action_max: [ 0.2, 0.5 ]
           real_action_min: [ -0.02, 0. ]
 
@@ -59,7 +59,7 @@ Environment:
           personal_contribution_rate: 0.1  # 个人养老金上交比例
           pension_growth_rate: 0.01
           base_interest_rate: 0.05
-          reserve_requirement: 0.1
+          reserve_ratio: 0.1
 
           action_dim: 5
           action_space:
@@ -104,7 +104,7 @@ Environment:
         params:
           type: 'ramsey'
           type_list: [ 'ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest','personal_pension' ]  # you can add "risk_invest" ,example: 'ramsey_risk_invest' or 'OLG_risk_invest', means households can take risky investment
-          households_n: 10
+          households_n: 1000
           CRRA: 1
           IFE: 1
           eta: 0
@@ -251,7 +251,7 @@ Trainer:
   bank_alg: "rule_based"
 
   central_bank_gov_alg: 'rule_based'
-  pension_gov_alg: 'rule_based'
+  # pension_gov_alg: 'rule_based'
   tax_gov_alg: 'rule_based'
 
   update_each_epoch: 20

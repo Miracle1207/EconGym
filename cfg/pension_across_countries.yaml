@@ -9,7 +9,8 @@ Environment:
       entity_args:
         params:
           type: "pension"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
-          retire_age: 65
+          retire_age: 62
+          pension_rate: 0.7
           contribution_rate: 0.08
           gov_task: "gdp"
 

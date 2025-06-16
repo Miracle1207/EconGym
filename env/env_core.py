@@ -29,7 +29,6 @@ class EconomicSociety:
         self.__dict__.update(cfg['env_core'])  # update cfg to self
         self.__dict__.update(cfg['env_core'])  # update cfg to self
         self.agents = {}
-        
 
         if invalid_gov is not None:
             filtered_entities = [
@@ -103,12 +102,13 @@ class EconomicSociety:
 
         self.market.observation_space = Box(
             low=-np.inf, high=np.inf,
-            shape=(global_obs.shape[0] + self.main_gov.action_dim + self.bank.action_dim + 1,),  # The last dimension represents the firm's own productivity level Zt.
+            shape=(global_obs.shape[0] + self.main_gov.action_dim + self.bank.action_dim + 1,),
+            # The last dimension represents the firm's own productivity level Zt.
             dtype=np.float32
         )
 
         self.display_mode = False
-    
+
     @property
     def action_spaces(self):
         return {
@@ -117,7 +117,7 @@ class EconomicSociety:
             self.market.name: self.market.action_space,
             self.bank.name: self.bank.action_space
         }
-    
+
     @property
     def observation_spaces(self):
         return {
@@ -126,7 +126,7 @@ class EconomicSociety:
             self.market.name: self.market.observation_space,
             self.bank.name: self.bank.observation_space
         }
-    
+
     def action_wrapper(self, action_dict):
         processed_action_dict = {}
         for agent_name, agent_action in action_dict.items():
@@ -143,7 +143,7 @@ class EconomicSociety:
             if agent_action.shape[-1] == 0:
                 processed_action_dict[agent_name] = None
                 continue
-            
+
             fill_in_len = abs(expected_dim - len(self.agents[agent_name].real_action_min))
             real_action_min = self.agents[agent_name].real_action_min
             real_action_min = np.pad(real_action_min, (0, fill_in_len), mode='constant', constant_values=0)
@@ -154,7 +154,7 @@ class EconomicSociety:
                 temp[:, 1] = self.agents[agent_name].real_action_max[1] * temp[:, 1]  # working hours scale
             processed_action_dict[agent_name] = np.clip(temp, real_action_min, real_action_max)
         return processed_action_dict
-    
+
     def get_actions(self, action_dict):
         """Get and process actions for all agents."""
         valid_action_dict = self.is_valid(action_dict)
@@ -165,7 +165,7 @@ class EconomicSociety:
         self.bank.get_action(processed_action_dict[self.bank.name])
         self.market.get_action(processed_action_dict[self.market.name])
         self.households.get_action(processed_action_dict[self.households.name], firm_n=self.market.firm_n)
-    
+
     def step(self, action_dict, t=None):
         """Perform a simulation step given the actions."""
         # Agents get action
@@ -181,47 +181,47 @@ class EconomicSociety:
         # Bank Step
         self.bank.step(self)
         # Update Evaluation Metrics
-        
+
         self.update_metrics()
-        
+
         # Increment step counter
         self.step_cnt += 1
         self.done = self.is_terminal()
-        
+
         # Next state
         next_global_state, next_private_state = self.get_obs()
-        
+
         # Check for NaN values
         next_state = self.is_nan()
         if next_state != False:
             next_global_state, next_private_state = next_state
-        
+
         self.last_price_index = copy.copy(self.price_index)
         # print(f"Step: {self.step_cnt}, households num:{self.households.households_n}")
         return next_global_state, next_private_state, self.government_reward, self.households_reward, self.firm_reward, self.bank_reward, self.done
-    
+
     def update_metrics(self):
         """Update evaluation metrics such as Gini coefficients, price index, and rewards."""
         # Next state
         next_global_state, next_private_state = self.get_obs()
-        
+
         # Compute Gini coefficients
         self.wealth_gini = self.gini_coef(self.households.post_asset)
         self.income_gini = self.gini_coef(self.households.post_income)
-        
+
         # Compute Price Index
         self.inflation_rate, self.price_index = self.market.compute_inflation_rate(self.market.price,
                                                                                    self.last_price_index)
-        
+
         # Compute rewards
         self.households_reward = self.households.get_reward()
         self.government_reward = self.main_gov.get_reward(self)
 
         self.firm_reward = self.market.get_reward(self)
         self.bank_reward = self.bank.get_reward()
-        
+
         return next_global_state, next_private_state
-    
+
     def reset(self, **custom_cfg):
         """Reset the simulation to the initial state."""
         self.step_cnt = 0
@@ -233,15 +233,15 @@ class EconomicSociety:
 
         self.market.reset(households_n=self.households.households_n, GDP=self.main_gov.GDP,
                           households_at=self.households.at)
-        
+
         self.last_price_index = 1
         self.ini_income_gini = self.gini_coef(self.households.income)
         self.ini_wealth_gini = self.gini_coef(self.households.at)
         self.done = False
         self.display_mode = False
-        
+
         return self.get_obs()
-    
+
     def get_obs(self):
         """Generate global and private observations for the agents."""
         # Global state: mean values for top 10% and bottom 50% of income and wealth
@@ -259,15 +259,15 @@ class EconomicSociety:
             np.mean(self.households.at_next),  # 0
             np.mean(self.households.income),
             np.mean(self.households.e),
-            # float(len(private_obs)),
-            # getattr(self, "inflation_rate", 0.0),  # you can set global observation here
-            # getattr(self, "wealth_gini", 0.0),
-            # getattr(self.main_gov, "GDP", 0.0),
-            # getattr(self.main_gov, "growth_rate", 0.0),
-            # getattr(self.main_gov, "Bt_next", 0.0) / getattr(self.main_gov, "GDP", 1.0),  # 避免除以 0
-            # getattr(self.main_gov, "tau", 0.0),  # 9
-            # getattr(self.main_gov, "xi", 0.0),
-            # getattr(self.main_gov, "Gt_prob", 0.0),
+            float(len(private_obs)),
+            getattr(self, "inflation_rate", 0.0),  # you can set global observation here
+            getattr(self, "wealth_gini", 0.0),
+            getattr(self.main_gov, "GDP", 0.0),
+            getattr(self.main_gov, "growth_rate", 0.0),
+            getattr(self.main_gov, "Bt_next", 0.0) / getattr(self.main_gov, "GDP", 1.0),  # 避免除以 0
+            getattr(self.main_gov, "tau", 0.0),  # 9
+            getattr(self.main_gov, "xi", 0.0),
+            getattr(self.main_gov, "Gt_prob", 0.0),
 
         ])
 
@@ -283,7 +283,7 @@ class EconomicSociety:
             elif self.government.type == "central_bank":
                 additional_obs = np.array([
                     getattr(self.government, "base_interest_rate", 0.01),
-                    getattr(self.government, "reserve_requirement", 0.01)
+                    getattr(self.government, "reserve_ratio", 0.01)
                 ])
                 global_obs = np.concatenate([global_obs, additional_obs])
 
@@ -293,9 +293,9 @@ class EconomicSociety:
             if hasattr(self, "central_bank_gov"):
                 additional_obs_1 = np.array([
                     getattr(self.central_bank_gov, "base_interest_rate", 0.01),
-                    getattr(self.central_bank_gov, "reserve_requirement", 0.01)
+                    getattr(self.central_bank_gov, "reserve_ratio", 0.01)
                 ])
-            elif hasattr(self, "pension_gov"):
+            if hasattr(self, "pension_gov"):
                 additional_obs_2 = np.array([
                     getattr(self.pension_gov, "pension_fund", 0.0),
                     getattr(self.pension_gov, "retire_age", 60.0),  # 默认退休年龄为 60
@@ -305,7 +305,7 @@ class EconomicSociety:
             global_obs = np.concatenate([global_obs, additional_obs_1, additional_obs_2])
 
         return global_obs, private_obs
-    
+
     def is_terminal(self):
         """
         Check if the simulation has reached a terminal state.
@@ -314,20 +314,20 @@ class EconomicSociety:
         gini_exceeded = self.wealth_gini >= 1 or self.income_gini >= 1
         # if gini_exceeded:
         #     print("Termination condition: Gini coefficient exceeded.")
-        
+
         # Condition 2: Data contains NaN values
         data_nan = any([
             math.isnan(self.government_reward),
             math.isnan(self.wealth_gini * self.income_gini),
             math.isnan(np.mean(self.households_reward))
         ])
-        
+
         episode_completed = self.step_cnt >= self.episode_length
         agent_terminal = any(agent.is_terminal() for agent in self.agents.values())
         # if gini_exceeded or data_nan or episode_completed or agent_terminal == True:
         #     print(1)
         return gini_exceeded or data_nan or episode_completed or agent_terminal
-    
+
     def is_nan(self):
         """Handle NaN values in rewards and state variables."""
         if (
@@ -347,7 +347,7 @@ class EconomicSociety:
             return next_global_state, next_private_state
         else:
             return False
-    
+
     def is_valid(self, action_dict):
         """Validate the actions provided by the agents."""
         expected_agents = set(self.agents.keys())
@@ -357,39 +357,39 @@ class EconomicSociety:
         else:
             raise ValueError(
                 "Invalid actions. Expected agents: {}, Received agents: {}".format(expected_agents, received_agents))
-    
+
     def gini_coef(self, values):
         """Calculate the Gini coefficient of a numpy array."""
         values = np.sort(values, axis=0) + 1e-7  # Avoid division by zero
         n = values.shape[0]
         index = np.arange(1, n + 1).reshape(-1, 1)
         return (np.sum((2 * index - n - 1) * values)) / (n * np.sum(values))
-    
+
     def working_hours_wrapper(self, ht):
         """Compute actual working hours based on ht."""
         max_hours = 365 * 24 * (2 / 3)
         return max_hours * ht  # Max: Work up to 2/3 of the total possible hours
-    
+
     def _load_image(self):
         self.gov_img = pygame.image.load(os.path.join(ROOT_PATH, "img/gov.jpeg"))
         self.house_img = pygame.image.load(os.path.join(ROOT_PATH, "img/household.png"))
         self.firm_img = pygame.image.load(os.path.join(ROOT_PATH, "img/firm.png"))
         self.bank_img = pygame.image.load(os.path.join(ROOT_PATH, "img/bank.jpeg"))
-    
+
     def render(self):
         if not self.display_mode:
             self.background = pygame.display.set_mode([500, 500])
             self.display_mode = True
             self._load_image()
-        
+
         self.background.fill((255, 255, 255))
-        
+
         debug(f"Step {self.step_cnt}")
         debug("Mean Social Welfare: " + "{:.3g}".format(float(self.households_reward.mean())), x=280, y=10)
         debug("Wealth Gini: " + "{:.3g}".format(self.wealth_gini), x=348, y=30)
         debug("Income Gini: " + "{:.3g}".format(self.income_gini), x=348, y=50)
         debug('GDP: ' + "{:.3g}".format(self.government.GDP), x=390, y=70)
-        
+
         gov_img = pygame.transform.scale(self.gov_img, (50, 50))
         self.background.blit(gov_img, [100, 100])
         debug("Tau: " + "{:.3g}".format(self.government.tau), x=10, y=80)
@@ -398,35 +398,35 @@ class EconomicSociety:
         debug("Xi_a: " + "{:.3g}".format(self.government.xi_a), x=10, y=140)
         debug("Gt_prob: " + "{:.3g}".format(self.government.Gt_prob), x=10, y=160)
         debug("Bt2At: " + "{:.3g}".format(self.Bt2At), x=10, y=180)
-        
+
         house_img = pygame.transform.scale(self.house_img, (50, 50))
         self.background.blit(house_img, [200, 400])
         self.background.blit(house_img, [160, 400])
         self.background.blit(house_img, [180, 440])
         debug("Mean Working Hours: " + "{:.3g}".format(self.workingHours.mean()), x=250, y=450)
         debug("Mean Saving Prop: " + "{:.3g}".format(self.mean_saving_p), x=250, y=470)
-        
+
         firm_img = pygame.transform.scale(self.firm_img, (50, 50))
         self.background.blit(firm_img, [400, 170])
         debug("Wage Rate: " + "{:.3g}".format(self.market.WageRate), x=370, y=230)
-        
+
         pygame.draw.line(self.background, COLORS['blue'], (140, 150), (190, 390), width=10)
         pygame.draw.line(self.background, COLORS['blue'], (220, 390), (390, 210), width=10)
         pygame.draw.line(self.background, COLORS['blue'], (160, 130), (390, 180), width=10)
-        
+
         bank_img = pygame.transform.scale(self.bank_img, (50, 50))
         self.background.blit(bank_img, [230, 200])
-        
+
         pygame.draw.line(self.background, COLORS['blue'], (145, 145), (225, 195), width=10)
         pygame.draw.line(self.background, COLORS['blue'], (205, 390), (250, 255), width=10)
         pygame.draw.line(self.background, COLORS['blue'], (380, 195), (280, 230), width=10)
-        
+
         for event in pygame.event.get():
-            
+
             if event.type == pygame.QUIT:
                 sys.exit()
         pygame.display.flip()
-    
+
     def close(self):
         if self.screen is not None:
             import pygame
@@ -452,11 +452,11 @@ if render:
         # 'red-2': [215,80,83],
         # 'blue-2': [73,141,247]
     }
-    
+
     pygame.init()
     font = pygame.font.Font(None, 22)
-    
-    
+
+
     def debug(info, y=10, x=10, c='black'):
         display_surf = pygame.display.get_surface()
         debug_surf = font.render(str(info), True, COLORS[c])

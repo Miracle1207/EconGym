@@ -45,7 +45,10 @@ class ddpg_agent:
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
-        self.agent = getattr(self.envs, agent_name)
+
+        env_agent_name = "households" if agent_name == "household" else agent_name
+
+        self.agent = getattr(self.envs, env_agent_name)
 
         if agent_name == "household":
             self.obs_dim = self.envs.observation_space.shape[0]
