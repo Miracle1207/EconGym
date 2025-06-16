@@ -47,12 +47,12 @@ Below is an overview of the 25 economic benchmark problems and their correspondi
 ### 🏛️ Monetary Policy Issues
 
 | No.  | Research Question                                            | YAML File                |
-| ---- | ------------------------------------------------------------ | ------------------------ |
+| ---- | ------------------------------------------------------------ |--------------------------|
 | Q1   | [`How effective are negative interest rates?`](document/Monetary%20Policy%20Issues/Q1-How-effective-are-negative-interest-rates.md) | `negative_interest.yaml` |
 | Q2   | [`How to control inflation via monetary policy?`](document/Monetary%20Policy%20Issues/Q2-How-to-control-inflation-via-monetary-policy.md) | `inflation_control.yaml` |
 | Q3   | [`What are the long-term effects of quantitative easing?`](document/Monetary%20Policy%20Issues/Q3-What-are-the-long-term-effects-of-quantitative-easing.md) | `QE.yaml`                |
 | Q4   | [`How to set optimal bank rate spreads?`](document/Monetary%20Policy%20Issues/Q4-How-to-set-optimal-bank-rate-spreads.md) | `optimal_monetary.yaml`  |
-| Q5   | [`How to coordinate monetary and fiscal policies?`](document/Monetary%20Policy%20Issues/Q5-How-to-coordinate-monetary-and-fiscal-policies.md) | `multi_government.yaml`  |
+| Q5   | [`How to coordinate monetary and fiscal policies?`](document/Monetary%20Policy%20Issues/Q5-How-to-coordinate-monetary-and-fiscal-policies.md) | `tre_government.yaml`    |
 
 ### ⚖️ Market Competition Issues
 
@@ -70,7 +70,7 @@ Below is an overview of the 25 economic benchmark problems and their correspondi
 | Q1   | [`Does the “996” work culture improve utility and efficiency?`](document/Individual%20Decision%20Issues/Q1-Does-the-996-work-culture-improve-utility-and-efficiency.md) | `work_hard.yaml`                  |
 | Q2   | [`How does age affect consumption patterns?`](document/Individual%20Decision%20Issues/Q2-How-does-age-affect-consumption-patterns.md) | `age_consumption.yaml`            |
 | Q3   | [`How does asset allocation affect wealth?`](document/Individual%20Decision%20Issues/Q3-How-does-asset-allocation-affect-wealth.md) | `asset_allocation.yaml`           |
-| Q4   | [`How does work-life balance impact well-being?`](document/Individual%20Decision%20Issues/Q4-How-does-work-life-balance-impact-well-being.md) | `work-life_well-bing.yaml`        |
+| Q4   | [`How does work-life balance impact well-being?`](document/Individual%20Decision%20Issues/Q4-How-does-work-life-balance-impact-well-being.md) | `work_life_well_bing.yaml`        |
 | Q5   | [`How does over-leveraged consumption impact the economy?`](document/Individual%20Decision%20Issues/Q5-How-does-over-leveraged-consumption-impact-the-economy.md) | `over_leveraged_consumption.yaml` |
 | Q6   | [`How do market structures shape consumer behavior?`](document/Individual%20Decision%20Issues/Q6-How-do-market-structures-shape-consumer-behavior.md) | `market_type.yaml`                |
 
@@ -134,9 +134,9 @@ personal_pension
 
 To run multi-government coordination, set `--problem_scene` to one of the supported scenarios, such as:
 ```bash
-python main.py --problem_scene "multi_government"
+python main.py --problem_scene "tre_government"
 ```
-Available options include: "multi_government" and "dbl_government".
+Available options include: "tre_government" and "dbl_government".
 
 
 ------

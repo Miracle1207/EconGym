@@ -259,8 +259,8 @@ class EconomicSociety:
             np.mean(self.households.at_next),  # 0
             np.mean(self.households.income),
             np.mean(self.households.e),
-            float(len(private_obs)),
-            getattr(self, "inflation_rate", 0.0),  # you can set global observation here
+            float(len(private_obs)),   # you can set global observation here
+            getattr(self, "inflation_rate", 0.0),
             getattr(self, "wealth_gini", 0.0),
             getattr(self.main_gov, "GDP", 0.0),
             getattr(self.main_gov, "growth_rate", 0.0),

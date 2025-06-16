@@ -172,13 +172,10 @@ class ppo_agent:
             action_dists = torch.distributions.Normal(mu, std)
             log_probs = action_dists.log_prob(action_tensor)
             ratio = torch.exp(log_probs - old_log_probs)
-            # ratio = torch.exp((log_probs - old_log_probs).clamp(-20, 20))
             surr1 = ratio * advantage
             surr2 = torch.clamp(ratio, 1 - self.args.clip, 1 + self.args.clip) * advantage
             actor_loss = torch.mean(-torch.min(surr1, surr2))
             critic_loss = torch.mean(F.mse_loss(value, td_target.detach()))
-            # # policy entropy
-            # entropy_loss = self.args.entropy_coef * action_dists.entropy().sum()
             total_loss = actor_loss + self.args.vloss_coef * critic_loss
             self.optimizer.zero_grad()
             total_loss.backward()
@@ -210,21 +207,11 @@ class ppo_agent:
         mu, sigma = pi
         action_dist = torch.distributions.Normal(mu, sigma)
         action = action_dist.sample()
-        # action = (action + 1) / 2
-        if self.agent_name == "government":
-            if self.envs.government.type == "tax":
-                action[0][2] = 0
-                action[0][3] = 0
-            # if self.envs.government.type == "pension":
-            #     action[0][0] = torch.round(action[0][0])
-        if self.agent_name == "tax_gov":
+        if self.agent_name == "government" and self.envs.government.type == "tax" or self.agent_name == "tax_gov":
             action[0][2] = 0
             action[0][3] = 0
-        # if self.agent_name == "pension_gov":
-        #     action[0][0] = torch.round(action[0][0])
 
         if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-            # return action.cpu().numpy().flatten()
             return self.gov_action_wrapper(action.cpu().numpy().flatten())
         else:
             return action.cpu().numpy()

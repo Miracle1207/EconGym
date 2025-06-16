@@ -152,8 +152,11 @@ class Government(BaseEntity):
         """Compute taxes based on government policies."""
 
         def tax_formula(x, tau, xi):
-            x = np.maximum(x, 0)
-            return x - ((1 - tau) / (1 - xi)) * np.power(x, 1 - xi)
+            x = np.maximum(x, 1e-8)  # 避免 x=0
+            if np.isclose(xi, 1.0):
+                return x - (1 - tau) * np.log(x)
+            else:
+                return x - ((1 - tau) / (1 - xi)) * np.power(x, 1 - xi)
 
         income_tax = tax_formula(income, self.tau, self.xi)
         asset_tax = tax_formula(asset, self.tau_a, self.xi_a)
