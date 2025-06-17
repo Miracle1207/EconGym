@@ -115,4 +115,7 @@ As an example, we selected the following roles from the social role classificati
 
 ​**Figure 4**​: As time progresses, all tax strategies significantly reduce the wealth gap. However, when the government uses the RL-Agent (green line), the long-term wealth disparity remains relatively higher.
 
+* Through the learning process of the RL-Agent, the simulated economy’s government is able to design a tax system that maximizes aggregate wealth accumulation, household income growth, and total social consumption.
+* All tax strategies effectively reduce long-term income inequality in the simulated economy, though the RL-Agent–led government tends to exhibit relatively higher long-run inequality.
+
   
