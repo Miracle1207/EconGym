@@ -105,7 +105,7 @@ As an example, we selected the following roles from the social role classificati
 
 ![Fiscal Q4 P2](../img/Fiscal%20Q4%20P2.png)
 
-Figure 2:At T=192 years, the phenomenon reflected in household wealth is identical, where the tax system trained by the RL-Agent maximizes consumption across different wealth tiers of households.
+​**Figure 2**:At T=192 years, the phenomenon reflected in household wealth is identical, where the tax system trained by the RL-Agent maximizes consumption across different wealth tiers of households.
 
 ![Fiscal Q4 P3](../img/Fiscal%20Q4%20P3.png)
 
