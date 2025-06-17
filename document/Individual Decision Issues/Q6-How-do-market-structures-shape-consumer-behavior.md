@@ -111,14 +111,15 @@ As an example, we selected the following roles from the social role classificati
 * **Experiment Description:**  Conduct a direct comparison of simulated societies under four market structures to analyze the effects of different market structures on key household indicators.
 * **Involved Social Roles:**
   * Market: Perfect Competition / Monopoly / Oligopoly / Monopolistic Competition
-  * Households: Ramsey Model
+  * Individual: Ramsey Model
 * **AI**​**​ Agents:**
   * Market: Rule-Based Agent (or RL Agent to explore non-linear responses)
-  * Households: Behavior Cloning Agent
+  * Invididual: Behavior Cloning Agent
 * **Experimental Variables:**
   * Market structure design (choice among the four regimes)
   * Household wealth level
   * Household utility
+* **Visualized Experimental Results:**
 
 ![Individual Q6 P1](../img/Individual%20Q6%20P1.png)
 
