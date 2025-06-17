@@ -94,7 +94,7 @@ As an example, we selected the following roles from the social role classificati
   Train reinforcement learning models using the minimization of the pension gap as the reward function, and compare the outcomes across different RL algorithms as well as between RL-based policies and baseline scenarios.
 * **Involved Social Roles:**
   * *Government:* Pension Department
-  * *individual*​*s:* OLG Model
+  * *Individual*​*s:* OLG Model
 * **AI**​**​ Agents:**
   * *Government:* RL Agent/Rule-Based Agent
   * *Individual*​*s:* RL Agent/Behavior Cloning Agent/Rule-Based Agent
