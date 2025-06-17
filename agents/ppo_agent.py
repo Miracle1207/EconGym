@@ -114,58 +114,62 @@ class ppo_agent:
 
     def train(self, transition_dict):
         sum_loss = torch.tensor([0., 0.], dtype=torch.float32).to(self.device)
+    
         global_obses = torch.tensor(np.array(transition_dict['global_obs']), dtype=torch.float32).to(self.device)
-        if self.agent_name == "pension_gov":
-            gov_actions = torch.tensor(np.array(transition_dict['pension_gov_action']), dtype=torch.float32).to(self.device)
-
-        elif self.agent_name == "central_bank_gov":
-            gov_actions = torch.tensor(np.array(transition_dict['central_bank_gov_action']), dtype=torch.float32).to(self.device)
-        else:
-            gov_actions = torch.tensor(np.array(transition_dict['gov_action']), dtype=torch.float32).to(
-                self.device)
-
-        gov_rewards = torch.tensor(np.array(transition_dict['gov_reward']), dtype=torch.float32).to(
-            self.device).unsqueeze(-1)
-
         next_global_obses = torch.tensor(np.array(transition_dict['next_global_obs']), dtype=torch.float32).to(
             self.device)
         inverse_dones = torch.tensor([x - 1 for x in np.array(transition_dict['done'])], dtype=torch.float32).to(
             self.device).unsqueeze(-1)
-
-        # private_obses = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['private_obs']]
-        # house_actions = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['house_action']]
-        # house_rewards = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['house_reward']]
-        # next_private_obses = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['next_private_obs']]
-        #
-        # private_obses_tensor = rnn_utils.pad_sequence(private_obses, batch_first=True)
-        # house_actions_tensor = rnn_utils.pad_sequence(house_actions, batch_first=True)
-        # house_rewards_tensor = rnn_utils.pad_sequence(house_rewards, batch_first=True)
-        # next_private_obses_tensor = rnn_utils.pad_sequence(next_private_obses, batch_first=True)
-
-        # households_n = len(private_obses_tensor[0])
+    
+        if self.agent_name == "pension_gov":
+            gov_actions = torch.tensor(np.array(transition_dict['pension_gov_action']), dtype=torch.float32).to(
+                self.device)
+        elif self.agent_name == "central_bank_gov":
+            gov_actions = torch.tensor(np.array(transition_dict['central_bank_gov_action']), dtype=torch.float32).to(
+                self.device)
+        else:
+            gov_actions = torch.tensor(np.array(transition_dict['gov_action']), dtype=torch.float32).to(self.device)
+    
+        gov_rewards = torch.tensor(np.array(transition_dict['gov_reward']), dtype=torch.float32).to(
+            self.device).unsqueeze(-1)
+    
         if self.agent_name in ("government", "pension_gov", "tax_gov", "central_bank_gov"):
             obs_tensor = global_obses
             action_tensor = self.inverse_action_wrapper(gov_actions)
             reward_tensor = gov_rewards
             next_obs_tensor = next_global_obses
-        # elif self.agent_name == "household":
-        #     obs_tensor = private_obses_tensor
-        #     action_tensor = house_actions_tensor
-        #     reward_tensor = house_rewards_tensor
-        #     next_obs_tensor = next_private_obses_tensor
-        #     inverse_dones = inverse_dones.unsqueeze(-1).repeat(1, households_n, 1)
+    
+        elif self.agent_name == "household":
+            # Convert household inputs to padded tensors
+            private_obses = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['private_obs']]
+            house_actions = [torch.tensor(act, dtype=torch.float32) for act in transition_dict['house_action']]
+            house_rewards = [torch.tensor(rwd, dtype=torch.float32) for rwd in transition_dict['house_reward']]
+            next_private_obses = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['next_private_obs']]
+        
+            obs_tensor = rnn_utils.pad_sequence(private_obses, batch_first=True).to(self.device)
+            action_tensor = rnn_utils.pad_sequence(house_actions, batch_first=True).to(self.device)
+            reward_tensor = rnn_utils.pad_sequence(house_rewards, batch_first=True).to(self.device)
+            next_obs_tensor = rnn_utils.pad_sequence(next_private_obses, batch_first=True).to(self.device)
+        
+            # Adjust inverse_dones to shape (batch, n_households, 1)
+            households_n = obs_tensor.size(1)
+            inverse_dones = inverse_dones.unsqueeze(-1).repeat(1, households_n, 1)
+    
         else:
-            obs_tensor, action_tensor, reward_tensor, next_obs_tensor = None, None, None, None
-
+            return None, None  # Skip training for unsupported agents
+    
+        # Forward pass
         next_value, next_pi = self.net(next_obs_tensor)
         td_target = reward_tensor + self.args.gamma * next_value * inverse_dones
         value, pi = self.net(obs_tensor)
         td_delta = td_target - value
+    
         advantage = self.compute_advantage(self.args.gamma, self.args.tau, td_delta.cpu()).to(self.device)
+    
         mu, std = pi
         action_dists = torch.distributions.Normal(mu.detach(), std.detach())
         old_log_probs = action_dists.log_prob(action_tensor)
-
+    
         for i in range(self.args.update_each_epoch):
             value, pi = self.net(obs_tensor)
             mu, std = pi
@@ -177,13 +181,15 @@ class ppo_agent:
             actor_loss = torch.mean(-torch.min(surr1, surr2))
             critic_loss = torch.mean(F.mse_loss(value, td_target.detach()))
             total_loss = actor_loss + self.args.vloss_coef * critic_loss
+        
             self.optimizer.zero_grad()
             total_loss.backward()
             torch.nn.utils.clip_grad_norm_(self.net.parameters(), 0.5)
             self.optimizer.step()
+        
             sum_loss[0] += actor_loss
             sum_loss[1] += critic_loss
-
+    
         self.scheduler.step()
         return sum_loss[0], sum_loss[1]
 

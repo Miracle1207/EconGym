@@ -173,6 +173,8 @@ class rule_agent:
 
             elif gov_type == "tax":
                 # base_action = np.array([0.263, 0.049, 0., 0., 0.189])
+
+                # base_action = np.array([0., 0.0, 0., 0., 0.189])
                 predefined_cfg = copy.deepcopy(gov_agent.entity_args.params)
                 tau = predefined_cfg.tau
                 xi = predefined_cfg.xi
