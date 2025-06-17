@@ -86,26 +86,26 @@ As an example, we selected the following roles from the social role classificati
 
 * **Experiment Description:** In the simulated economic environment, the government can use a reinforcement learning (RL) agent to automatically learn the optimal mix and rates of labor-income, consumption, and capital taxes. In this experiment, we compare the government’s use of reinforcement learning methods (DDPG), economic rule-based methods (Seaz Tax), and the real tax rates set by the U.S. federal government (2022), and discuss the impact of different tax rate settings and tax structures on the macroeconomy.
 * **Involved Social Roles:**
-  * *Households:* Ramsey Model
+  * *Individual:* Ramsey Model
   * *Government:* Treasury Department
   * *Market: ​*Perfectly Competitive Market
   * *Financial Institutions:* Arbitrage-Free Financial Intermediaries
 * **AI**​**​ Agents:**
-  * *Households:* Rule-Based Agent
+  * *Individual:* Rule-Based Agent
   * *Government:* RL Agent/Rule-Based Agent/Data-Based Agent
   * *Market: ​*Rule-Based Agent
   * *Financial Institutions: ​*Rule-Based Agent
 * **Experimental Variables:**
   * Different government department agents and their corresponding tax structures.
   * Macro indicators: GDP, wealth Gini coefficient, average household wealth
-
+* **Visualized Experimental Results:**
 ![Fiscal Q4 P1](../img/Fiscal%20Q4%20P1.png)
 
 ​**Figure 1**​: Comparison of household wealth under different tax policies at T=192years. The tax system trained by the RL-Agent (red bar) results in higher average household wealth, with the average wealth of the wealthier households (blue bar) significantly higher than the other two tax systems. The simulated economy using the Seaz rule (left chart) has the second highest average household wealth, while the simulated economy using the real U.S. tax system (right chart) shows the lowest average household wealth.
 
 ![Fiscal Q4 P2](../img/Fiscal%20Q4%20P2.png)
 
-Figure 2:At T=192 years, the phenomenon reflected in household wealth is identical, where the tax system trained by the RL-Agent maximizes consumption across different wealth tiers of households.
+​**Figure 2**:At T=192 years, the phenomenon reflected in household wealth is identical, where the tax system trained by the RL-Agent maximizes consumption across different wealth tiers of households.
 
 ![Fiscal Q4 P3](../img/Fiscal%20Q4%20P3.png)
 
@@ -114,5 +114,8 @@ Figure 2:At T=192 years, the phenomenon reflected in household wealth is identic
 ![Fiscal Q4 P4](../img/Fiscal%20Q4%20P4.png)
 
 ​**Figure 4**​: As time progresses, all tax strategies significantly reduce the wealth gap. However, when the government uses the RL-Agent (green line), the long-term wealth disparity remains relatively higher.
+
+* Through the learning process of the RL-Agent, the simulated economy’s government is able to design a tax system that maximizes aggregate wealth accumulation, household income growth, and total social consumption.
+* All tax strategies effectively reduce long-term income inequality in the simulated economy, though the RL-Agent–led government tends to exhibit relatively higher long-run inequality.
 
   

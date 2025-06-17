@@ -94,7 +94,7 @@ As an example, we selected the following roles from the social role classificati
   * Whether households adopt a work–life balance strategy (Behavior Cloning vs. RL Agent)
   * Level of socio‐economic growth
   * Level of social welfare
-* **Visualization of Results:**
+* **Visualized Experimental Results:**
 
 ![Individual Q6 P1](../img/Individual%20Q6%20P1.png)
 

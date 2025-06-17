@@ -88,18 +88,28 @@ As an example, we selected the following roles from the social role classificati
 
 ## 4. Illustrative Experiments
 
-### Experiment 1: Optimal Pension Policy Solution
+### 4.1 Experiment: Optimal Pension Policy Solution
 
 * **Experiment Description:**
-  Use reinforcement learning to enable the Pension Department (Government) to optimize pension policy, aiming to minimize the pension gap (as the reward function) while maintaining fiscal sustainability.
+  Train reinforcement learning models using the minimization of the pension gap as the reward function, and compare the outcomes across different RL algorithms as well as between RL-based policies and baseline scenarios.
 * **Involved Social Roles:**
-  * *Government:* Pension Authority
-  * *Individual:* OLG Model
-* **AI Agents:**
-  * *Government:* RL Agent
-  * *Individual:* Behavior Cloning Agent
+  * *Government:* Pension Department
+  * *Individual*​*s:* OLG Model
+* **AI**​**​ Agents:**
+  * *Government:* RL Agent/Rule-Based Agent
+  * *Individual*​*s:* RL Agent/Behavior Cloning Agent/Rule-Based Agent
 * **Experimental Variables:**
   * Pension replacement rate
-  * Fiscal deficit
   * GDP impact
+* **Visualized Experimental Results：**
+
+![Pension Q4 P1](../img/PensionQ4P1.png)
+
+**Figure 1:** Pension outcomes under different training strategies, considering four combinations of household and government policies: BC\_DDPG, BC\_PPO, BC\_Rule-Based, and PPO\_PPO (with the first referring to the household strategy and the second to the government strategy).From the age-based breakdown (left panel), the BC\_PPO combination yields the highest total pension surplus. RL-based government strategies significantly reduce pension gaps among young and middle-aged groups, with the PPO\_PPO strategy achieving the smallest pension deficit for young individuals.From the wealth-based breakdown (right panel), the BC\_PPO strategy again results in the highest overall pension surplus. The PPO\_PPO combination substantially lowers the pension gap for wealthy households (blue bars).
+
+![Pension Q4 P2](../img/PensionQ4P2.png)
+
+**Figure 2:** GDP trajectories under different training strategies. The BC\_DDPG combination achieves both stronger long-term GDP growth and a longer simulation duration (blue line), while the PPO\_PPO strategy results in the lowest GDP level.
+
+* Although RL strategies are effective in reducing the pension gap, this optimization may come at the cost of **economic growth—particularly ​**when households also adopt RL-based decision-making. Overall, the combination where households follow Behavior Cloning and the government adopts an RL Agent strikes the best balance between sustained economic development and minimizing the pension gap.
 

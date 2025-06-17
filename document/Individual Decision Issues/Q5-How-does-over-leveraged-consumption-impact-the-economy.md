@@ -95,15 +95,15 @@ As an example, we selected the following roles from the social role classificati
   Create two simulated economies: one permits households to engage in front-loading consumption via credit overdrafts, the other restricts consumption to current income. Compare macro-indicators (GDP, aggregate wealth, saving rate, financial-system stability) to assess how borrowing-enabled consumption trades off short-term stimulus against long-term sustainability.
 * **Involved Social Roles:**
   * *Market:* Perfectly Competitive Market
-  * *Households: ​*Overlapping Generations (OLG) Model
+  * *Individual: ​*Overlapping Generations (OLG) Model
 * **AI**​**​ Agents:**
   * *Market: ​*Rule-Based Agent
-  * *Households:* Rule-Based Agent
+  * *Individual:* Rule-Based Agent
 * **Experimental Variables:**
   * Degree of front-loading propensity in the population
   * Wealth levels, consumption, and working hours of households across different age and wealth groups under the influence of front-loading consumption
   * GDP level
-
+* **Visualized Experimental Results:**
 ![Individual Q5 P1](../img/Individual%20Q5%20P1.png)
 
 ​**Figure 1**​: Comparison of household consumption distribution between front-loading (overdraft-enabled) and normal consumption groups. From the age perspective (left chart), young households in the front-loading group show significantly higher consumption (green bar); from the income perspective (right chart), front-loading consumption notably increases the average consumption of poor households (yellow bar).
