@@ -77,6 +77,9 @@ class mlp_net(nn.Module):
         self.use_norm = True
         self.register_buffer('mean', torch.tensor(mean, dtype=torch.float32))
         self.register_buffer('std', torch.tensor(std, dtype=torch.float32))
+        if next(self.parameters()).is_cuda:
+            self.mean = self.mean.cuda()
+            self.std = self.std.cuda()
 
     def forward(self, x):
         if self.use_norm:
