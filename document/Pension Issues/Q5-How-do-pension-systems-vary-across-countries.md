@@ -101,7 +101,7 @@ As an example, we selected the following roles from the social role classificati
   * GDP level of the simulated economy
 * **Visualized Experimental Results：**
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MzBjZGVmMzY0ZDFkYjVkYmFkNzk1MTIxYzU3ODIxMTdfQjRueEVyQzZKeTNaeGVBSmcxVGZHazMzNnNKT0xBQ0FfVG9rZW46REl1QWIxeFRWb2JjQXl4NXNudmM1ZEJDbkxkXzE3NTAxNTc0NjQ6MTc1MDE2MTA2NF9WNA)
+![Pension Q5 P1](../img/PensionQ5P1.png)
 
 **Figure 1: ​**Long-Term GDP Comparison Under Different Pension Policies  Using the current U.S. pension system as the baseline (light blue line), adjusting the "pension penalty" for early retirement has little impact on GDP growth (dark blue and green lines). However, increasing the "additional pension benefits" for delayed retirement leads to significantly higher long-term GDP levels (red and yellow lines).
 
