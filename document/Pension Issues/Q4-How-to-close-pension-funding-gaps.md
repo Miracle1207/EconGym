@@ -103,11 +103,11 @@ As an example, we selected the following roles from the social role classificati
   * GDP impact
 * **Visualized Experimental Results：**
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MzE0OGNmOWFkZWJjZTU5ZGQyOGQ2YzY4OTdiNDUwNDhfVDlhWHdMN1BEZGxScllIQWRRR1lZRWt1SDJEcWUwT2ZfVG9rZW46RXNPT2JuS0xsb1VMU014RGZHVmNUNW5VbmpmXzE3NTAxMzg1NzY6MTc1MDE0MjE3Nl9WNA)
+![Pension Q4 P1](../img/PensionQ4P1.png)
 
 **Figure 1:** Pension outcomes under different training strategies, considering four combinations of household and government policies: BC\_DDPG, BC\_PPO, BC\_Rule-Based, and PPO\_PPO (with the first referring to the household strategy and the second to the government strategy).From the age-based breakdown (left panel), the BC\_PPO combination yields the highest total pension surplus. RL-based government strategies significantly reduce pension gaps among young and middle-aged groups, with the PPO\_PPO strategy achieving the smallest pension deficit for young individuals.From the wealth-based breakdown (right panel), the BC\_PPO strategy again results in the highest overall pension surplus. The PPO\_PPO combination substantially lowers the pension gap for wealthy households (blue bars).
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=ZmVkNzhiMmYyMWY5YmFjNjI2ZWYzOWU5YzRlZTY4M2ZfV0tmU1VFcURWNXpoeFF6WnR6cEdsSHlBcWFUSHczWm9fVG9rZW46S0JKbmJ0NmtrbzI1VjF4clduSmNVNVp4bmpnXzE3NTAxMzg1NzY6MTc1MDE0MjE3Nl9WNA)
+![Pension Q4 P2](../img/PensionQ4P2.png)
 
 **Figure 2:** GDP trajectories under different training strategies. The BC\_DDPG combination achieves both stronger long-term GDP growth and a longer simulation duration (blue line), while the PPO\_PPO strategy results in the lowest GDP level.
 
