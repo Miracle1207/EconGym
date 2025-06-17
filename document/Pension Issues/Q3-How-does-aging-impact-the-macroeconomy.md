@@ -126,11 +126,11 @@ Compare household-level micro indicators across simulated economies with varying
   * Household income and consumption stratified by age and wealth
 * **​ Visualized Experimental Results：**
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MTk1YTBlM2FlODU0MzEzMjU3ODQ0NDZmODExY2JhMWVfZnV0SjZ2VWFpNE1NUHh1bndsRzl0Vnd2blpIb3doamVfVG9rZW46RnlycWJRS29xb0RNeGZ4Qm5VZ2NDSTRxbkVoXzE3NTAxMzUxMjY6MTc1MDEzODcyNl9WNA)
+![Pension Q3 P1](../img/PensionQ3P1.png)
 
 **Figure 1:** Household income statistics at Year 52 under different aging scenarios. The left panel shows simulated household income by age group, and the right panel shows income by wealth tier. From left to right, the five bars represent Aging Scenarios 1 through 5.From the age perspective, young individuals in Scenario 3 exhibit the highest income (green and orange bars), while income levels for middle-aged and elderly individuals show no significant differences across scenarios.From the wealth perspective, wealthy (blue bars) and middle-class households (green bars) in Scenario 3 have the highest income, and the average household consumption (red bars) is also the highest in this scenario.
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MjlmMjhlYjVjYWEzN2UzMzE4OGYyYTk4NzE3NzNjYjZfT0hLMUJWWjd5YjFWNmNqQWQ2WWlIckhuTURaYzkzWjNfVG9rZW46SnloV2JPNGNzb1oxRTJ4b0N2RWNYd29rbk5kXzE3NTAxMzUxMjY6MTc1MDEzODcyNl9WNA)
+![Pension Q3 P2](../img/PensionQ3P2.png)
 
 **Figure 2:** Household consumption statistics at Year 52 under different aging scenarios. From the age perspective, young individuals in Scenario 3 exhibit the highest consumption (green and orange bars), while middle-aged individuals consume the most in Scenario 4 (blue bars). Consumption levels for the elderly remain relatively low across all scenarios. From the income perspective, wealthy (blue bars) and middle-class households (green bars) in Scenario 3 have the highest consumption, with the overall average household consumption (red bars) also highest in this scenario.
 
@@ -151,11 +151,11 @@ Compare household-level micro indicators across simulated economies with varying
   * Degree of population aging
   * GDP growth rate and income Gini coefficient
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=NWVkNWU3YWM0YmU4YWUwY2VhYTQwYjZkZDcyYjk5ZjBfUGxXUFJLaEhEcVZxRWtzUHBIVmZtclpVTjZpZnBaSUJfVG9rZW46WDlJRWJEMGVYb1B5Z0p4ZFZ5dGN2N1hJbkZiXzE3NTAxMzUxMjY6MTc1MDEzODcyNl9WNA)
+![Pension Q3 P3](../img/PensionQ3P3.png)
 
 **Figure 3:** GDP statistics under different aging scenarios. The simulated economy in Aging Scenario 3 achieves a significant GDP jump at Year 25 (yellow line), Scenario 5 experiences steady GDP growth (blue line), while Scenario 2 shows considerable GDP fluctuations with a moderate long-term growth trend.
 
-![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=NGE4MjhhZTNkOTJjYjZlODc3YWJhNmVjOTg4ZDY2OTJfNk0xaUVnQnZBa0tMcVg0NnBPTmJqYWhKa3BYeHRuU1dfVG9rZW46QUdmV2JBcmRvb3FySWJ4ZjUyS2NWZFlkbmlmXzE3NTAxMzUxMjY6MTc1MDEzODcyNl9WNA)
+![Pension Q3 P4](../img/PensionQ3P4.png)
 
 **Figure 4:** Income Gini coefficient statistics under different aging scenarios. Scenario 3 exhibits the largest income inequality (yellow line), while income disparities in other scenarios are less pronounced.
 
