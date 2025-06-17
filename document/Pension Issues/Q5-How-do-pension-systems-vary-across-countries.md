@@ -83,22 +83,28 @@ As an example, we selected the following roles from the social role classificati
 
 ---
 
-## 4. Illustrative Experiments
+## **4. Illustrative Experiments**
 
-### Experiment 1: Cross‐National Pension Policy Comparison
+### Experiment 1: Parametric Adjustment of a Specific Country's Pension System
 
 * **Experiment Description:**
-  Predefine pension‐policy templates for several countries (e.g., China, the United States, Sweden). Users select any template to run the simulation and observe impacts on economic output, public finances, individual welfare, and intergenerational equity.
+  Using the predefined U.S. pension system in the model as the baseline, we introduce slight policy adjustments regarding early and delayed retirement—for example, reducing pension benefits by 25%–30% for early retirees, and increasing benefits by 25%–30% for those who delay retirement.
 * **Involved Social Roles:**
-  * *Individual: ​*Saving, retirement, and benefit‐claim strategies over the life cycle
-  * *Government: ​*Setting contribution rates, replacement rates, and subsidy rules
-  * *Firm: ​*Labor‐force participation and wage responses under different regimes
-* **AI Agents:**
-  * *Individual:* Behavior Cloning Agent
-  * *Government:* Rule‐Based Agent (switching by country template)
-  * *Firm:* Rule‐Based Agent
+  * *Individuals: OLG model*
+  * *Government: Pension Authority*
+* **AI**​**​ Agents:**
+  * *Individuals:* Behavior Cloning Agent
+  * *Government:* Rule‐Based Agent
+  * *Market:* Rule‐Based Agent
 * **Experimental Variables:**
-  * Policy template selection (e.g., USA / China / Sweden)
-  * Replacement rate (e.g., 40%, 60%, 80%)
-  * Statutory retirement age (e.g., 60, 65, 67)
+  * Pension benefit adjustments for early and delayed retirement
+  * GDP level of the simulated economy
+* **Visualized Experimental Results：**
+
+![](https://yqq94nlzjex.feishu.cn/space/api/box/stream/download/asynccode/?code=MzBjZGVmMzY0ZDFkYjVkYmFkNzk1MTIxYzU3ODIxMTdfQjRueEVyQzZKeTNaeGVBSmcxVGZHazMzNnNKT0xBQ0FfVG9rZW46REl1QWIxeFRWb2JjQXl4NXNudmM1ZEJDbkxkXzE3NTAxNTc0NjQ6MTc1MDE2MTA2NF9WNA)
+
+**Figure 1: ​**Long-Term GDP Comparison Under Different Pension Policies  Using the current U.S. pension system as the baseline (light blue line), adjusting the "pension penalty" for early retirement has little impact on GDP growth (dark blue and green lines). However, increasing the "additional pension benefits" for delayed retirement leads to significantly higher long-term GDP levels (red and yellow lines).
+
+* Compared to imposing "penalties" for early retirement, **offering incentives for voluntary delayed retirement ​**more effectively enhances overall economic stability and vitality, and contributes to higher aggregate GDP in the long run.
+
 
