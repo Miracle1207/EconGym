@@ -1,21 +1,20 @@
 from omegaconf import omegaconf
 
 from entities.base import BaseEntity
-import numpy as np
+
 import copy
 import math
 import pandas as pd
-import random
-# import quantecon as qe
-import matplotlib.pyplot as plt
+
 import os, sys
-from sklearn.preprocessing import StandardScaler, PolynomialFeatures
-from scipy.special import expit
 from gym.spaces import Box
+import time
+from numba import njit, prange
+import numpy as np
 
 
 class Household(BaseEntity):
-    name = 'household'
+    name = 'households'
 
     def __init__(self, entity_args):
         super().__init__()
@@ -30,6 +29,9 @@ class Household(BaseEntity):
             self.__dict__.update(entity_args.OLG)
 
         self.best_loss = 100
+        self.action_space = Box(low=self.action_space.low,
+                                high=self.action_space.high,
+                                shape=(self.households_n, self.action_dim), dtype=np.float32)
 
     def e_initial(self, n):
         self.e_array = np.zeros((n, 2))  # super-star and normal
@@ -45,60 +47,72 @@ class Household(BaseEntity):
     def generate_e_ability(self):
         """
         Generates n current ability levels for a given time step t.
+        Implements superstar transition logic + normal agent ability evolution,
+        maintaining functional parity with the original implementation.
         """
-        self.e_past = copy.copy(self.e_array)
-        e_past_mean = sum(self.e_past[:, 0]) / np.count_nonzero(self.e_past[:, 0])
-        for i in range(self.households_n):
-            positive_values = self.e_past[self.e_past[:, 0] > 0, 0]  # If < 0, randomly pick one from positive values
-            is_superstar = (self.e_array[i, 1] > 0).astype(int)
-            if is_superstar == 0:
-                # normal state
-                if np.random.rand() < self.e_p:
-                    # transition from normal to super-star
-                    self.e_array[i, 0] = 0
-                    self.e_array[i, 1] = self.super_e * e_past_mean
-                else:
-                    # remain in normal
-                    self.e_array[i, 1] = 0
-                    if self.e_past[i, 0] <= 0:
-                        self.e_past[i, 0] = np.random.choice(positive_values)  # avoid NaN by using small value
-                    self.e_array[i, 0] = np.exp(
-                        self.rho_e * np.log(self.e_past[i, 0]) + self.sigma_e * np.random.randn())
-            else:
-                # super-star state
-                if np.random.rand() < self.e_q:
-                    # remain in super-star
-                    self.e_array[i, 0] = 0
-                    self.e_array[i, 1] = self.super_e * e_past_mean
-                else:
-                    # transition to normal
-                    self.e_array[i, 1] = 0
-                    self.e_array[i, 0] = random.uniform(self.e_array[:, 0].min(), self.e_array[:, 0].max())
+        N = self.households_n
+    
+        # === Step 1: Copy previous e_array, calculate mean of positive values ===
+        self.e_past = self.e_array.copy()
+        past_positive_mask = self.e_past[:, 0] > 0
+        positive_values = self.e_past[past_positive_mask, 0]
+        e_past_mean = np.mean(positive_values) if positive_values.size > 0 else 1.0
+    
+        # === Step 2: Determine current status ===
+        is_superstar = (self.e_array[:, 1] > 0)
+        normal_mask = ~is_superstar
+        superstar_mask = is_superstar
+    
+        # === Step 3: Normal → Superstar transitions ===
+        trans_to_superstar = (np.random.rand(N) < self.e_p) & normal_mask
+        self.e_array[trans_to_superstar, 0] = 0
+        self.e_array[trans_to_superstar, 1] = self.super_e * e_past_mean
+    
+        # === Step 4: Remaining normal agents ===
+        remain_normal_mask = normal_mask & (~trans_to_superstar)
+    
+        # Fallback: replace non-positive past values with sampled positive ones
+        fallback_mask = remain_normal_mask & (self.e_past[:, 0] <= 0)
+        if np.any(fallback_mask):
+            fallback_idx = np.where(fallback_mask)[0]
+            fallback_sample = np.random.choice(positive_values, size=len(fallback_idx))
+            self.e_past[fallback_idx, 0] = fallback_sample
+    
+        # === Step 5: Apply noisy update for remaining normal agents ===
+        idx = np.where(remain_normal_mask)[0]
+        eps = np.random.randn(len(idx))
+        safe_e = np.clip(self.e_past[idx, 0], 1e-8, None)
+        new_e = np.exp(self.rho_e * np.log(safe_e) + self.sigma_e * eps)
+
+        self.e_array[idx, 0] = new_e
+        self.e_array[idx, 1] = 0
+
+        # === Step 6: Superstar → Normal transitions ===
+        leave_superstar = (np.random.rand(N) >= self.e_q) & superstar_mask
+        if np.any(leave_superstar):
+            low = self.e_array[:, 0].min()
+            high = self.e_array[:, 0].max()
+            self.e_array[leave_superstar, 1] = 0
+            self.e_array[leave_superstar, 0] = np.random.uniform(low, high, size=np.sum(leave_superstar))
+    
+        # Remaining superstar agents
+        remain_super_mask = superstar_mask & (~leave_superstar)
+        self.e_array[remain_super_mask, 0] = 0
+        self.e_array[remain_super_mask, 1] = self.super_e * e_past_mean
+    
+        # === Final aggregation ===
         self.e = np.sum(self.e_array, axis=1, keepdims=True)
 
-    def reset_action_space(self):
-        original_low = self.action_space.low
-        original_high = self.action_space.high
-        new_shape = (self.households_n, self.action_dim)
-        # 全部裁剪
-        new_low = original_low[:self.households_n, :]
-        new_high = original_high[:self.households_n, :]
-        self.action_space = Box(low=new_low, high=new_high, shape=new_shape, dtype=np.float32)
 
     def generate_c_init(self, age):
         self.c_init = np.zeros_like(age, dtype=float)
-        # Forward consumption: increase consumption ratio
-        for i, a in enumerate(age):
-            if a < 24:
-                self.c_init[i] = 0.2 + np.random.normal(0, 0.05)  # Young people consume less
-            elif 25 <= a < 34:
-                self.c_init[i] = 0.5 + np.random.normal(0, 0.05)  # Consumption increases in young adults
-            elif 35 <= a < 54:
-                self.c_init[i] = 0.7 + np.random.normal(0, 0.05)  # Peak consumption in middle age
-            elif 55 <= a < 74:
-                self.c_init[i] = 0.6 + np.random.normal(0, 0.05)  # Consumption starts to decline
-            else:
-                self.c_init[i] = 0.4 + np.random.normal(0, 0.05)  # Elderly consume even less
+        noise = np.random.normal(0, 0.05, size=age.shape)
+    
+        self.c_init += ((age < 24) * (0.2 + noise) +
+                        ((25 <= age) & (age < 34)) * (0.5 + noise) +
+                        ((35 <= age) & (age < 54)) * (0.7 + noise) +
+                        ((55 <= age) & (age < 74)) * (0.6 + noise) +
+                        (age >= 74) * (0.4 + noise))
 
     def reset(self, **custom_cfg):
         self.households_n = self.entity_args.params.households_n  # Reset number of households
@@ -113,19 +127,22 @@ class Household(BaseEntity):
         self.investment_p = copy.copy(self.investment_init)  # Initialize to zero for each household
         self.ht = self.work_init * self.h_max
         self.stock_price = 1.0
+        self.risky_income = 0.
+        self.savings = np.zeros((self.households_n, 1))
 
         # Estate tax
         self.estate_tax = 0.
         # Pensions
         self.pension = np.zeros((self.households_n, 1))  # Initialize to zero for each household
 
-        if isinstance(self.action_space, omegaconf.DictConfig):
-            self.action_space = Box(low=self.action_space.low,
-                                    high=self.action_space.high,
-                                    shape=(self.households_n, self.action_dim), dtype=np.float32)
-        else:
-            self.update_action_space()
-
+        
+        # if isinstance(self.action_space, omegaconf.DictConfig):
+            # self.action_space = Box(low=self.action_space.low,
+            #                         high=self.action_space.high,
+            #                         shape=(self.households_n, self.action_dim), dtype=np.float32)
+        # else:
+        #     self.update_action_space()
+        # todo: 修改规范
         self.real_action_max = np.array(self.real_action_max)
         self.real_action_min = np.array(self.real_action_min)
         real_action_size = np.array(self.real_action_max).size
@@ -182,7 +199,7 @@ class Household(BaseEntity):
         self.at = copy.copy(self.at_next)  # Reset at to latest value
         saving_p = actions[:, 0][:, np.newaxis]
         self.consumption_p = 1 - saving_p  # Forward consumption allowed
-        self.ht = actions[:, 1][:, np.newaxis]  # Labor supply
+        self.ht = actions[:, 1][:, np.newaxis] * self.h_max # Labor supply
 
         # Risk investment decision
         if "risk_invest" in self.type:
@@ -192,7 +209,7 @@ class Household(BaseEntity):
 
         if firm_n != 1:
             # Work firm index from scaled action value
-            work_firm_index = (actions[:, -firm_n - 1][:, np.newaxis] * firm_n).reshape(-1).astype(int).clip(0, firm_n - 1)
+            work_firm_index = (actions[:, -firm_n - 1][:, np.newaxis] * firm_n).round().reshape(-1).astype(int).clip(0, firm_n)
             self.h_ij_ratio = np.eye(firm_n)[work_firm_index]  # One-hot encoding
 
             # Normalize consumption distribution across firms
@@ -201,6 +218,7 @@ class Household(BaseEntity):
         else:
             self.h_ij_ratio = 1
             self.c_ij_ratio = 1
+
 
     def step(self, society, t):
         # Step forward in time based on household type
@@ -212,97 +230,115 @@ class Household(BaseEntity):
             raise ValueError("Households Wrong Type Choice!")
 
     def ramsey_step(self, society):
-        """Ramsey-style update for income, tax, consumption, and assets."""
-        labor_income = self.e * np.dot(self.ht * self.h_ij_ratio, society.market.WageRate)
-        capital_income = society.bank.deposit_rate * self.at
-        self.income = labor_income + capital_income
+        """
+        Perform a full economic decision step for an individual agent under the Ramsey model.
 
-        self.income_tax, self.asset_tax = society.main_gov.compute_tax(self.income, self.at)
+        This includes labor and capital income computation, taxation, consumption decision,
+        and asset allocation between savings and risky investments.
+
+        Args:
+            society: The full economic environment (agents, government, market, etc.)
+        """
+        # Try 'tax', then 'central_bank', otherwise another key.
+        government_agent = society.government.get('tax', society.government.get('central_bank', 'pension'))
+        # === Step 1: Compute total income ===
+        # Labor income: effort * effective hours * wage rate
+        labor_income = self.e * np.dot(self.ht * self.h_ij_ratio, society.market.WageRate)
+    
+        # Capital income: based on current savings (bank deposit or loan)
+        is_deposit = (self.savings >= 0).astype(float)  # shape (N, 1)
+        is_loan = 1.0 - is_deposit  # shape (N, 1)
+
+        saving_interest = is_deposit * society.bank.deposit_rate * self.savings + \
+                          is_loan * society.bank.lending_rate * self.savings
+
+        # Total income includes labor, saving interest, and risky asset return from last step
+        self.income = labor_income + saving_interest + self.risky_income
+    
+        # === Step 2: Taxation ===
+        self.income_tax, self.asset_tax = government_agent.compute_tax(self.income, self.at)
         self.post_income = self.income - self.income_tax
         self.post_asset = self.at - self.asset_tax
         total_wealth = self.post_income + self.post_asset
-
-        # Determine money available for consumption
+    
+        # === Step 3: Consumption decision ===
         money_for_consumption = self.consumption_p * self.post_income / (1 + society.consumption_tax_rate)
-        money_for_consumption = np.where(money_for_consumption < 0, 0, money_for_consumption)
+        money_for_consumption = np.maximum(money_for_consumption, 0.0)  # no negative consumption
+    
+        # Prevent division by zero in price
         if np.any(society.market.price.T == 0):
             raise ValueError("Price contains zero values, which can cause division by zero.")
-        self.consumption_ij = (money_for_consumption * self.c_ij_ratio) / society.market.price.T
-        self.consumption = self.compute_ces_consumption(epsilon=society.market.epsilon)  # Dixit–Stiglitz
 
-        # Calculate savings and update assets
-        all_money_investment = total_wealth - money_for_consumption
-        self.update_stock_market(all_money_investment)
-        savings = all_money_investment - (self.investment_p * all_money_investment)
-        self.at_next = savings * (1 + society.bank.deposit_rate) + self.stock_holdings * self.stock_price
+        # Compute per-good consumption and aggregate CES consumption (e.g., Dixit–Stiglitz)
+        consumption_ij = (money_for_consumption * self.c_ij_ratio) / society.market.price.T
+
+        households_demand = np.sum(consumption_ij, axis=0).reshape(-1, 1)
+        goods_supply = society.market.Yt_j
+        success_households_deals = np.minimum(households_demand, goods_supply)
+
+        self.final_consumption = consumption_ij / np.sum(consumption_ij, axis=0) * success_households_deals.T  # Proportionally distribute the sold goods among all households.
+        self.consumption = self.compute_ces_consumption(consumption_ij=self.final_consumption, epsilon=society.market.epsilon)
+        money_for_consumption = np.sum(self.final_consumption * society.market.price.T, axis=1).reshape(-1, 1)
+
+        # === Step 4: Compute next-period asset ===
+        self.at_next = total_wealth - money_for_consumption
+    
+        if np.isnan(self.at_next).any() or np.isinf(self.at_next).any():
+            raise ValueError("Invalid at_next: NaN or Inf encountered.")
+    
+        # === Step 5: Asset allocation ===
+        money_risky_invest = self.investment_p * self.at_next
+        self.savings = self.at_next - money_risky_invest
+    
+        # === Step 6: Update risky investment returns ===
+        self.update_stock_market(money_risky_invest)
+        self.risky_income = self.stock_holdings * self.stock_price - money_risky_invest
+    
+        # === Step 7: Log final values for writing ===
         self.at_next_write = copy.copy(self.at_next)
         self.age_write = copy.copy(self.age)
 
-    def compute_ces_consumption(self, epsilon: float):
+    def compute_ces_consumption(self, consumption_ij, epsilon: float):
         if epsilon == 1.0:
-            consumption = np.exp(np.mean(np.log(self.consumption_ij + 1e-8), axis=1))[:, np.newaxis]
+            consumption = np.exp(np.mean(np.log(consumption_ij + 1e-8), axis=1))[:, np.newaxis]
         else:
             rho = (epsilon - 1) / epsilon
-            ces_inner = np.power(self.consumption_ij + 1e-8, rho)  # shape: (N, n_f)
+            ces_inner = np.power(consumption_ij + 1e-8, rho)  # shape: (N, n_f)
             ces_sum = np.sum(ces_inner, axis=1)  # shape: (N,)
             consumption = np.power(ces_sum, 1 / rho)[:, np.newaxis]  # shape: (N, 1)
         return consumption
 
-    def update_action_space(self):
-        original_low = self.action_space.low
-        original_high = self.action_space.high
 
-        new_shape = (self.households_n, self.action_dim)
-
-        households_n_old = original_low.shape[0]
-        if households_n_old < self.households_n:
-            last_row_low = original_low[-1].reshape(1, -1)
-            last_row_high = original_high[-1].reshape(1, -1)
-
-            repeat_times = self.households_n - households_n_old
-            new_rows_low = np.tile(last_row_low, (repeat_times, 1))
-            new_rows_high = np.tile(last_row_high, (repeat_times, 1))
-
-            new_low = np.vstack((original_low, new_rows_low))
-            new_high = np.vstack((original_high, new_rows_high))
-        elif households_n_old > self.households_n:
-            new_low = original_low[:self.households_n, :]
-            new_high = original_high[:self.households_n, :]
-        else:
-            new_low = original_low
-            new_high = original_high
-
-        self.action_space = Box(low=new_low, high=new_high, shape=new_shape, dtype=np.float32)
-
-    def update_stock_market(self, savings):
+    def update_stock_market(self, money_risky_investment):
         """
-        封装股市投资和价格更新逻辑。
-        :param savings: 每个家庭的储蓄金额 (n_households, 1)
+        Encapsulate stock market investment and price update logic.
+        :param money_risky_investment: Amount of money for each household (n_households, 1)
         """
-        # 计算目标投资金额
-        target_investment = self.investment_p * savings  # (n_households, 1)
-
-        # 计算当前股票市值
+        # Calculate current stock market value held
         current_stock_value = self.stock_holdings * self.stock_price  # (n_households, 1)
-
-        # 决定买入或卖出
-        buy_sell_amount = target_investment - current_stock_value  # >0, 买入; <0, 卖出
-
-        # 更新股票持有量
-        self.stock_holdings += buy_sell_amount / self.stock_price  # 买入
-
-        total_buy = np.sum(buy_sell_amount[buy_sell_amount > 0])  # 总买入
-        total_sell = np.sum(np.abs(buy_sell_amount[buy_sell_amount < 0]))  # 总卖出
-        # 计算成交量（所有交易的绝对值之和）
-        total_volume = np.sum(np.abs(buy_sell_amount))
-        imbalance = np.sum(buy_sell_amount)  # 净买入卖出量
-
-        # 更新股票价格
-        total_stock_value = np.sum(self.stock_holdings) * self.stock_price  # 总股票市值
-        if total_stock_value > 0:
+    
+        # Determine buy or sell amount
+        # Positive value means buying, negative value means selling
+        buy_sell_amount = money_risky_investment - current_stock_value
+    
+        # Update stock holdings with protection against zero price
+        if self.stock_price != 0:
+            self.stock_holdings += buy_sell_amount / self.stock_price
+        else:
+            # Handle scenario where stock price is zero (e.g., initialize or skip)
+            pass
+    
+        # Calculate net buying/selling volume
+        imbalance = np.sum(buy_sell_amount)
+    
+        # Update stock price based on market imbalance
+        total_stock_value = np.sum(self.stock_holdings) * self.stock_price
+        if total_stock_value > 0 and not np.isclose(imbalance, 0):
+            # Adjust price based on imbalance ratio
             self.stock_price *= (1 + self.stock_alpha * imbalance / total_stock_value)
-
-    import numpy as np
+        
+            # Optional: Add price floor to prevent non-positive prices
+            self.stock_price = max(self.stock_price, 1e-6)
 
     # 假设 self.e_array 是你的二维数组，born_n 是需要选择的行数
     def select_newborn_data(self, born_n):
@@ -323,56 +359,74 @@ class Household(BaseEntity):
     def OLG_step(self, society, t):
         """Calculate households' income, assets, and consumption."""
         # Classify households as young or old based on age
-        if hasattr(society, 'pension_gov'):
-            retire_age = society.pension_gov.retire_age
-        else:
-            retire_age = society.main_gov.retire_age
+        government_agent = society.government['pension']
+        retire_age = government_agent.retire_age
 
         self.is_old = self.age >= retire_age
         self.old_n = np.sum(self.is_old)
-        # self.ht[:self.old_n] = np.zeros_like(self.ht[:self.old_n])
         self.ht[self.is_old] = 0
 
-        # Calculate income, taxes, and post-income for all households
+        # Labor income: effort * effective hours * wage rate
         labor_income = self.e * np.dot(self.ht * self.h_ij_ratio, society.market.WageRate)
-        labor_income[self.is_old] = 0
 
-        capital_income = society.bank.deposit_rate * self.at
-        self.income = labor_income + capital_income
-        self.income_tax, self.asset_tax = society.main_gov.compute_tax(self.income, self.at)
+        # Capital income: based on current savings (bank deposit or loan)
+        is_deposit = (self.savings >= 0).astype(float)  # shape (N, 1)
+        is_loan = 1.0 - is_deposit  # shape (N, 1)
+
+        saving_interest = is_deposit * society.bank.deposit_rate * self.savings + \
+                          is_loan * society.bank.lending_rate * self.savings
+
+        # Total income includes labor, saving interest, and risky asset return from last step
+        self.income = labor_income + saving_interest + self.risky_income
+
+        # === Step 2: Taxation ===
+        self.income_tax, self.asset_tax = government_agent.compute_tax(self.income, self.at)
         self.post_income = self.income - self.income_tax
         self.post_asset = self.at - self.asset_tax
 
-        self.pension = society.main_gov.calculate_pension(self)
-        self.accumulated_pension_account[~self.is_old] -= self.pension[~self.is_old]
+        self.pension = government_agent.calculate_pension(self)
+        self.accumulated_pension_account[~self.is_old] -= self.pension[~self.is_old]  # young individuals 上交的养老金保险 被存入 国家养老金池中
         total_wealth = self.post_income + self.post_asset + self.pension
 
         self.working_years[~self.is_old] += 1
 
-        # Consumption
-        # money_for_consumption = self.consumption_p * total_wealth / ( 1 + society.consumption_tax_rate)  # 消费比例 = 消费/总财富。 之前版本是 比例=消费/收入
-        money_for_consumption = self.consumption_p * (self.post_income + self.pension) / (
-                1 + society.consumption_tax_rate)  # 消费比例 = 消费/总财富。 之前版本是 比例=消费/收入
-        money_for_consumption = np.where(money_for_consumption < 0, 0, money_for_consumption)
+        # === Step 3: Consumption decision ===
+        money_for_consumption = self.consumption_p * (self.post_income + self.pension) / (1 + society.consumption_tax_rate)
+        money_for_consumption = np.maximum(money_for_consumption, 0.0)  # no negative consumption
+
+        # Prevent division by zero in price
         if np.any(society.market.price.T == 0):
             raise ValueError("Price contains zero values, which can cause division by zero.")
-        self.consumption_ij = (money_for_consumption * self.c_ij_ratio) / society.market.price.T
-        self.consumption = self.compute_ces_consumption(epsilon=society.market.epsilon)  # Dixit–Stiglitz
 
-        # 计算储蓄（理财部分）
-        all_money_investment = total_wealth - money_for_consumption  # (n_households, 1)
+        # Compute per-good consumption and aggregate CES consumption (e.g., Dixit–Stiglitz)
+        consumption_ij = (money_for_consumption * self.c_ij_ratio) / society.market.price.T
+        
+        households_demand = np.sum(consumption_ij, axis=0).reshape(-1, 1)
+        goods_supply = society.market.Yt_j
+        success_households_deals = np.minimum(households_demand, goods_supply)
+        
+        self.final_consumption = consumption_ij / np.sum(consumption_ij, axis=0) * success_households_deals.T   # Proportionally distribute the sold goods among all households.
+        self.consumption = self.compute_ces_consumption(consumption_ij=self.final_consumption,epsilon=society.market.epsilon)
+        money_for_consumption = np.sum(self.final_consumption * society.market.price.T, axis=1).reshape(-1, 1)
+        
+        # === Step 4: Compute next-period asset ===
+        self.at_next = total_wealth - money_for_consumption
 
-        # 调用股市更新函数
-        self.update_stock_market(all_money_investment)
+        if np.isnan(self.at_next).any() or np.isinf(self.at_next).any():
+            raise ValueError("Invalid at_next: NaN or Inf encountered.")
 
-        # 更新下一期财富
-        savings = all_money_investment - (self.investment_p * all_money_investment)  # 储蓄
-        self.at_next = savings * (
-                1 + society.bank.deposit_rate) + self.stock_holdings * self.stock_price  # 下一期的财富 = 储蓄以及利息 + 风险投资收益
+        # === Step 5: Asset allocation ===
+        money_risky_invest = self.investment_p * self.at_next
+        self.savings = self.at_next - money_risky_invest
 
+        # === Step 6: Update risky investment returns ===
+        self.update_stock_market(money_risky_invest)
+        self.risky_income = self.stock_holdings * self.stock_price - money_risky_invest
+
+        # === Step 7: Log final values for writing ===
         self.at_next_write = copy.copy(self.at_next)
         self.age_write = copy.copy(self.age)
-
+        
         # Age update
         self.age += 1
         if t != 0:
@@ -387,8 +441,8 @@ class Household(BaseEntity):
 
             self.variables_to_sort = [
                 'age', 'at', 'e', 'at_next', 'income', 'e_array', 'accumulated_pension_account', 'working_years',
-                'stock_holdings', 'ht', 'consumption', 'consumption_ij', 'income_tax', 'asset_tax', 'pension',
-                'post_income',
+                'stock_holdings', 'ht', 'consumption', 'final_consumption', 'income_tax', 'asset_tax', 'pension',
+                'post_income', 'risky_income', 'savings'
             ]
             total_wealth_deceased = 0
             # born_n = born_n + die_total - die_n
@@ -419,11 +473,13 @@ class Household(BaseEntity):
                 n_working_years = np.zeros((born_n, 1))
                 n_accumulated_pension_account = np.zeros((born_n, 1))
                 n_income = np.zeros((born_n, 1))
-                n_consumption_ij = np.zeros((born_n, 1))
+                n_final_consumption = np.zeros((born_n, society.market.firm_n))
                 n_consumption = np.zeros((born_n, 1))
-                n_incoem_tax = np.zeros((born_n, 1))
+                n_income_tax = np.zeros((born_n, 1))
                 n_asset_tax = np.zeros((born_n, 1))
                 n_pension = np.zeros((born_n, 1))
+                n_risky_income = np.zeros((born_n, 1))
+                n_savings = np.zeros((born_n, 1))
 
                 newborn_variables = {
                     'age': n_ages,
@@ -437,11 +493,13 @@ class Household(BaseEntity):
                     'stock_holdings': np.full((born_n, 1), newborn_stock_holdings),  # 新增 stock_holdings
                     'ht': n_ht,
                     'consumption': n_consumption,
-                    'consumption_ij': n_consumption_ij,
-                    'income_tax': n_incoem_tax,
+                    'final_consumption': n_final_consumption,
+                    'income_tax': n_income_tax,
                     'asset_tax': n_asset_tax,
                     'pension': n_pension,
                     'post_income': n_income,
+                    'risky_income': n_risky_income,
+                    'savings': n_savings,
                     # 'households_death_rate': n_death_rate,
                 }
                 for var, value in newborn_variables.items():
@@ -458,7 +516,7 @@ class Household(BaseEntity):
         # Update population count
         self.households_n = len(self.age)
         self.is_old = self.age >= retire_age
-        self.update_action_space()
+        # self.update_action_space()  # todo:到底有没有用？？
         self.old_percent = self.old_n / self.households_n  # 当前老年人口比例
         self.dependency_ratio = self.old_n / (
                     self.households_n - self.old_n + 1e-8)  # Dependency ratio（赡养比），用来衡量养老压力或抚养负担。
@@ -540,6 +598,7 @@ class Household(BaseEntity):
         if self.households_n <= 2:
             return True
         else:
+            # Unreasonably large borrowing
             if self.at_next.min() < self.at_min or np.isnan(self.at_next).any():
                 return True
             else:

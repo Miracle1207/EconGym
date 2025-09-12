@@ -12,7 +12,7 @@ from omegaconf import OmegaConf
 from env import EconomicSociety
 
 sys.path.append(os.path.abspath('../..'))
-from agents.log_path import make_logpath
+from agents.log_path import make_logpath, save_args
 from utils.experience_replay import ReplayBuffer
 from datetime import datetime
 
@@ -26,279 +26,169 @@ class NumpyEncoder(json.JSONEncoder):
         return super(NumpyEncoder, self).default(obj)
 
 
+
+
+
 class Runner:
-    def __init__(self, envs, args, house_agent, firm_agent, bank_agent, central_bank_gov_agent=None, tax_gov_agent=None,
-                 pension_gov_agent=None, heter_house=None, government_agent=None):
+    def __init__(self, envs, args, house_agent,  government_agent, firm_agent, bank_agent):
         self.envs = copy.deepcopy(envs)
         self.args = args
         self.eval_env = copy.deepcopy(envs)
-        self.gov_agents = []
 
         self.house_agent = house_agent
-        if government_agent:
-            self.government_agent = government_agent
-            self.gov_agents.append(government_agent)
-            self.main_gov_agent = government_agent
-        if central_bank_gov_agent:
-            self.central_bank_gov_agent = central_bank_gov_agent
-            self.gov_agents.append(central_bank_gov_agent)
-        if tax_gov_agent:
-            self.tax_gov_agent = tax_gov_agent
-            self.gov_agents.append(tax_gov_agent)
-            self.main_gov_agent = tax_gov_agent
-        if pension_gov_agent:
-            self.pension_gov_agent = pension_gov_agent
-            self.gov_agents.append(pension_gov_agent)
-
+        self.government_agent = government_agent
         self.firm_agent = firm_agent
         self.bank_agent = bank_agent
-        self.households_n = self.envs.households.households_n
-        
-        if self.args.heterogeneous_house_agent == True:
-            self.heter_house = heter_house
-        # define the replay buffer
-        self.buffer = ReplayBuffer(self.args.buffer_size)
-
-
-        gov_alg_mapping = {
-            'central_bank_gov': 'central_bank_gov_alg',
-            'pension_gov': 'pension_gov_alg',
-            'tax_gov': 'tax_gov_alg',
-            'government': 'gov_alg',
+        self.agents_policy = {
+            "government": self.government_agent,
+            "households": self.house_agent,
+            "market": self.firm_agent,
+            "bank":self.bank_agent,
         }
 
-        gov_alg_key = gov_alg_mapping.get(envs.main_gov.name, 'gov_alg')  #
-        self.gov_alg = getattr(args, gov_alg_key, 'rule_based')  #
+        self.households_n = self.envs.households.households_n
 
-        self.model_path, _ = make_logpath(algo=self.args.house_alg + "_" + self.gov_alg,
-                                          n=self.households_n, task=self.envs.main_gov.gov_task)
-
-        save_args(path=self.model_path, args=self.args)
-        self.households_welfare = 0
         self.eva_year_indicator = 0
         self.eva_reward_indicator = 0
+        
+        # define the replay buffer
+        self.buffer = ReplayBuffer(self.args.buffer_size)
+        self.device = 'cuda' if getattr(self.args, "cuda", False) else 'cpu'
+        
+        self.model_path, self.file_name = make_logpath(args=self.args, n=self.households_n, task=self.envs.problem_scene)
+        save_args(path=self.model_path, args=self.args)
         self.wandb = self.args.wandb
-        self.aligned = self.args.aligned
-        np.random.seed(self.args.seed)
         
         if self.wandb:
             wandb.init(
                 config=self.args,
                 project="EconGym",
-                entity="econgym",
-                name=self.model_path.parent.parent.parent.name + "_" + self.model_path.name + '_' + str(
-                    self.households_n) + "_" + self.envs.gov_task + "_seed=" + str(self.args.seed),
+                # entity="your_account",  # TODO: Replace with your W&B account or team name
+                entity="economic_ai",
+                name=self.file_name + "_seed=" + str(self.args.seed),
                 dir=str(self.model_path),
                 job_type="training",
                 reinit=True
             )
+
+    def _get_tensor_inputs(self, obs_dict):
+        def to_tensor(x):
+            if isinstance(x, dict):
+                return {k: to_tensor(v) for k, v in x.items()}
+            else:
+                return torch.as_tensor(x, dtype=torch.float32, device=self.device)
     
-    def _get_tensor_inputs(self, obs):
-        obs_tensor = torch.tensor(obs, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        return obs_tensor
-    
-    def get_obs(self, current_env, agent_name, global_obs_tensor, private_obs_tensor, gov_action, bank_action,
-                firm_action=None):
-        obs_dim = current_env.agents[agent_name].observation_space.shape[0]
-        
-        # Generate previous_action tensor
-        gov_bank_action = np.concatenate([gov_action, bank_action])
-        if agent_name == current_env.households.name:
-            if obs_dim == gov_action.size + bank_action.size + firm_action.size + private_obs_tensor.shape[-1]:
-                # Flatten firm_action for consistency
-                firm_action = firm_action.flatten()
-                previous_action = self._get_tensor_inputs(np.concatenate([gov_bank_action, firm_action]))
-                previous_action_repeated = previous_action.repeat(current_env.households.households_n, 1)
-                return torch.cat((private_obs_tensor, previous_action_repeated), dim=-1)
-            elif obs_dim == private_obs_tensor.shape[-1]:
-                return private_obs_tensor
-        elif agent_name == current_env.market.name:
-            if obs_dim == gov_action.size + bank_action.size + global_obs_tensor.shape[-1] + 1:
-                previous_action = self._get_tensor_inputs(gov_bank_action)
-                base_obs = torch.cat((global_obs_tensor, previous_action), dim=-1)  # shape: [1, D]
-                firm_n = current_env.market.Zt.shape[0]
-                # Expand to (firm_n, D)
-                expanded_obs = base_obs.expand(firm_n, -1)
-                # Concatenate Zt: shape (firm_n, D+1)
-                full_obs = torch.cat((expanded_obs, self._get_tensor_inputs(current_env.market.Zt)), dim=-1)
-        
-                return full_obs
-    
-            elif obs_dim == global_obs_tensor.shape[-1]:
+        return {k: to_tensor(v) for k, v in obs_dict.items()}
+
+    def agents_get_action(self, obs_dict_tensor):
+        def act(policy, obs, path=""):
+            if isinstance(policy, dict):
+                return {k: act(policy[k], obs[k], f"{path}.{k}" if path else k) for k in policy}
+            try:
+                return policy.get_action(obs)
+            except KeyError as e:
+                print(f"[Warning] obs missing key at '{path}': {e}")
                 return None
-        
-        # Raise error if no matching condition is found
-        raise ValueError(f"Unexpected {agent_name} observation dimension: {obs_dim}")
+            except Exception as e:
+                print(
+                    f"[Warning] get_action failed at '{path}' for policy {getattr(policy, 'name', type(policy).__name__)}: {e}")
+                return None
     
-    def agents_get_action(self, env, global_obs_tensor, private_obs_tensor):
-
-        gov_action = self.main_gov_agent.get_action(global_obs_tensor, private_obs_tensor, env=env)
-        bank_action = self.bank_agent.get_action(global_obs_tensor, private_obs_tensor)
-        firm_private_obs_tensor = self.get_obs(env, 'market', global_obs_tensor, private_obs_tensor, gov_action, bank_action)
-        if hasattr(self, 'central_bank_gov_agent'):
-            central_bank_gov_action = self.central_bank_gov_agent.get_action(global_obs_tensor, private_obs_tensor,
-                                                                             env=env)
-        if hasattr(self, 'pension_gov_agent'):
-            pension_gov_action = self.pension_gov_agent.get_action(global_obs_tensor, private_obs_tensor, env=env)
-
-        firm_action = self.firm_agent.get_action(global_obs_tensor, firm_private_obs_tensor)
-        house_private_obs_tensor = self.get_obs(env, 'household', global_obs_tensor, private_obs_tensor,
-                                                gov_action, bank_action, firm_action)
-
-        house_action = self.house_agent.get_action(global_obs_tensor, house_private_obs_tensor, env=env)
-
-        # if use mean field method
-        if "mf" in self.args.house_alg:
-            house_action, mean_house_action = house_action
-        else:
-            mean_house_action = None
+        return act(self.agents_policy, obs_dict_tensor)
     
 
-        action_dict = {self.envs.main_gov.name: gov_action,
-                       self.envs.bank.name: bank_action,
-                       self.envs.market.name: firm_action,
-                       self.envs.households.name: house_action}
-        private_obs_dict = {self.envs.main_gov.name: private_obs_tensor,
-                            self.envs.bank.name: private_obs_tensor,
-                            self.envs.market.name: firm_private_obs_tensor,
-                            self.envs.households.name: house_private_obs_tensor}
-        if hasattr(self, 'pension_gov_agent'):
-            action_dict[self.envs.pension_gov.name] = pension_gov_action
-            private_obs_dict[self.envs.pension_gov.name] = private_obs_tensor
-
-        if hasattr(self, 'central_bank_gov_agent'):
-            action_dict[self.envs.central_bank_gov.name] = central_bank_gov_action
-            private_obs_dict[self.envs.central_bank_gov.name] = private_obs_tensor
-
-        return action_dict, private_obs_dict, mean_house_action
-    
     def run(self):
-        agents = [self.house_agent] + self.gov_agents
-
-        gov_rew, house_rew, epochs = [], [], []
-        global_obs, private_obs = self.envs.reset()
+        obs_dict = self.envs.reset()
         
         for epoch in range(self.args.n_epochs):
-            transition_dict = {'global_obs': [], 'private_obs': [], 'gov_action': [], 'house_action': [],
-                               'gov_reward': [], 'house_reward': [], 'firm_reward': [], 'bank_reward': [],
-                               'next_global_obs': [], 'next_private_obs': [], 'done': [], "mean_house_actions": []}
+            transition_dict = {
+                "obs_dict": [],
+                "action_dict": [],
+                "reward_dict": [],
+                "next_obs_dict": [],
+                "done": []
+            }
 
-            if hasattr(self, 'pension_gov_agent'):
-                transition_dict['pension_gov_action'] = []
-                transition_dict['pension_gov_reward'] = []
-
-            if hasattr(self, 'central_bank_gov_agent'):
-                transition_dict['central_bank_gov_action'] = []
-                transition_dict['central_bank_gov_reward'] = []
-
-            sum_loss = np.zeros((len(agents), 2))
+            sum_loss = {
+                "actor_loss": {},
+                "critic_loss": {}
+            }
             for t in range(self.args.epoch_length):
-                global_obs_tensor = self._get_tensor_inputs(global_obs)
-                private_obs_tensor = self._get_tensor_inputs(private_obs)
-                action_dict, private_obs_dict, mean_house_action = self.agents_get_action(self.envs, global_obs_tensor,
-                                                                                          private_obs_tensor)
-                # 给household
-                next_global_obs, next_private_obs, gov_reward, house_reward, firm_reward, bank_reward, done = self.envs.step(
-                    action_dict, t)
+                obs_dict_tensor = self._get_tensor_inputs(obs_dict)
+                action_dict = self.agents_get_action(obs_dict_tensor)
+                next_obs_dict, rewards_dict, done = self.envs.step(action_dict, t)
 
-                on_policy_process = any(agent.on_policy for agent in agents)
+                on_policy_process = all(self.envs.recursive_decompose_dict(self.agents_policy, lambda a: a.on_policy))
                 if on_policy_process:
                     # on policy
-                    transition_dict['global_obs'].append(global_obs)
-                    transition_dict['private_obs'].append(private_obs)
-                    transition_dict['gov_action'].append(action_dict[self.envs.main_gov.name])
-
-                    if hasattr(self, 'pension_gov_agent'):
-                        transition_dict['pension_gov_action'].append(action_dict[self.envs.pension_gov.name])
-                    if hasattr(self, 'central_bank_gov_agent'):
-                        transition_dict['central_bank_gov_action'].append(action_dict[self.envs.central_bank_gov.name])
-
-                    transition_dict['house_action'].append(action_dict[self.envs.households.name])
-                    transition_dict['gov_reward'].append(gov_reward)
-                    transition_dict['house_reward'].append(house_reward)
-                    transition_dict['firm_reward'].append(firm_reward)
-                    transition_dict['bank_reward'].append(bank_reward)
-                    transition_dict['next_global_obs'].append(next_global_obs)
-                    transition_dict['next_private_obs'].append(next_private_obs)
+                    transition_dict['obs_dict'].append(obs_dict)
+                    transition_dict['next_obs_dict'].append(next_obs_dict)
+                    transition_dict['action_dict'].append(action_dict)
+                    transition_dict['reward_dict'].append(rewards_dict)
                     transition_dict['done'].append(float(done))
-                    transition_dict['mean_house_actions'].append(mean_house_action)
 
-                off_policy_process = any(not agent.on_policy for agent in agents)
-                if off_policy_process:
-                    # off policy: replay buffer
-                    data = {
-                        'global_obs': global_obs,
-                        # 'private_obs': private_obs,
-                        'gov_action': action_dict[self.envs.main_gov.name],
-                        # 'hou_action': action_dict[self.envs.households.name],
-                        'gov_reward': gov_reward,
-                        # 'house_reward': house_reward,
-                        'next_global_obs': next_global_obs,
-                        # 'next_private_obs': next_private_obs,
-                        'done': done,
-                        # 'mean_action': mean_house_action
-                    }
-                    
-                    if hasattr(self, 'pension_gov_agent'):
-                        data['pension_gov_action'] = action_dict[self.envs.pension_gov.name]
-                    if hasattr(self, 'central_bank_gov_agent'):
-                        data['central_bank_gov_action'] = action_dict[self.envs.central_bank_gov.name]
-
-                    self.buffer.add(data)
-                
-                global_obs = next_global_obs
-                private_obs = next_private_obs
-                if done:
-                    global_obs, private_obs = self.envs.reset()
-            
-            for i in range(len(agents)):
-                # if epoch < 10 or epoch % 5 == 0 or i == 1:
-                if agents[i].on_policy == True:
-                    actor_loss, critic_loss = agents[i].train(transition_dict)
-                    sum_loss[i, 0] = actor_loss
-                    sum_loss[i, 1] = critic_loss
                 else:
-                    for _ in range(self.args.update_cycles):
-                        transitions = self.buffer.sample(self.args.batch_size)
-                        actor_loss, critic_loss = agents[i].train(transitions,
-                                                                  other_agent=agents[1 - i])  # MARL has other agents
-                        sum_loss[i, 0] += actor_loss
-                        sum_loss[i, 1] += critic_loss
+                    # off policy: replay buffer
+                    transition_dict['obs_dict'] = obs_dict
+                    transition_dict['next_obs_dict'] = next_obs_dict
+                    transition_dict['action_dict'] = action_dict
+                    transition_dict['reward_dict'] = rewards_dict
+                    transition_dict['done'] = float(done)
+
+                    self.buffer.add(transition_dict)
+                    
+                obs_dict = next_obs_dict
+                if done:
+                    obs_dict = self.envs.reset()
             
+            for agent_name in self.agents_policy:
+                sub_agent_policy = self.agents_policy[agent_name]
+                if isinstance(sub_agent_policy, dict):
+                    for name in sub_agent_policy:
+                        sum_loss = self.sub_agent_training(agent_name=name,
+                                                agent_policy=sub_agent_policy[name],
+                                                transition_dict=transition_dict,
+                                                loss=sum_loss)
+                            
+                else:
+                    sum_loss = self.sub_agent_training(agent_name=agent_name,
+                                            agent_policy=sub_agent_policy,
+                                            transition_dict=transition_dict,
+                                            loss=sum_loss)
+
             # print the log information
-            if epoch % self.args.display_interval == 0:  # display_interval=1
+            if epoch % self.args.display_interval == 0:
                 economic_idicators_dict = self._evaluate_agent()
-                now_step = (epoch + 1) * self.args.epoch_length
-                gov_rew.append(economic_idicators_dict["gov_reward"])
-                house_rew.append(economic_idicators_dict["house_reward"])
-                np.savetxt(str(self.model_path) + "/gov_reward.txt", gov_rew)
-                np.savetxt(str(self.model_path) + "/house_reward.txt", house_rew)
-                epochs.append(now_step)
-                np.savetxt(str(self.model_path) + "/steps.txt", epochs)
-                loss_dict = {
-                    "house_actor_loss": sum_loss[1, 0],
-                    "house_critic_loss": sum_loss[1, 1],
-                    "gov_actor_loss": sum_loss[0, 0],
-                    "gov_critic_loss": sum_loss[0, 1]
-                }
                 
                 if self.wandb:
                     wandb.log(economic_idicators_dict)
-                    wandb.log(loss_dict)
+                    wandb.log(sum_loss) # todo: 不确定多层 dict 是否能存？
                 
                 print(
-                    '[{}] Epoch: {} / {}, Frames: {}, Gov_Rewards: {:.3f}, House_Rewards: {:.3f}, Firm_Rewards: {:.3f}, Bank_Rewards: {:.3f},  years:{:.3f}, actor_loss: {:.3f}, critic_loss: {:.3f}'.format(
+                    '[{}] Epoch: {} / {}, Frames: {}, Gov_Rewards: {:.3f}, House_Rewards: {:.3f}, Firm_Rewards: {:.3f}, Bank_Rewards: {:.3f},  years:{:.3f}'.format(
                         datetime.now(), epoch, self.args.n_epochs, (epoch + 1) * self.args.epoch_length,
                         economic_idicators_dict["gov_reward"], economic_idicators_dict["house_reward"],
                         economic_idicators_dict["firm_reward"], economic_idicators_dict["bank_reward"],
-                        economic_idicators_dict["years"], np.sum(sum_loss[:, 0]), np.sum(sum_loss[:, 1])))
+                        economic_idicators_dict["years"]))
             
             if epoch % self.args.save_interval == 0:  # save_interval=10
-                self.house_agent.save(dir_path=self.model_path)
-                self.main_gov_agent.save(dir_path=self.model_path)
+                self.envs.recursive_decompose_dict(self.agents_policy, lambda a: a.save(dir_path=self.model_path))
 
         if self.wandb:
             wandb.finish()
+            
+    def sub_agent_training(self, agent_name, agent_policy, transition_dict, loss):
+        if agent_policy.on_policy == True:
+            actor_loss, critic_loss = agent_policy.train(transition_dict)
+            loss['actor_loss'][agent_name] = actor_loss
+            loss['critic_loss'][agent_name] = critic_loss
+        else:
+            for _ in range(self.args.update_cycles):
+                transitions = self.buffer.sample(self.args.batch_size)
+                actor_loss, critic_loss = agent_policy.train(transitions)
+                loss['actor_loss'][agent_name] += actor_loss
+                loss['critic_loss'][agent_name] += critic_loss
+        return loss
     
     def test(self):
         ''' record the actions of gov and households'''
@@ -310,9 +200,19 @@ class Runner:
         # this data is used for visualization
         self._evaluate_agent(write_evaluate_data=True)
 
-    def init_economic_dict(self, gov_reward, households_reward, firm_reward, bank_reward):
+    def init_economic_dict(self, reward_dict):
+        gov_rewards = reward_dict['government']
+        households_reward = reward_dict['households']
+        firm_reward = reward_dict['market']
+        bank_reward = reward_dict['bank']
+
+        gov_reward = sum([reward_dict['government'][key] for key in reward_dict['government']])
+        
         self.econ_dict = {
             "gov_reward": gov_reward,  # sum
+            "tax_gov_reward": gov_rewards.get('tax', 0),
+            "central_bank_gov_reward": gov_rewards.get('central_bank', 0),
+            "pension_gov_reward": gov_rewards.get('pension', 0),
             "social_welfare": np.sum(households_reward),  # sum
             "house_reward": households_reward,  # sum
             "firm_reward": firm_reward,
@@ -332,7 +232,7 @@ class Runner:
             "total_labor": self.eval_env.market.Lt,
             "house_consumption": self.eval_env.households.consumption,
             "house_work_hours": self.eval_env.households.ht,
-            "gov_spending": self.eval_env.main_gov.Gt_prob * self.eval_env.main_gov.GDP,
+            "gov_spending": self.eval_env.main_gov.gov_spending,
             "house_age": self.eval_env.households.age,
         }
         if hasattr(self, 'pension_gov_agent'):
@@ -358,7 +258,8 @@ class Runner:
         return np.mean(flat_list)
 
     def _evaluate_agent(self, write_evaluate_data=False):
-        eval_econ = ["gov_reward", "house_reward", "social_welfare", "per_gdp", "income_gini",
+        eval_econ = ["gov_reward", "tax_gov_reward", "central_bank_gov_reward", "pension_gov_reward",
+                     "house_reward", "social_welfare", "per_gdp", "income_gini",
                      "wealth_gini", "years", "GDP", "gov_spending", "house_total_tax", "house_income_tax",
                      "house_wealth_tax", "house_wealth", "house_income", "house_consumption", "house_pension",
                      "house_work_hours", "total_labor", "WageRate", "house_age", "firm_reward", "bank_reward"]
@@ -371,24 +272,20 @@ class Runner:
                 "old_percent",
                 "dependency_ratio"
             ]
-        global_obs, private_obs = self.eval_env.reset()
+        obs_dict = self.eval_env.reset()
         episode_econ_dict = dict(zip(eval_econ, [[] for i in range(len(eval_econ))]))
         final_econ_dict = dict(zip(eval_econ, [None for i in range(len(eval_econ))]))
+        
         for epoch_i in range(self.args.eval_episodes):
             eval_econ_dict = dict(zip(eval_econ, [[] for i in range(len(eval_econ))]))
-            
+            t = 0
             while True:
                 with torch.no_grad():
-                    global_obs_tensor = self._get_tensor_inputs(global_obs)
-                    private_obs_tensor = self._get_tensor_inputs(private_obs)
-                    action_dict, private_obs_dict, mean_house_action = self.agents_get_action(self.eval_env,
-                                                                                              global_obs_tensor,
-                                                                                              private_obs_tensor)
-                    
-                    next_global_obs, next_private_obs, gov_reward, house_reward, firm_reward, bank_reward, done = self.eval_env.step(
-                        action_dict)
-
-                self.init_economic_dict(gov_reward, house_reward, firm_reward, bank_reward)
+                    obs_dict_tensor = self._get_tensor_inputs(obs_dict)
+                    action_dict = self.agents_get_action(obs_dict_tensor)
+                    next_obs_dict, rewards_dict, done = self.eval_env.step(action_dict, t)
+                t += 1
+                self.init_economic_dict(rewards_dict)
 
                 for each in eval_econ:
                     if "house_" in each or each == "WageRate":
@@ -396,13 +293,10 @@ class Runner:
                     else:
                         eval_econ_dict[each].append(self.econ_dict[each])
                 
-                global_obs = next_global_obs
-                private_obs = next_private_obs
+                obs_dict = next_obs_dict
                 if done:
-                    global_obs, private_obs = self.eval_env.reset()
+                    obs_dict = self.eval_env.reset()
                     break
-            # print(f"epoch {epoch_i}  mean_a {np.mean(self.eval_env.market.Kt_next)}")
-            
             
             for key, value in eval_econ_dict.items():
                 if key == "gov_reward" or key == "GDP" or key == "bank_reward" or key == "firm_reward":  # You can store the firm_reward for each firm individually.
@@ -438,8 +332,9 @@ class Runner:
             store_path = "viz/data/"
             if not os.path.exists(store_path):  # 确保路径存在
                 os.makedirs(store_path)
-            file_name = f"{self.eval_env.problem_scene}_{self.eval_env.households.type}_{self.households_n}_{self.args.house_alg}_" \
-                        f"{self.eval_env.main_gov.type}_{self.gov_alg}_data.json"
+            file_name = f"{self.file_name}_data.json"
+                # f"{self.eval_env.problem_scene}_{self.eval_env.households.type}_{self.households_n}_{self.args.house_alg}_" \
+                #         f"{self.eval_env.main_gov.type}_{self.gov_alg}_data.json"
 
             file_path = os.path.join(store_path, file_name)
             with open(file_path, "w") as file:
@@ -450,11 +345,4 @@ class Runner:
         return final_econ_dict
 
 
-def save_args(path, args):
-    argsDict = args.__dict__
-    with open(str(path) + '/setting.txt', 'w') as f:
-        f.writelines('------------------ start ------------------' + '\n')
-        for eachArg, value in argsDict.items():
-            f.writelines(eachArg + ' : ' + str(value) + '\n')
-        f.writelines('------------------- end -------------------')
 

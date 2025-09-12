@@ -19,12 +19,12 @@ def save_args(path, args):
 
 
 class llm_agent:
-    def __init__(self, envs, args, agent_name="household"):
+    def __init__(self, envs, args, agent_name="households"):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
-        if agent_name == "household":
+        if agent_name == "households":
             self.obs_dim = self.envs.households.observation_space.shape[0]
             self.action_dim = self.envs.households.action_space.shape[1]
         elif agent_name == "government":

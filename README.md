@@ -66,11 +66,11 @@ Below is an overview of the 25 economic benchmark problems and their correspondi
 ### 👤 Individual Decision-Making Issues
 
 | No.  | Research Question                                            | YAML File                         |
-| ---- | ------------------------------------------------------------ | --------------------------------- |
+| ---- | ------------------------------------------------------------ |-----------------------------------|
 | Q1   | [`Does the “996” work culture improve utility and efficiency?`](document/Individual%20Decision%20Issues/Q1-Does-the-996-work-culture-improve-utility-and-efficiency.md) | `work_hard.yaml`                  |
 | Q2   | [`How does age affect consumption patterns?`](document/Individual%20Decision%20Issues/Q2-How-does-age-affect-consumption-patterns.md) | `age_consumption.yaml`            |
 | Q3   | [`How does asset allocation affect wealth?`](document/Individual%20Decision%20Issues/Q3-How-does-asset-allocation-affect-wealth.md) | `asset_allocation.yaml`           |
-| Q4   | [`How does work-life balance impact well-being?`](document/Individual%20Decision%20Issues/Q4-How-does-work-life-balance-impact-well-being.md) | `work_life_well_bing.yaml`        |
+| Q4   | [`How does work-life balance impact well-being?`](document/Individual%20Decision%20Issues/Q4-How-does-work-life-balance-impact-well-being.md) | `work_life_well_being.yaml`       |
 | Q5   | [`How does over-leveraged consumption impact the economy?`](document/Individual%20Decision%20Issues/Q5-How-does-over-leveraged-consumption-impact-the-economy.md) | `over_leveraged_consumption.yaml` |
 | Q6   | [`How do market structures shape consumer behavior?`](document/Individual%20Decision%20Issues/Q6-How-do-market-structures-shape-consumer-behavior.md) | `market_type.yaml`                |
 
@@ -162,7 +162,7 @@ Each role is defined with a `type` field. For example:
     params:
       type: "pension"
 
-- entity_name: 'household'
+- entity_name: "households"
   entity_args:
     params:
       type: 'OLG'

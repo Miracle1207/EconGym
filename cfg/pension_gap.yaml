@@ -13,7 +13,7 @@ Environment:
           gov_task: "pension_gap"
 
 
-    - entity_name: 'household'
+    - entity_name: 'households'
       entity_args:
         params:
           type: 'OLG'

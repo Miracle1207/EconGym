@@ -15,7 +15,7 @@ Environment:
           gov_task: "gdp"
 
 
-    - entity_name: 'household'
+    - entity_name: 'households'
       entity_args:
         params:
           type: 'OLG'

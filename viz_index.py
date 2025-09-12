@@ -296,7 +296,7 @@ def generate_data():
         env = EconomicSociety(yaml_cfg.Environment)
 
         # 选择代理
-        house_agent = select_agent(args.house_alg, agent_name="household")
+        house_agent = select_agent(args.house_alg, agent_name="households")
         gov_agent = select_agent(args.gov_alg, agent_name="government")
         firm_agent = select_agent(args.firm_alg, agent_name="firm")
         bank_agent = select_agent(args.bank_alg, agent_name="central_bank")

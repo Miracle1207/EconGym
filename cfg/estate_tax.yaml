@@ -12,14 +12,14 @@ Environment:
         params:
           type: "pension"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
 
-    - entity_name: 'household'
+    - entity_name: 'households'
       entity_args:
         params:
           type: 'OLG'
           type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
           households_n: 100
           action_dim: 2
-          real_action_max: [1.0, 2512]
+          real_action_max: [1.0, 1.0]
           real_action_min: [-0.5, 0.0]
         OLG:
           birth_rate: 0.011

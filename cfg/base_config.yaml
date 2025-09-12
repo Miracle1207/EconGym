@@ -9,6 +9,7 @@ Environment:
     consumption_tax_rate: 0.0
     interest_rate: 0.04
     gini_weight: 1
+    welfare_weight: 1
     financial_crisis: False
     disasters: False
     tax_moudle: "ai_agent"
@@ -78,7 +79,7 @@ Environment:
             reserve_ratio: 0.08
           real_action_max: [0.1, 0.2]
           real_action_min: [-0.02, 0.0]
-    - entity_name: 'household'
+    - entity_name: 'households'
       entity_args:
         params:
           type: 'ramsey'
@@ -97,7 +98,7 @@ Environment:
           super_e: 504.3
           at_min: -1e6
           h_max: 2512
-          real_action_max: [1.0, 2512]
+          real_action_max: [1.0, 1.0]
           real_action_min: [-0.5, 0.0]
           action_space:
             low: 0
@@ -198,8 +199,8 @@ Trainer:
   env_name: 'wealth_distribution'
   init_exploration_policy: 'gaussian'
   n_epochs: 10
-  epoch_length: 300
   update_cycles: 100
+  epoch_length: 300
   target_update_interval: 1
   display_interval: 1
   batch_size: 64
@@ -231,7 +232,6 @@ Trainer:
   best_response: False
   entropy_coef: 0.025
   bc: False
-  heterogeneous_house_agent: False
   heter_house_alg: "real"
   heter_house_rate: 0
   economic_shock: null

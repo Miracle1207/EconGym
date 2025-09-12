@@ -54,7 +54,7 @@ class data_agent:
             else:
                 print("Wrong government agent type!")
             return gov_action
-        elif self.agent_name == "household":
+        elif self.agent_name == "households":
             house_action = np.random.randn(self.envs.households.households_n, self.envs.households.action_dim)
 
             house_action[:, 1] = np.clip(house_action[:, 1], 0, 1)  # Ensure in [0, 1]

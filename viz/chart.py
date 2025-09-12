@@ -202,60 +202,6 @@ def distribution_chart(house_data, category_data, house_age_dist, years):
 
     timeline.add_schema(play_interval=100, is_loop_play=False)
 
-    # # 获取所有策略的名字
-    # names = list(average.keys())
-    # max_years = max(len(years[name]) for name in names)
-    # for year_index in range(max_years):
-    #     valid_names = [name for name in names if year_index < len(years[name])]
-    #
-    #     if not valid_names:  # 如果没有有效的策略数据，跳过这个时间点
-    #         continue
-    #
-    #     bar_wealth = Bar()
-    #
-    #     for strategy_name in valid_names:
-    #         value = average[strategy_name]
-    #         if year_index < len(value):
-    #             bar_wealth.add_xaxis(wealth_labels)
-    #             bar_wealth.add_yaxis(strategy_name, value[year_index], label_opts=opts.LabelOpts(is_show=False))
-    #             bar_wealth.reversal_axis()  # 交换了x和y轴
-    #
-    #     bar_wealth.set_global_opts(
-    #         title_opts=opts.TitleOpts(title=f"Wealth Distribution at year {years[valid_names[0]][year_index]}",
-    #                                   pos_right="50px"),
-    #         xaxis_opts=opts.AxisOpts(name="Money"),
-    #         yaxis_opts=opts.AxisOpts(name="Wealth Class", name_location='start', name_gap='20'),
-    #         tooltip_opts=opts.TooltipOpts(trigger='axis', formatter=JsCode(tool_tip_formatter_tiemline)),
-    #         legend_opts=opts.LegendOpts(is_show=False),
-    #     )
-    #
-    #     bar_population = Bar()
-    #     bar_population.options["series"] = []
-    #
-    #
-    #     for strategy_name in valid_names:
-    #         value = house_age_count[strategy_name]
-    #         y_data = [list(d.values()) for d in value]
-    #         if year_index < len(y_data):
-    #             bar_population.add_yaxis(strategy_name, y_data[year_index], label_opts=opts.LabelOpts(is_show=False))
-    #             bar_population.add_xaxis(age_labels + ['total'])
-    #
-    #     bar_population.reversal_axis()
-    #     bar_population.set_global_opts(
-    #         title_opts=opts.TitleOpts(
-    #             title=f"Population Distribution at year {years[valid_names[0]][year_index]}"),
-    #         xaxis_opts=opts.AxisOpts(name="Number", is_inverse=True),
-    #         yaxis_opts=opts.AxisOpts(name="Age Range", name_location='start', name_gap='20'),
-    #         tooltip_opts=opts.TooltipOpts(trigger='axis', formatter=JsCode(tool_tip_formatter_tiemline)),
-    #         legend_opts=opts.LegendOpts(pos_left="50px", pos_top='6%', border_width=0, border_color='white'),
-    #     )
-    #
-    #     grid = Grid()
-    #     grid.add(bar_wealth, grid_opts=opts.GridOpts(pos_left="55%", pos_right="5%"))
-    #     grid.add(bar_population, grid_opts=opts.GridOpts(pos_left="5%", pos_right="55%"))
-    #
-    #     timeline.add(grid, f"Year {years[valid_names[0]][year_index]}")
-    # 获取所有策略的名字
 
     return timeline
 

@@ -25,7 +25,7 @@ class bc_agent:
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
-        if agent_name == "household":
+        if agent_name == "households":
             self.obs_dim = self.envs.households.observation_space.shape[0]
             self.action_dim = self.envs.households.action_space.shape[1]
         elif agent_name == "government":
@@ -70,7 +70,7 @@ class bc_agent:
             private_obses_tensor = rnn_utils.pad_sequence(private_obses, batch_first=True).to(self.device)
             house_actions_tensor = rnn_utils.pad_sequence(house_actions, batch_first=True).to(self.device)
 
-            if self.agent_name == "household":
+            if self.agent_name == "households":
                 obs_tensor = private_obses_tensor
                 expert_action_tensor = house_actions_tensor
 
@@ -109,7 +109,7 @@ class bc_agent:
         Returns:
             np.ndarray: Array of shape (N, action_dim) containing household actions.
         """
-        if self.agent_name != "household":
+        if self.agent_name != "households":
             raise ValueError("AgentError: Behavior cloning method is suitable for household agents only.")
     
         action_dim = self.envs.households.action_dim

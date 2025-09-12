@@ -8,7 +8,7 @@ Environment:
           type: "tax"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
           consumption_tax_rate: 0.0
 
-    - entity_name: 'household'
+    - entity_name: 'households'
       entity_args:
         params:
           type: 'OLG'

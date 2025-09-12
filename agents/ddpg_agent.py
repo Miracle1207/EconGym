@@ -40,17 +40,17 @@ class RunningMeanStd:
 
 
 class ddpg_agent:
-    def __init__(self, envs, args, agent_name="household"):
+    def __init__(self, envs, args, agent_name="households"):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
 
-        env_agent_name = "households" if agent_name == "household" else agent_name
+        env_agent_name = "households" if agent_name == "households" else agent_name
 
         self.agent = getattr(self.envs, env_agent_name)
 
-        if agent_name == "household":
+        if agent_name == "households":
             self.obs_dim = self.envs.observation_space.shape[0]
             self.action_dim = self.envs.households.action_space.shape[1]
         elif agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
@@ -65,7 +65,7 @@ class ddpg_agent:
         self.actor = PolicyNet(state_dim=self.obs_dim, hidden_dim=128, action_dim=self.action_dim).to(self.device)
         self.critic = QValueNet(state_dim=self.obs_dim, hidden_dim=128, action_dim=self.action_dim).to(self.device)
         self.use_type = "train"
-        if agent_name == "household":
+        if agent_name == "households":
             if self.args.bc == True:
                 self.actor.load_state_dict(torch.load("agents/real_data/2024_01_04_21_21_maddpg_trained_model.pth"))
                 self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=1e-6)
@@ -134,7 +134,7 @@ class ddpg_agent:
             action_tensor = self.inverse_action_wrapper(gov_actions)
             reward_tensor = gov_rewards
             next_obs_tensor = next_global_obses
-        # elif self.agent_name == "household":
+        # elif self.agent_name == "households":
         #     obs_tensor = private_obses
         #     action_tensor = house_actions
         #     reward_tensor = house_rewards
@@ -172,7 +172,7 @@ class ddpg_agent:
     def get_action(self, global_obs_tensor, private_obs_tensor, gov_action=None, env=None):
         if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
             obs_tensor = global_obs_tensor.reshape(-1, self.obs_dim)
-        elif self.agent_name == "household":
+        elif self.agent_name == "households":
             obs_tensor = private_obs_tensor
         else:
             obs_tensor = None
@@ -209,7 +209,7 @@ class ddpg_agent:
             wrapper_action = self.gov_action_wrapper(action.flatten())
             return wrapper_action
 
-        elif self.agent_name == "household":
+        elif self.agent_name == "households":
             return action
 
     def gov_action_wrapper(self, gov_action):

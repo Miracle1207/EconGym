@@ -52,13 +52,13 @@ class RunningMeanStd:
 
 
 class ppo_agent:
-    def __init__(self, envs, args, agent_name="household"):
+    def __init__(self, envs, args, agent_name="households"):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
         
-        env_agent_name = "households" if agent_name == "household" else agent_name
+        env_agent_name = "households" if agent_name == "households" else agent_name
 
         self.agent = getattr(self.envs, env_agent_name)
         self.obs_dim = self.agent.observation_space.shape[0]
@@ -73,7 +73,7 @@ class ppo_agent:
 
         self.load_exist_policy = False  # choose from "test" or "train". if test, get action from trained ppo policy.
 
-        if self.load_exist_policy == True and agent_name == "household":
+        if self.load_exist_policy == True and agent_name == "households":
             if "OLG" in self.envs.households.type:
                 self.net.load_state_dict(torch.load("agents/models/trained_policy/ppo_OLG/ppo_net.pt",
                                                     weights_only=True))  # 30,31   # 这个 policy 不能风投，当时没设置
@@ -139,7 +139,7 @@ class ppo_agent:
             reward_tensor = gov_rewards
             next_obs_tensor = next_global_obses
     
-        elif self.agent_name == "household":
+        elif self.agent_name == "households":
             # Convert household inputs to padded tensors
             private_obses = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['private_obs']]
             house_actions = [torch.tensor(act, dtype=torch.float32) for act in transition_dict['house_action']]

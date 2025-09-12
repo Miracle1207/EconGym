@@ -20,48 +20,55 @@ Environment:
     step_cnt: 0
 
   Entities:
-    - entity_name: 'central_bank_gov'
+    - entity_name: 'government'
       entity_args:
         params:
           type: "central_bank"
-          gov_task: "gdp"  # choices: {"gdp", "gini", "social_welfare", "gdp_gini","pension_gap"}
+          type_list: [ 'tax', 'pension', 'central_bank' ]
+          tau: 0.263
+          xi: 0.049
+          tau_a: 0.0
+          xi_a: 0.0
+          Gt_prob: 0.189
+          retire_age: 65
+          contribution_rate: 0.08
+          pension_growth_rate: 0.01
+          base_interest_rate: 0.03
+          reserve_ratio: 0.08
+          gov_task: "gdp"
           tax_type: "ai_agent"
-
-          base_interest_rate: 0.05
-          reserve_ratio: 0.1
-
+        central_bank:
+          type: "central_bank"
           action_dim: 2
           action_space:
             low: -0.01
             high: 0.01
             dtype: float32
           initial_action:
-            base_interest_rate: 0.05
-            reserve_ratio: 0.1
-          real_action_max: [ 0.2, 0.5 ]
-          real_action_min: [ -0.02, 0. ]
+            base_interest_rate: 0.03
+            reserve_ratio: 0.08
+          real_action_max: [ 0.1, 0.2 ]
+          real_action_min: [ -0.02, 0.0 ]
 
-
-    - entity_name: 'tax_gov'
+    - entity_name: 'government'
       entity_args:
         params:
           type: "tax"
-          gov_task: "gdp"  # choices: {"gdp", "gini", "social_welfare", "gdp_gini","pension_gap"}
-          tax_type: "ai_agent"
-
+          type_list: [ 'tax', 'pension', 'central_bank' ]
           tau: 0.263
           xi: 0.049
           tau_a: 0.0
           xi_a: 0.0
           Gt_prob: 0.189
-          # tax 替代government,需要参数
           retire_age: 65
           contribution_rate: 0.08
-          person al_contribution_rate: 0.1  # 个人养老金上交比例
           pension_growth_rate: 0.01
-          base_interest_rate: 0.05
-          reserve_ratio: 0.1
-
+          base_interest_rate: 0.03
+          reserve_ratio: 0.0
+          gov_task: "gdp"
+          tax_type: "ai_agent"
+        tax:
+          type: "tax"
           action_dim: 5
           action_space:
             low: -1e-3
@@ -73,38 +80,44 @@ Environment:
             tau_a: 0.0
             xi_a: 0.0
             Gt_prob: 0.189
-          real_action_max: [ 1., 2., 1., 2., 1. ]
-          real_action_min: [ 0.0, 0., 0., 0., 0. ]
+          real_action_max: [ 0.6, 2, 0.05, 2., 1.0 ]
+          real_action_min: [ 0., 0., 0.0, 0., 0.0 ]
 
-
-    - entity_name: 'pension_gov'
+    - entity_name: 'government'
       entity_args:
         params:
-          type: "pension_gov"
-          gov_task: "gdp"  # choices: {"gdp", "gini", "social_welfare", "gdp_gini","pension_gap"}
-          tax_type: "ai_agent"
-
+          type: "pension"
+          type_list: [ 'tax', 'pension', 'central_bank' ]
+          tau: 0.263
+          xi: 0.049
+          tau_a: 0.0
+          xi_a: 0.0
+          Gt_prob: 0.189
           retire_age: 65
           contribution_rate: 0.08
-          person al_contribution_rate: 0.1  # 个人养老金上交比例
           pension_growth_rate: 0.01
-
+          base_interest_rate: 0.03
+          reserve_ratio: 0.08
+          gov_task: "gdp"
+          tax_type: "ai_agent"
+        pension:
+          type: "pension"
           action_dim: 2
           action_space:
             low: -0.05
             high: 0.05
             dtype: float32
           initial_action:
-            retire_age: 65
+            retire_age: 67
             contribution_rate: 0.08
             pension_growth_rate: 0.01
-          real_action_max: [ 75, 0.2 ]
-          real_action_min: [ 50, 0.05 ]
+          real_action_max: [ 70, 0.2 ]
+          real_action_min: [ 60, 0.05 ]
 
-    - entity_name: 'household'
+    - entity_name: 'households'
       entity_args:
         params:
-          type: 'ramsey'
+          type: 'ramsey_risk_invest'
           type_list: [ 'ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest','personal_pension' ]  # you can add "risk_invest" ,example: 'ramsey_risk_invest' or 'OLG_risk_invest', means households can take risky investment
           households_n: 1000
           CRRA: 1
@@ -120,14 +133,13 @@ Environment:
           super_e: 504.3
           at_min: -1e6   # cited from "Monetary policy according to HANK"
           h_max: 2512
-          real_action_max: [ 1., 2512 ]
+          real_action_max: [ 1., 1.0 ]
           real_action_min: [ -0.5, 0. ]
           action_space:
             low: -0.5
             high: 0.5
             dtype: float32
         OLG:
-          # 0.0166是2022的总生育率 0.007988是真实死亡率 韩国的数据出生和死亡
           birth_rate: 0.011
           die_rate: 0.05
           initial_working_age: 24
@@ -135,7 +147,7 @@ Environment:
     - entity_name: 'market'
       entity_args:
         params:
-          type: "perfect"
+          type: "oligopoly"
           type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
           alpha: 0.25
           Z: 10.0
@@ -247,7 +259,7 @@ Trainer:
   noise_rate: 0.01
   epsilon: 0.1
   save_interval: 10
-  house_alg: "bc"
+  house_alg: "rule_based"
   gov_alg: "rule_based"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
@@ -259,7 +271,6 @@ Trainer:
   update_each_epoch: 20
   seed: 1
   wandb: False
-  aligned: False
   best_response: False
   entropy_coef: 0.025
   bc: False

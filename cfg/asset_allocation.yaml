@@ -8,7 +8,7 @@ Environment:
         params:
           type: "pension" # central_bank gov
 
-    - entity_name: 'household'
+    - entity_name: 'households'
       entity_args:
         params:
           type: 'ramsey'

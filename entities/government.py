@@ -41,7 +41,8 @@ class Government(BaseEntity):
         self.per_household_gdp = real_gdp / real_population
         self.GDP = self.per_household_gdp * households_n
         self.Bt_next = real_debt_rate * self.GDP
-        self.pension_fund = self.entity_args.get('initial_pension_fund', 0)
+        self.Bt = copy.copy(self.Bt_next)
+        self.pension_fund = self.entity_args.get('initial_pension_fund', 1e-8)
         self.contribution_rate = self.entity_args.params.contribution_rate
         self.retire_age = self.entity_args.params.retire_age
         self.old_percent = 0
@@ -53,22 +54,23 @@ class Government(BaseEntity):
 
     def get_action(self, actions, firm_n):
         self.old_per_gdp = copy.copy(self.per_household_gdp)
+        self.old_GDP = copy.copy(self.GDP)
         self.Bt = copy.copy(self.Bt_next)
 
         policy_actions = actions[:self.policy_action_len]
+        Gt_prob_ratios = np.ones(firm_n)/firm_n
         if self.type == "pension":
             # self.retire_age, self.contribution_rate, self.pension_growth_rate = policy_actions
             self.retire_age, self.contribution_rate = policy_actions
-            # self.retire_age = policy_actions[0]
         elif self.type == "tax":
             self.tau, self.xi, self.tau_a, self.xi_a, self.Gt_prob = policy_actions
+            Gt_prob_ratios = actions[self.policy_action_len:]
         elif self.type == "central_bank":
             self.base_interest_rate, self.reserve_ratio = policy_actions
         else:
             raise ValueError("Invalid government type specified!")
 
         if firm_n != 1:
-            Gt_prob_ratios = actions[self.policy_action_len:]
             if np.sum(Gt_prob_ratios) == 0:
                 self.Gt_prob_j = np.zeros_like(Gt_prob_ratios)[:, np.newaxis]
             else:
@@ -76,13 +78,13 @@ class Government(BaseEntity):
         else:
             self.Gt_prob_j = self.Gt_prob
 
+
     def step(self, society):
         self.tax_step(society)
         if self.type == "pension" and (
                 "OLG" in society.households.type or society.households.type == "personal_pension"):
             self.pension_step(society)
 
-    import numpy as np
 
     def get_reward_central(self, inflation_rate, growth_rate,
                            target_inflation=0.02, target_growth=0.05):
@@ -98,15 +100,13 @@ class Government(BaseEntity):
     def tax_step(self, society):
         """Calculate government metrics such as taxes, investment, and GDP."""
         households = society.households
-        self.tax_array = (households.income_tax + households.asset_tax +
-                          np.dot(households.consumption_ij,
-                                 society.market.price) * society.consumption_tax_rate) + households.estate_tax
-        self.Bt_next = (
-                (1 + society.bank.lending_rate) * self.Bt + np.sum(self.Gt_prob_j * society.market.Yt_j) - np.sum(
-            self.tax_array))
+        self.tax_array = (households.income_tax + households.asset_tax + np.dot(households.final_consumption, society.market.price) * society.consumption_tax_rate) + households.estate_tax
+        self.gov_spending = self.Gt_prob_j * society.market.Yt_j
+        self.Bt_next = ((1 + society.bank.base_interest_rate) * self.Bt + np.sum(self.gov_spending) - np.sum(self.tax_array))
 
         self.GDP = np.sum(society.market.price * society.market.Yt_j)
         self.per_household_gdp = self.GDP / households.households_n
+        
 
     def pension_step(self, society):
         """Update the pension fund for all households."""
@@ -117,7 +117,7 @@ class Government(BaseEntity):
 
     def calculate_pension(self, households):
         """Calculate the pension benefits for a given household."""
-        pension = -households.income * ~households.is_old * self.contribution_rate
+        pension = -households.income * ~households.is_old * self.contribution_rate   # <0 : pension contribute from young individuals
 
         income_mean = np.nanmean(households.income)
 
@@ -126,14 +126,13 @@ class Government(BaseEntity):
             avg_wage = (income_old_mean + income_mean) / 2
 
             if hasattr(self, 'pension_rate') and self.pension_rate is not None:
-                # 假设它是非空数组、列表或标量
                 basic_pension = avg_wage * households.working_years[households.is_old] * 0.01 * self.pension_rate
             else:
                 basic_pension = avg_wage * households.working_years[households.is_old] * 0.01
             personal_pension = households.accumulated_pension_account[households.is_old] / self.get_annuity_factor(
                 self.retire_age)
 
-            pension[households.is_old] = basic_pension + personal_pension
+            pension[households.is_old] = basic_pension + personal_pension  # >0 : payoff for old individuals
 
         return pension
 
@@ -203,43 +202,86 @@ class Government(BaseEntity):
             asset_tax = np.zeros_like(asset)
         return income_tax, asset_tax
 
+    def softsign(self, x):
+        return x / (1.0 + np.abs(x))
+    
     def get_reward(self, society):
-        """Compute the government's reward based on its goal."""
-        self.growth_rate = (self.per_household_gdp - self.old_per_gdp) / self.old_per_gdp
+        """
+        Compute the government's reward based on its goal.
+
+        Notes
+        -----
+        - For self.type in {"pension", "tax"}:
+          They can share the same reward function definitions below (gov_goal routing).
+        - For self.type == "central_bank":
+          Delegates to `get_reward_central(inflation_rate, growth_rate)`.
+        """
+        SCALE = dict(
+            gdp_growth=0.05,  # s_g: 5% target
+            gini_scale=0.05,  # s_gini
+            sw_scale=0.10,  # s_sw (set from steady-state analysis)
+        )
+
+        self.growth_rate = (self.GDP + 1e-8) / (self.old_GDP + 1e-8) - 1
+    
+        # Central bank uses its own reward
         if self.type == "central_bank":
             return self.get_reward_central(society.inflation_rate, self.growth_rate)
+    
+        # Below: common routing for fiscal/pension/tax and other government types
+        gov_goal = self.gov_task
+    
+        if gov_goal == "gdp":
+            # # Capital growth (%)
+            # capital_growth_rate = (
+            #         (society.market.Kt_next - society.market.Kt) / society.market.Kt * 100
+            # )
+            # return capital_growth_rate.mean()
+            # GDP growth (%)
+            log_gdp_growth = np.log(self.GDP + 1e-8) - np.log(self.old_GDP + 1e-8)
+            return self.softsign(log_gdp_growth / SCALE["gdp_growth"]) * 100
+    
+        elif gov_goal == "gini":
+            # Wealth Gini improvement
+            before_tax_wealth_gini = society.gini_coef(society.households.at)
+            after_tax_wealth_gini = society.gini_coef(society.households.post_asset)
+            impr_w = before_tax_wealth_gini - after_tax_wealth_gini
+        
+            # Income Gini improvement
+            before_tax_income_gini = society.gini_coef(society.households.income)
+            after_tax_income_gini = society.gini_coef(society.households.post_income)
+            impr_i = before_tax_income_gini - after_tax_income_gini
+            # return (delta_income_gini + delta_wealth_gini) * 100
+            r = self.softsign((impr_w + impr_i) / (2 * SCALE["gini_scale"]))   # \in (-1,1)
+            return r
+    
+        elif gov_goal == "social_welfare":
+            # Sum of household utilities (social welfare)
+            return np.sum(society.households_reward)
+    
+        elif gov_goal == "mean_welfare":
+            # When population changes (OLG), mean welfare ≠ social welfare.
+            # Mean welfare better reflects policy effects without population-size confounds.
+            return np.mean(society.households_reward)
+    
+        elif gov_goal == "gdp_gini":
+            # mixed goal
+            gini_penalty = - society.gini_weight * (society.wealth_gini * society.income_gini)
+            welfare = society.welfare_weight * np.sum(society.households_reward)
+            return self.growth_rate + gini_penalty + welfare
+    
+        elif gov_goal == "pension_gap":
+            # Minimizing "pension_gap" is equivalent to maximizing the pension fund surplus,
+            pension_surplus = sum(-self.calculate_pension(society.households))
+            return pension_surplus
+    
         else:
-            gov_goal = self.gov_task
-            if gov_goal == "gdp":
-                capital_growth_rate = (society.market.Kt_next - society.market.Kt) / society.market.Kt * 100
-                return capital_growth_rate.mean()
-            elif gov_goal == "gini":
-                before_tax_wealth_gini = society.gini_coef(society.households.at)
-                after_tax_wealth_gini = society.gini_coef(society.households.post_asset)
-                delta_wealth_gini = (before_tax_wealth_gini - after_tax_wealth_gini) / before_tax_wealth_gini
-
-                before_tax_income_gini = society.gini_coef(society.households.income)
-                after_tax_income_gini = society.gini_coef(society.households.post_income)
-                delta_income_gini = (before_tax_income_gini - after_tax_income_gini) / before_tax_income_gini
-
-                return (delta_income_gini + delta_wealth_gini) * 100
-            elif gov_goal == "social_welfare":
-                return np.sum(society.households_reward)
-            elif gov_goal == "mean_welfare":
-                return np.mean(society.households_reward)
-            elif gov_goal == "gdp_gini":
-                gdp_growth = (self.per_household_gdp - self.old_per_gdp) / self.old_per_gdp
-                gini_penalty = society.gini_weight * (society.wealth_gini * society.income_gini)
-                return gdp_growth - gini_penalty
-            elif gov_goal == "pension_gap":
-                payout = sum(-self.calculate_pension(society.households))
-                return payout
-
-            else:
-                raise ValueError("Invalid government goal specified.")
+            raise ValueError("Invalid government goal specified.")
 
     def is_terminal(self):
-
+        '''
+        If `self.pension_fund < 0` (pension pool exhausted),  the environment should trigger a terminal state.
+        '''
         if self.pension_fund < 0:
             return True
         return False

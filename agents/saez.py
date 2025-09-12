@@ -502,8 +502,6 @@ class SaezGovernment():
         for b_idx, income in enumerate(self.bracket_cutoffs[1:]):
             # How much income occurs within each bin
             # (including the open-ended, top "bin").
-            # print(income)
-            # print(bin_edges)
             past_cutoff = np.maximum(0, income - bin_edges)
             bin_income = np.minimum(bin_sizes, past_cutoff)
 
@@ -529,16 +527,11 @@ class SaezGovernment():
     def saez_step(self):
         if self.tax_cycle_pos == 1:
             self.compute_and_set_new_period_rates_from_saez_formula()
-            # (cache this for faster obs generation)
-            # self._curr_rates_obs = np.array(self.curr_marginal_rates)
 
         # 2. On the last day of the tax period: Get $-taxes AND update agent endowments.
         if self.tax_cycle_pos >= self.period:
             # self.enact_taxes()
             self.tax_cycle_pos = 0
 
-        # else:
-        # print(len(self.saez_buffer))
-        # self.taxes.append([])
         # increment timestep.
         self.tax_cycle_pos += 1

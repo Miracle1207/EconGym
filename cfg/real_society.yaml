@@ -6,7 +6,7 @@ Environment:
       entity_args:
         params:
           type: "tax"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
-    - entity_name: 'household'
+    - entity_name: 'households'
       entity_args:
         params:
           type: 'ramsey'

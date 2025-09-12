@@ -60,7 +60,7 @@ class Market(BaseEntity):
             inflation_rate = (current_price_level / old_price_level).item() - 1
             return inflation_rate, current_price_level
     
-    def production_quality_update(self):
+    def update_firm_productivity(self):
         """Update the production quality (technology shock)."""
         log_next_z = np.log(self.Zt) + self.sigma_z * np.random.rand(*self.Zt.shape)
         self.Zt = np.exp(log_next_z)
@@ -68,7 +68,6 @@ class Market(BaseEntity):
     def reset(self, **custom_cfg):
         np.random.seed(0)
         households_n = custom_cfg['households_n']
-        households_at = custom_cfg['households_at']
         GDP = custom_cfg['GDP']
         real_capital_rate = 18.3 * 0.01
         real_total_hours = 265888.875e6  # total hours worked, large L
@@ -88,29 +87,36 @@ class Market(BaseEntity):
     
     def step(self, society):
         """Calculate firm's labor demand and production output."""
-        self.Kt = copy.copy(self.Kt_next)
-        real_Kt = np.clip(self.Kt, a_min=0, a_max=None)
-        self.production_quality_update()
+        self.Kt = np.clip(copy.copy(self.Kt_next), 1e-8, None)
+        self.update_firm_productivity()
         # Compute firm's labor demand
         self.firm_labor_j = (society.households.h_ij_ratio * society.households.ht * society.households.e).sum(axis=0)[:, np.newaxis]
         self.Lt = np.sum(self.firm_labor_j)
-        self.WageRate = self.price * self.Zt * (1 - self.alpha) * np.power((real_Kt) / (self.firm_labor_j + 1e-8),
-                                                                           self.alpha)
-        self.Yt_j = self.production_output(real_Kt, self.firm_labor_j)
-    
+        self.Yt_j = self.production_output(self.Kt, self.firm_labor_j)
+        self.WageRate = self.price * self.Zt * (1 - self.alpha) * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha)
+        self.MarketClear_InterestRate = self.price * self.Zt * self.alpha * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha-1)
+
+        self.MarketClear_InterestRate[self.Kt < 1e-7] = np.nan
+        if society.bank.type == "non_profit":
+            if self.type == "perfect":
+                society.bank.lending_rate = np.nanmean(self.MarketClear_InterestRate)
+                society.bank.deposit_rate = np.nanmean(self.MarketClear_InterestRate)
+            else:
+                society.bank.lending_rate = society.bank.base_interest_rate
+                society.bank.deposit_rate = society.bank.base_interest_rate
+        
+        
     def production_output(self, Kt, Lt):
         """Compute the production output."""
-        if (Kt <= 0).any() or (Lt <= 0).any():
-            # print(f"Kt invalid indices: {np.where(Kt <= 0)}, Lt invalid indices: {np.where(Lt <= 0)}")
-            Kt = np.maximum(Kt, 1e-6)
-            Lt = np.maximum(Lt, 1e-6)
+        Kt = np.clip(Kt, a_min=0, a_max=None)
+        Lt = np.clip(Lt, a_min=0, a_max=None)
         
         Y = self.Zt * (Kt ** self.alpha) * (Lt ** (1 - self.alpha))
         return Y
     
     def get_reward(self, society):
         """Calculate the firm's profit."""
-        profit = self.price * self.Yt_j - self.WageRate * self.firm_labor_j - society.bank.lending_rate * self.Kt
+        profit = self.price * society.real_deals - self.WageRate * self.firm_labor_j - society.bank.lending_rate * self.Kt
         return profit
     
     def is_terminal(self):
