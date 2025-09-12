@@ -96,11 +96,11 @@ As an example, we selected the following roles from the social role classificati
   * Level of social welfare
 * **Visualized Experimental Results:**
 
-![Individual Q6 P1](../img/Individual%20Q6%20P1.png)
+![Individual Q4 P1](../img/Individual%20Q4%20P1.png)
 
 **Figure 1**: When households adopt a “work–life balance” strategy (green line), aggregate GDP is lower than under the standard work regime (blue line), but after year 60 the gap narrows and the two GDP paths converge.
 
-![Individual Q6 P2](../img/Individual%20Q6%20P2.png)
+![Individual Q4 P2](../img/Individual%20Q4%20P2.png)
 
 **Figure 2**: When households adopt a “work–life balance” strategy (green line), social welfare increases and remains elevated over time.
 
