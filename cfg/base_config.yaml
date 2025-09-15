@@ -239,3 +239,4 @@ Trainer:
   heter_house_rate: 0
   economic_shock: null
   test: False
+  bc_test: True
