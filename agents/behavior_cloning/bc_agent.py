@@ -149,7 +149,7 @@ class bc_agent:
             )
 
     def get_real_data(self, age_limit=None):
-        df = pd.read_csv(os.path.join(os.path.abspath('.'), "agents/data/advanced_scfp2022_1110.csv"))
+        df = pd.read_csv(os.path.join(os.path.abspath(''), "agents/data/advanced_scfp2022_1110.csv"))
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
         if age_limit is not None:
             df = df[df['AGE'] == age_limit]
