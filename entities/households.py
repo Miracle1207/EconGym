@@ -209,7 +209,7 @@ class Household(BaseEntity):
 
         if firm_n != 1:
             # Work firm index from scaled action value
-            work_firm_index = (actions[:, -firm_n - 1][:, np.newaxis] * firm_n).round().reshape(-1).astype(int).clip(0, firm_n)
+            work_firm_index = (actions[:, -firm_n - 1][:, np.newaxis] * firm_n).astype(int).clip(0, firm_n-1).flatten()
             self.h_ij_ratio = np.eye(firm_n)[work_firm_index]  # One-hot encoding
 
             # Normalize consumption distribution across firms

@@ -47,7 +47,12 @@ class bc_agent:
             self.bc_obs_dim = 3  # [education, wealth, age]
         else:
             raise ValueError(f"Agent type Error: No {self.type} in EconGym.")
-        self.net = mlp_net(state_dim=self.bc_obs_dim, num_actions=self.action_dim).to(self.device)
+        
+        if "invest" in self.type:
+            self.bc_action_dim = 3
+        else:
+            self.bc_action_dim = 2
+        self.net = mlp_net(state_dim=self.bc_obs_dim, num_actions=self.bc_action_dim).to(self.device)
         # Define the mapping of types to model paths
         model_paths = {
             "ramsey": "agents/behavior_cloning/trained_models/ramsey_bc_net.pt",
@@ -63,13 +68,15 @@ class bc_agent:
                 )
             model_path = model_paths[type]
             self.net.load_state_dict(torch.load(model_path, weights_only=True))
+        else:
+            # Load real data
+            self.real_data = self.get_real_data(age_limit=None)  # Adjust age_limit if needed
 
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.args.p_lr, eps=1e-5)
         lambda_function = lambda epoch: 0.97 ** (epoch // 10)
         self.scheduler = LambdaLR(self.optimizer, lr_lambda=lambda_function)
         self.on_policy = True
-        # Load real data
-        self.real_data = self.get_real_data(age_limit=None)  # Adjust age_limit if needed
+        
 
     def train(self, transition_dict):
         """
@@ -130,13 +137,13 @@ class bc_agent:
 
         # Ensure output matches households.action_dim
         if self.envs.market.firm_n == 1:
-            return action[:, :self.action_dim]
+            return action[:, :self.bc_action_dim]
         elif self.envs.market.firm_n > 1:
             fill_dim = self.envs.market.firm_n + 1  # +1 for work firm choice, +firm_n for consumption shares
             real_action_dim = self.action_dim - fill_dim
             n_agents = action.shape[0]
-            # use a random value in [-1, 1] to represent firm choice preference
-            firm_choice = np.random.uniform(low=-1.0, high=1.0, size=(n_agents, 1))
+            # use a random value in [0, 1) to represent firm choice preference
+            firm_choice = np.random.rand(n_agents, 1)
             # Assign uniform consumption distribution across all firms
             fill_values = np.ones((n_agents, self.envs.market.firm_n)) / self.envs.market.firm_n
             # Concatenate: [existing action part] + [firm choice] + [consumption share vector]

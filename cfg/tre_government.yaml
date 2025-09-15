@@ -259,7 +259,7 @@ Trainer:
   noise_rate: 0.01
   epsilon: 0.1
   save_interval: 10
-  house_alg: "rule_based"
+  house_alg: "bc"
   gov_alg: "rule_based"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
@@ -279,3 +279,4 @@ Trainer:
   heter_house_rate: 0
   economic_shock: null
   test: False
+  bc_test: True

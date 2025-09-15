@@ -98,7 +98,6 @@ class Market(BaseEntity):
         self.WageRate = self.price * self.Zt * (1 - self.alpha) * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha)
         self.MarketClear_InterestRate = self.price * self.Zt * self.alpha * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha-1)
 
-        self.MarketClear_InterestRate[self.Kt < 1e-7] = np.nan
         if society.bank.type == "non_profit":
             if self.type == "perfect":
                 society.bank.lending_rate = np.nanmean(self.MarketClear_InterestRate)
