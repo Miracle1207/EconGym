@@ -72,6 +72,8 @@ class Market(BaseEntity):
         real_capital_rate = 18.3 * 0.01
         real_total_hours = 265888.875e6  # total hours worked, large L
         real_population = 333428e3
+
+        
         self.Zt = self.Z * (1 + np.random.rand(self.firm_n, 1))
         
         self.Lt = (real_total_hours / real_population) * households_n

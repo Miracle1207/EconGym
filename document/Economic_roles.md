@@ -36,7 +36,7 @@ This setup allows heterogeneous agents to interact in diverse scenarios.
 
 ---
 
-## MDP Elements for Economic Agents
+### MDP Elements for Economic Agents
 
 The following table summarizes the observation $o_t$, action $a_t$, and reward $r_t$ for each agent type. Notation and economic meaning are annotated for clarity.
 
@@ -56,3 +56,17 @@ The following table summarizes the observation $o_t$, action $a_t$, and reward $
 
 
 ---
+
+## Agent Algorithms
+
+| **Agent Algorithm**             | **Description**                                              | **Example Use Case**                                         |
+| ------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **Reinforcement Learning (RL)** | Learns through trial-and-error to optimize long-term cumulative rewards. Well-suited for solving dynamic decision-making problems. | Dynamic environments requiring optimal decision-making.      |
+| **Large Language Model (LLM)**  | Generates decisions based on internal knowledge and language understanding. Exhibits human-like behavior patterns. | Simulating realistic decision-making with human-like behavior. 或者面向 非结构化的文本数据。 |
+| **Behavior Cloning (BC)**       | Imitates real-world behavior by training on empirical data. Enables realistic micro-level behavior. | Individual households following BC policies from the [2022 Survey of Consumer Finances data](https://www.federalreserve.gov/econres/scfindex.htm). |
+| **Economic Method**             | Uses classical rule-based policies from economics literature (e.g., Taylor rule, Saez Tax). Provides direct comparisons between economic theory and AI-based methods. | Central banks (Taylor rule) or fiscal agents (Saez Tax).     |
+| **Rule-based Method**           | Encodes domain knowledge or user-defined heuristics (e.g., IMF’s fiscal adjustment rule). Provides interpretable, human-crafted policies. | E.g., “save more when young for retirement”.                 |
+| **Real-Data**                   | Replays actual policy trajectories based on historical data (e.g., U.S. federal tax rates). Enables benchmarking against real-world policy outcomes. | U.S. federal tax rates, retirement age schedules.            |
+
+Each algorithm has its own strengths. EconGym supports benchmarking them under the same economic role, or combining different algorithms across roles in a shared scenario. In the following experiments, we showcase how these algorithms generate diverse policy outcomes across tasks.
+

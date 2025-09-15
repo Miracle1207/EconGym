@@ -22,9 +22,9 @@ class Government(BaseEntity):
             self.saez_gov = SaezGovernment()
         households_n = custom_cfg['households_n']
         firm_n = custom_cfg['firm_n']
-        real_gdp = 254746 * 1e8  # in USD
-        real_debt_rate = 121.29 * 0.01  # as a fraction 未修改
-        real_population = 333428e3
+        real_gdp = self.real_gdp
+        real_debt_rate = self.real_debt_rate
+        real_population = self.real_population
 
         self.action_space = Box(
             low=self.entity_args[self.type]["action_space"]["low"],
@@ -162,7 +162,7 @@ class Government(BaseEntity):
 
         return income_tax, asset_tax
 
-    def calculate_taxes(self, income, asset):
+    def calculate_progressive_taxes(self, income, asset):
         """Calculate income and asset taxes based on US federal tax brackets."""
 
         def income_tax_function(x):
@@ -188,7 +188,7 @@ class Government(BaseEntity):
     def compute_tax(self, income, asset):
         """Compute income and asset taxes based on the tax policy."""
         if self.tax_type == "us_federal":
-            income_tax, asset_tax = self.calculate_taxes(income, asset)
+            income_tax, asset_tax = self.calculate_progressive_taxes(income, asset)
         elif self.tax_type == "saez":
             self.saez_gov.saez_step()
             self.saez_gov.update_saez_buffer(income)
