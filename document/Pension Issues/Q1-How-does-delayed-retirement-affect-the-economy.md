@@ -133,7 +133,7 @@ Trainer:
 
 
 
-## **​5.​ **​Illustrative Experiments
+## 5.​Illustrative Experiments
 
 ### Experiment: Impact of Different Retirement Ages on Economic Growth
 
