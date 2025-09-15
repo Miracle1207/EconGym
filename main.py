@@ -38,15 +38,25 @@ def setup_government_agents(config, env):
     """
     if isinstance(env.government, dict):
         gov_algs = {}
+        
         for gov_type, gov_agent in env.government.items():
             alg_name = gov_type + "_gov_alg"
-            gov_alg = select_agent(config['Trainer'][alg_name], "government", gov_type, env, config['Trainer']) if alg_name in config['Trainer'] else None
+            gov_key = alg_name if alg_name in config['Trainer'] else 'gov_alg'
+            
+            # Try to get the appropriate agent config, and select agent if found
+            gov_alg = None
+            if gov_key in config['Trainer']:
+                gov_alg = select_agent(config['Trainer'].get(gov_key), "government", gov_type, env, config['Trainer'])
+            
+            if gov_alg is None:    # Log a warning if no algorithm is found for a given government type
+                print(f"Warning: No algorithm found for government type '{gov_type}' using key '{gov_key}'")
+            
             gov_algs[gov_type] = gov_alg
-    
+        
         return gov_algs
+    
     else:
-        gov_alg = select_agent(config['Trainer']['gov_alg'], "government", env.government.type, env, config['Trainer']) if 'gov_alg' in config['Trainer'] else None
-        return gov_alg
+        raise ValueError("Government should be a dict")
 
 
 if __name__ == '__main__':

@@ -359,7 +359,7 @@ class Household(BaseEntity):
     def OLG_step(self, society, t):
         """Calculate households' income, assets, and consumption."""
         # Classify households as young or old based on age
-        government_agent = society.government['pension']
+        government_agent = society.main_gov
         retire_age = government_agent.retire_age
 
         self.is_old = self.age >= retire_age

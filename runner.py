@@ -25,10 +25,6 @@ class NumpyEncoder(json.JSONEncoder):
             return obj.tolist()
         return super(NumpyEncoder, self).default(obj)
 
-
-
-
-
 class Runner:
     def __init__(self, envs, args, house_agent,  government_agent, firm_agent, bank_agent):
         self.envs = copy.deepcopy(envs)
@@ -64,7 +60,7 @@ class Runner:
                 config=self.args,
                 project="EconGym",
                 # entity="your_account",  # TODO: Replace with your W&B account or team name
-                entity="economic_ai",
+                entity="ai_tax",
                 name=self.file_name + "_seed=" + str(self.args.seed),
                 dir=str(self.model_path),
                 job_type="training",

@@ -20,35 +20,50 @@ def save_args(path, args):
 
 
 class bc_agent:
-    def __init__(self, envs, args, agent_name="households"):
+    def __init__(self, envs, args, agent_name="households", type=None):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
+        self.type = type
         if agent_name == "households":
             self.obs_dim = self.envs.households.observation_space.shape[0]
             self.action_dim = self.envs.households.action_space.shape[1]
-        elif agent_name == "government":
-            self.obs_dim = self.envs.government.observation_space.shape[0]
-            self.action_dim = self.envs.government.action_space.shape[0]
         else:
-            print("AgentError: Please choose the correct agent name!")
-
+            raise ValueError(
+                "Due to data limitations, the current version only supports behavior cloning policy for 'households'. "
+                "You can train behavior cloning policies for other economic roles based on local data."
+            )
         # if use the cuda...
         if self.args.cuda:
             self.device = "cuda"
         else:
             self.device = "cpu"
+        
+        # special setting for BC: The real dataset only contains partial observations
+        if "ramsey" in self.type:
+            self.bc_obs_dim = 2  # [education, wealth]
+        elif "OLG" in self.type:
+            self.bc_obs_dim = 3  # [education, wealth, age]
+        else:
+            raise ValueError(f"Agent type Error: No {self.type} in EconGym.")
+        self.net = mlp_net(state_dim=self.bc_obs_dim, num_actions=self.action_dim).to(self.device)
+        # Define the mapping of types to model paths
+        model_paths = {
+            "ramsey": "agents/behavior_cloning/trained_models/ramsey_bc_net.pt",
+            "ramsey_risk_invest": "agents/behavior_cloning/trained_models/risky_investment/ramsey_risk_invest_bc_net.pt",
+            "OLG": "agents/behavior_cloning/trained_models/OLG_bc_net.pt",
+            "OLG_risk_invest": "agents/behavior_cloning/trained_models/risky_investment/OLG_risk_invest_bc_net.pt"
+        }
 
-        self.net = mlp_net(state_dim=self.obs_dim, num_actions=self.action_dim).to(self.device)
-        self.use_type = "test"  # if train, get actions from real data, and trained via BC; if test, get action from trained BC policy.
-        if self.use_type == "test":
-            self.net = mlp_net(state_dim=self.obs_dim, num_actions=3).to(
-                self.device)  #
-            if "OLG" in self.envs.households.type:
-                self.net.load_state_dict(torch.load("agents/real_data/OLG_bc_net.pt", weights_only=True))
-            elif "ramsey" in self.envs.households.type:
-                self.net.load_state_dict(torch.load("agents/real_data/ramsey_bc_net.pt", weights_only=True))
+        if self.args.bc_test:  # if train, get actions from real data, and trained via BC; if test, get action from trained BC policy.
+            if type not in model_paths:
+                raise ValueError(
+                    f"Invalid Households type: {type}. Supported types are: 'OLG', 'OLG_risk_invest', 'ramsey', and 'ramsey_risk_invest'."
+                )
+            model_path = model_paths[type]
+            self.net.load_state_dict(torch.load(model_path, weights_only=True))
+
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.args.p_lr, eps=1e-5)
         lambda_function = lambda epoch: 0.97 ** (epoch // 10)
         self.scheduler = LambdaLR(self.optimizer, lr_lambda=lambda_function)
@@ -62,20 +77,13 @@ class bc_agent:
         transition_dict: Dictionary containing the transitions with expert actions.
         Returns: The loss for the current training step.
         """
-        if self.use_type == "train":
-            private_obses = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['private_obs']]
-            house_actions = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['house_action']]
+        if not self.args.bc_test:
+            house_obses = [torch.tensor(obs[self.agent_name][:, -self.bc_obs_dim:], dtype=torch.float32) for obs in transition_dict['obs_dict']]
+            house_actions = [torch.tensor(obs[self.agent_name], dtype=torch.float32) for obs in transition_dict['action_dict']]
 
             # Pad sequences for household data
-            private_obses_tensor = rnn_utils.pad_sequence(private_obses, batch_first=True).to(self.device)
-            house_actions_tensor = rnn_utils.pad_sequence(house_actions, batch_first=True).to(self.device)
-
-            if self.agent_name == "households":
-                obs_tensor = private_obses_tensor
-                expert_action_tensor = house_actions_tensor
-
-            else:
-                raise ValueError("AgentError: Behavior cloning method is suitable for households agents.")
+            obs_tensor = rnn_utils.pad_sequence(house_obses, batch_first=True).to(self.device)
+            expert_action_tensor = rnn_utils.pad_sequence(house_actions, batch_first=True).to(self.device)
 
             _, pi = self.net(obs_tensor)  # pi contains (mu, std)
             mu, _ = pi
@@ -91,45 +99,38 @@ class bc_agent:
             self.scheduler.step()
 
             return bc_loss, torch.tensor(0.)
-        elif self.use_type == "test":
-            return torch.tensor(0.), torch.tensor(0.)
         else:
-            raise ValueError("TypeError: Wrong use_type under behavior cloning method!")
+            return torch.tensor(0.), torch.tensor(0.)
 
-    def get_action(self, global_obs_tensor, private_obs_tensor, gov_action=None, env=None):
+    def get_action(self, full_obs_tensor):
         """
         Get expert actions by finding the closest observations in real data or running test-time policy.
 
         Args:
-            global_obs_tensor (torch.Tensor): Global observation tensor (unused for household).
-            private_obs_tensor (torch.Tensor): Tensor of shape (N, 4) for household observations [ASSET, EDUC, INCOME, AGE].
-            gov_action (optional): Government action (unused in this implementation).
-            env (optional): Simulation environment reference, used for action_dim retrieval.
+            obs_tensor: ASSET, EDUC
 
         Returns:
             np.ndarray: Array of shape (N, action_dim) containing household actions.
         """
         if self.agent_name != "households":
             raise ValueError("AgentError: Behavior cloning method is suitable for household agents only.")
-    
-        action_dim = self.envs.households.action_dim
-    
-        if self.use_type == "train":
-            # Use expert actions directly
-            expert_actions = self.find_expert_action(private_obs_tensor, self.real_data)  # (N, ?)
-            action = expert_actions.cpu().numpy()
-        elif self.use_type == "test":
-            obs_tensor = private_obs_tensor
+        
+        obs_tensor = full_obs_tensor[:, -self.bc_obs_dim:]   # Each household's private obs: [education, wealth, age (optional)]
+        
+        if self.args.bc_test:
             _, pi = self.net(obs_tensor)
             mu, sigma = pi
             action_dist = torch.distributions.Normal(mu, 0.01 * sigma)
             action = action_dist.sample().cpu().numpy()
+            
         else:
-            raise ValueError(f"Unknown use_type: {self.use_type}")
-    
+            # Use expert actions directly
+            expert_actions = self.find_expert_action(obs_tensor, self.real_data)  # (N, ?)
+            action = expert_actions.cpu().numpy()
+
         # Ensure output matches households.action_dim
         if self.envs.market.firm_n == 1:
-            return action
+            return action[:, :self.action_dim]
         elif self.envs.market.firm_n > 1:
             fill_dim = self.envs.market.firm_n + 1  # +1 for work firm choice, +firm_n for consumption shares
             real_action_dim = self.action_dim - fill_dim
@@ -144,7 +145,7 @@ class bc_agent:
 
         else:
             raise ValueError(
-                f"Action dimension mismatch: network output {current_dim} > expected {action_dim}"
+                f"Wrong firm number {self.envs.market.firm_n}."
             )
 
     def get_real_data(self, age_limit=None):
@@ -164,7 +165,7 @@ class bc_agent:
 
         # Append in the new order: 1 - consumption_p, then LF, then invest_p
         consumption_p_cliped = np.clip(consumption_p, 0, 1)
-        data.append(1 - consumption_p_cliped)  # 理财的比例
+        data.append(1 - consumption_p_cliped)  # saving ratio
         data.append(df['LF'].values)
         data.append(invest_p)
 
@@ -182,8 +183,7 @@ class bc_agent:
             torch.Tensor: Tensor of shape (N, 3) containing expert actions [LF, consumption_p, invest_p].
         """
         # Extract observation and action components from real_data
-        real_obs = np.stack(real_data[:self.envs.households.observation_space.shape[0]],
-                            axis=1)  # Shape: (D, obs_dim) for ASSET, EDUC, INCOME, AGE(optional)
+        real_obs = np.stack(real_data[:self.bc_obs_dim],axis=1)  # Shape: (D, obs_dim) for ASSET, EDUC, AGE(optional)
         real_actions = np.stack(real_data[4:], axis=1)  # Shape: (D, 3) for LF, consumption_p, invest_p
 
         # Convert to tensors
@@ -212,4 +212,4 @@ class bc_agent:
         return expert_actions
 
     def save(self, dir_path):
-        torch.save(self.net.state_dict(), str(dir_path) + '/OLG_bc_net.pt')
+        torch.save(self.net.state_dict(), str(dir_path) + f'/{self.type}_bc_net.pt')
