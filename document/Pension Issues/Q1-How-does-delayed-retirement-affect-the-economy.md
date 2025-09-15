@@ -139,7 +139,7 @@ Trainer:
 
 * **Experiment Description:**
   
-  我们测试了不同的退休年龄（RA=60,63,65,67,70）对应的经济效应。
+  We tested the economic effects corresponding to different retirement ages (RA = 60, 63, 65, 67, 70).
   
 * **Visualized Experimental Results：**
 
