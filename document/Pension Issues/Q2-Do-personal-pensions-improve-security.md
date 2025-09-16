@@ -165,14 +165,14 @@ Each simulation scene has its own parameter file that describes how it differs f
   
 * **Baselines：**
 
-Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
 
-* **rule\_based\_rule\_based\_1000\_personal\_pension\_0.15 (Blue line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 15%.
-* **rule\_based\_rule\_based\_1000\_personal\_pension\_0.1 (Light green line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 10%.
-* **rule\_based\_rule\_based\_1000\_personal\_pension\_0.2 (Yellow line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 20%.
-* **rule\_based\_rule\_based\_100\_personal\_pension\_0.15 (Red line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 15%.
-* **​rule\_based\_rule\_based\_100\_personal\_pension\_0.1 (​**​**Cyan**​**​ line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 10%.
-* **rule\_based\_rule\_based\_100\_personal\_pension\_0.2 (Dark green line):** Both households and the government are modeled as R​**ule-Based Agents**​, with **100 households** and a tax-exemption level of 20%.
+  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.15 (Blue line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 15%.
+  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.1 (Light green line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 10%.
+  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.2 (Yellow line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 20%.
+  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.15 (Red line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 15%.
+  * **​rule\_based\_rule\_based\_100\_personal\_pension\_0.1 (​**​**Cyan**​**​ line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 10%.
+  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.2 (Dark green line):** Both households and the government are modeled as R​**ule-Based Agents**​, with **100 households** and a tax-exemption level of 20%.
 
   
 * **Visualized Experimental Results：**
