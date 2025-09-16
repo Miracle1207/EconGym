@@ -516,10 +516,9 @@ class Household(BaseEntity):
         # Update population count
         self.households_n = len(self.age)
         self.is_old = self.age >= retire_age
-        # self.update_action_space()  # todo:到底有没有用？？
-        self.old_percent = self.old_n / self.households_n  # 当前老年人口比例
+        self.old_percent = self.old_n / self.households_n  # old / all_population
         self.dependency_ratio = self.old_n / (
-                    self.households_n - self.old_n + 1e-8)  # Dependency ratio（赡养比），用来衡量养老压力或抚养负担。
+                    self.households_n - self.old_n + 1e-8)  # Dependency ratio，measure the pressure of pension
     
     def calculate_death_probability(self, age_array):
         """Vectorized function to return death probability by age."""
@@ -566,26 +565,29 @@ class Household(BaseEntity):
         estate_tax = np.sum(at_die) - total_inherited
         return total_inherited, estate_tax
 
-    def get_reward(self, consumption=None, working_hours=None, alpha=6.68e-6):
-        """Compute household utility based on CRRA utility of consumption and disutility of labor."""
+    def get_reward(self, consumption=None, working_hours=None, alpha=0.5, beta=5):
+        """Compute household utility based on CRRA utility \in (-10,15) of consumption and disutility of labor."""
         if consumption is None:
-            consumption = self.consumption   # Dixit–Stiglitz
-
+            consumption = self.consumption  # Dixit–Stiglitz
+    
         if working_hours is None:
             working_hours = self.ht
-
+    
+        working_ratio = working_hours / 2512 * beta
         crra = self.CRRA
         if 1 - crra == 0:
             utility_c = np.log((consumption + 1e-8))
         else:
             utility_c = (consumption ** (1 - crra)) / (1 - crra)
-
+    
         if 1 + self.IFE == 0:
-            utility_h = np.log(working_hours)
+            utility_h = np.log(working_ratio)
         else:
-            utility_h = (working_hours ** (1 + self.IFE) / (1 + self.IFE))
-
-        current_utility = utility_c - alpha * utility_h + 21  # 21 is max disutility
+            utility_h = (working_ratio ** (1 + self.IFE) / (1 + self.IFE))
+    
+        # Calculate total utility and apply an offset to ensure positive rewards
+        current_utility = utility_c - alpha * utility_h
+    
         return current_utility
 
     def sigmoid(self, x):
