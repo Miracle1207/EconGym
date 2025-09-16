@@ -13,11 +13,13 @@ The **Individual Pension Policy** refers to government-sponsored personal retire
 
 ### 1.3 Research Questions
 
-Using an economic simulation platform, this study examines the ​**effectiveness of individual pension policies**​, focusing on:
+This study uses an economic simulation platform to investigate the ​**economic impacts of introducing and expanding personal pension schemes**​, specifically examining:
 
-* **Aggregate Economic ​**​​**Output**​: How do individual pension policies influence total social GDP?
-* **Household Income:** What is the impact on household earnings?
-* **Capital Stock and Returns:** How are national capital accumulation and investment returns affected?
+* ​**Household Savings**​: How do personal pensions affect households’ savings, consumption, and investment decisions across different income groups?
+* ​**Income Security**​: Do personal pensions improve financial security for retirees, especially in vulnerable groups (e.g., low-income, middle class)?
+* **GDP**​​**​ Effects**​: What is the impact of mandatory pension contributions on aggregate output and long-term GDP growth?
+* ​**Wealth Distribution**​: How do personal pensions reshape income and wealth distribution across different cohorts (young vs. old) and social classes (poor, middle, rich)?
+* ​**Fiscal Sustainability**​: How do personal pension schemes interact with the public pension system, and do they reduce fiscal pressure on the government?
 
 ### 1.4 Research Significance
 
@@ -87,6 +89,65 @@ As an example, we selected the following roles from the social role classificati
 * Sets target returns and risk-management strategies for pension fund investments under market yield and macroeconomic constraints. Rules ensure predictable simulations; data-driven or RL methods may be limited by historical data or computational complexity.
 
 ---
+## **4. Running the Experiment**
+
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiment**
+
+### Experiment 1: How do tax incentives for personal pension savings impact social GDP?
+
+* **Experiment Description:**
+  Providing tax exemptions for a portion of personal pensions can increase households’ enthusiasm for saving in personal pension accounts. This experiment simulates the impact of different pension tax incentives (tax-exemption levels) on GDP in the simulated economy.
+* **Experimental Variables:**
+  * Tax-exemption levels (e.g., +10%, +15%, +20%)
+  * Long-term GDP performance under each scenario
+* **Baselines：**
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.* **rule\_based\_rule\_based\_1000\_personal\_pension\_0.15 (Blue line):** Both households and the government are modeled as Rule-Based Agents, with **1000 households** and a tax-exemption level of ​**15%**​.
+  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.1 (Light green line):** Both households and the government are modeled as Rule-Based Agents, with **1000 households** and a tax-exemption level of ​**10%**​.
+  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.2 (Yellow line):** Both households and the government are modeled as Rule-Based Agents, with **1000 households** and a tax-exemption level of ​**20%**​.
+  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.15 (Red line):** Both households and the government are modeled as Rule-Based Agents, with **100 households** and a tax-exemption level of ​**15%**​.
+  * **​rule\_based\_rule\_based\_100\_personal\_pension\_0.1 (​**​**Cyan**​**​ line):** Both households and the government are modeled as Rule-Based Agents, with **100 households** and a tax-exemption level of ​**10%**​.
+  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.2 (Dark green line):** Both households and the government are modeled as Rule-Based Agents, with **100 households** and a tax-exemption level of ​**20%**​.
+
+![Pension Q3 P1](../img/Pension%20Q3%20P1.png)
+  
+  **Figure 1:** GDP trajectories for household populations of 1,000 and 100 under differing exemption levels. Higher exemptions correlate with lower GDP.
+* Higher tax incentives for individual pension savings are associated with lower aggregate GDP, possibly because such incentives prompt households to sacrifice some consumption in favor of increased pension contributions, thereby reducing overall demand for goods and leading to a decline in GDP.
+
+---
+
+### Experiment 2: How do tax incentives for pensions affect household income?
+
+* **Experiment Description:**
+  Simulate effects of varying tax-exemption levels on long-term household incomes.
+* **Experimental Variables:**
+  
+  * Tax-exemption levels (+10%, +15%, +20%)
+  * Long-term income comparisons across age and income deciles
+* **Visualized Experimental Results：**
+![Pension Q3 P2](../img/Pension%20Q3%20P2.png)
+  
+  **Figure 2:** Bar charts showing income distributions by age group (left) and income bracket (right) under different exemption levels. Lower exemptions lead to larger income declines.
+* Generous tax incentives for personal pension contributions are associated with higher long-term household incomes: by increasing households’ willingness to participate in pension schemes, these exemptions channel savings into banks and financial markets, which in turn support greater income growth over time.
+
+  
 
 ## **​4.​**​**Illustrative Experiment**
 
@@ -94,18 +155,23 @@ As an example, we selected the following roles from the social role classificati
 
 * **Experiment Description:**
   Simulate the impact of varying tax-exemption thresholds on the GDP of the virtual economy.
-* **Involved Social Roles:**
   
-  * *Individual: ​*OLG Model
-  * *Government: ​*Pension Authority
-* **AI**​​**​ Agents**​:
-  
-  * *Individual: ​*Rule-Based Agent
-  * *Government:* Data-Based Agent
 * **Experimental Variables:**
   
   * Tax-exemption levels (e.g., +10%, +15%, +20%)
   * Long-term GDP performance under each scenario
+  
+* **Baselines：**
+
+Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+
+* **rule\_based\_rule\_based\_1000\_personal\_pension\_0.15 (Blue line):** Both households and the government are modeled as Rule-Based Agents, with **1000 households** and a tax-exemption level of ​**15%**​.
+* **rule\_based\_rule\_based\_1000\_personal\_pension\_0.1 (Light green line):** Both households and the government are modeled as Rule-Based Agents, with **1000 households** and a tax-exemption level of ​**10%**​.
+* **rule\_based\_rule\_based\_1000\_personal\_pension\_0.2 (Yellow line):** Both households and the government are modeled as Rule-Based Agents, with **1000 households** and a tax-exemption level of ​**20%**​.
+* **rule\_based\_rule\_based\_100\_personal\_pension\_0.15 (Red line):** Both households and the government are modeled as Rule-Based Agents, with **100 households** and a tax-exemption level of ​**15%**​.
+* **​rule\_based\_rule\_based\_100\_personal\_pension\_0.1 (​**​**Cyan**​**​ line):** Both households and the government are modeled as Rule-Based Agents, with **100 households** and a tax-exemption level of ​**10%**​.
+* **rule\_based\_rule\_based\_100\_personal\_pension\_0.2 (Dark green line):** Both households and the government are modeled as Rule-Based Agents, with **100 households** and a tax-exemption level of ​**20%**​.
+  
 * **Visualized Experimental Results：**
 ![Pension Q3 P1](../img/Pension%20Q3%20P1.png)
 
@@ -119,14 +185,7 @@ As an example, we selected the following roles from the social role classificati
 
 * **Experiment Description:**
   Simulate effects of varying tax-exemption levels on long-term individual incomes.
-* **Involved Social Roles:**
-  
-  * *Individual: ​*OLG Model
-  * *Government: ​*Pension Authority
-* **AI**​​**​ Agents**​:
-  
-  * *Individual: ​*Rule-Based Agent
-  * *Government:* Data-Based Agent
+
 * **Experimental Variables:**
   
   * Tax-exemption levels (+10%, +15%, +20%)
