@@ -1,10 +1,11 @@
 from env.env_core import EconomicSociety
 from agents.rule_based.rules_core import rule_agent
-from agents.ppo_agent import ppo_agent
+from agents.rl.ppo_agent import ppo_agent
+from agents.rl.sac_agent import sac_agent
 from agents.behavior_cloning.bc_agent import bc_agent
 from agents.ddpg_agent import ddpg_agent
 from agents.real_data.real_data import real_agent
-from agents.llm_agent import llm_agent
+from agents.llm.llm_agent import llm_agent
 from agents.data_based_agent import data_agent
 from utils.seeds import set_seeds
 from utils.config import load_config
@@ -24,6 +25,7 @@ agent_algorithms = {
     "us_federal": rule_agent,
 }
 
+
 def select_agent(alg, agent_name, agent_type, env, trainer_config):
     if alg not in agent_algorithms:
         raise ValueError(f"Unsupported algorithm: {alg}")
@@ -38,23 +40,23 @@ def setup_government_agents(config, env):
     """
     if isinstance(env.government, dict):
         gov_algs = {}
-        
+
         for gov_type, gov_agent in env.government.items():
             alg_name = gov_type + "_gov_alg"
             gov_key = alg_name if alg_name in config['Trainer'] else 'gov_alg'
-            
+
             # Try to get the appropriate agent config, and select agent if found
             gov_alg = None
             if gov_key in config['Trainer']:
                 gov_alg = select_agent(config['Trainer'].get(gov_key), "government", gov_type, env, config['Trainer'])
-            
-            if gov_alg is None:    # Log a warning if no algorithm is found for a given government type
+
+            if gov_alg is None:  # Log a warning if no algorithm is found for a given government type
                 print(f"Warning: No algorithm found for government type '{gov_type}' using key '{gov_key}'")
-            
+
             gov_algs[gov_type] = gov_alg
-        
+
         return gov_algs
-    
+
     else:
         raise ValueError("Government should be a dict")
 
@@ -72,9 +74,10 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = str(config['device_num'])
 
     env = EconomicSociety(config['Environment'])
-    
+
     # Equip agent algorithm for economic roles
-    house_agent = select_agent(config['Trainer']['house_alg'], "households", env.households.type, env, config['Trainer'])
+    house_agent = select_agent(config['Trainer']['house_alg'], "households", env.households.type, env,
+                               config['Trainer'])
     firm_agent = select_agent(config['Trainer']['firm_alg'], "market", env.market.type, env, config['Trainer'])
     bank_agent = select_agent(config['Trainer']['bank_alg'], "bank", env.bank.type, env, config['Trainer'])
 
