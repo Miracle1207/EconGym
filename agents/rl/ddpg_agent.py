@@ -1,7 +1,7 @@
 import copy
 import numpy as np
 import torch
-from agents.models import PolicyNet, QValueNet
+from agents.rl.models import PolicyNet, QValueNet
 import torch.nn.functional as F
 from torch.optim.lr_scheduler import LambdaLR
 
