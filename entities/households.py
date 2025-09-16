@@ -240,7 +240,11 @@ class Household(BaseEntity):
             society: The full economic environment (agents, government, market, etc.)
         """
         # Try 'tax', then 'central_bank', otherwise another key.
-        government_agent = society.government.get('tax', society.government.get('central_bank', 'pension'))
+        government_agent = (
+                society.government.get('tax')
+                or society.government.get('central_bank')
+                or society.government.get('pension')
+        )
         # === Step 1: Compute total income ===
         # Labor income: effort * effective hours * wage rate
         labor_income = self.e * np.dot(self.ht * self.h_ij_ratio, society.market.WageRate)
