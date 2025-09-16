@@ -140,12 +140,30 @@ Trainer:
 * **Experiment Description:**
   
   We tested the economic effects corresponding to different retirement ages (RA = 60, 63, 65, 67, 70).
-  
+
+* **Experimental Variables:**
+
+  * Different retirement ages
+  * Long-term GDP performance under each scenario
+
+* **Baselines:**
+
+  Next, we provide explanations of the experimental settings corresponding to each line in the visualization, so that readers can better understand the results.
+
+  * ​**Blue line**​: Households are modeled as ​**Rule-Based Agents**​, the government as a ​**Rule-Based Agent**​; population size = ​**1000**​;Households use the​**​ OLG model**​; retirement age = ​**60**​.
+  * ​**Light green line**​: Households = ​**1000**​; retirement age = ​**65**​.
+  * ​**Yellow line**​: Households = ​**1000**​; retirement age = ​**70**​.
+  * ​**Red line**​: Households = ​**100**​; retirement age = ​**60**​.
+  * **Cyan**​​**​ line**​: Households = **100;** retirement age = ​**65**​.
+  * ​**Dark green line**​: Households = ​**100**​; retirement age = ​**70**​.
+
+
 * **Visualized Experimental Results：**
 
 ![Pension Q2 P1](../img/Pension%20Q2%20P1.png)
 
-**Figure 1:** The yellow, green, and blue lines represent GDP trajectories in a simulated economy of 1,000 households under statutory retirement ages of 70, 65, and 60, respectively. It is observed that economies with earlier retirement ages exhibit higher total GDP, although the difference is less pronounced when household count is 100.
+**Figure 1:** The experiment observes that economies with earlier retirement ages exhibit higher aggregate GDP, although this difference is less evident when the household count is 100.
 
 * Delaying retirement does not raise aggregate output in the long run. One reason may be that extended working years reduce households’ time and willingness to consume, interrupting their life-cycle consumption and saving plans.
+
 
