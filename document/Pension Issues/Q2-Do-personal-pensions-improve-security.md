@@ -120,13 +120,15 @@ Each simulation scene has its own parameter file that describes how it differs f
   * Tax-exemption levels (e.g., +10%, +15%, +20%)
   * Long-term GDP performance under each scenario
 * **Baselines：**
-  
-  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.* **rule\_based\_rule\_based\_1000\_personal\_pension\_0.15 (Blue line):** Both households and the government are modeled as Rule-Based Agents, with **1000 households** and a tax-exemption level of ​**15%**​.
-  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.1 (Light green line):** Both households and the government are modeled as Rule-Based Agents, with **1000 households** and a tax-exemption level of ​**10%**​.
-  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.2 (Yellow line):** Both households and the government are modeled as Rule-Based Agents, with **1000 households** and a tax-exemption level of ​**20%**​.
-  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.15 (Red line):** Both households and the government are modeled as Rule-Based Agents, with **100 households** and a tax-exemption level of ​**15%**​.
-  * **​rule\_based\_rule\_based\_100\_personal\_pension\_0.1 (​**​**Cyan**​**​ line):** Both households and the government are modeled as Rule-Based Agents, with **100 households** and a tax-exemption level of ​**10%**​.
-  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.2 (Dark green line):** Both households and the government are modeled as Rule-Based Agents, with **100 households** and a tax-exemption level of ​**20%**​.
+
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+
+  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.15 (Blue line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 15%.
+  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.1 (Light green line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 10%.
+  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.2 (Yellow line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 20%.
+  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.15 (Red line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 15%.
+  * **​rule\_based\_rule\_based\_100\_personal\_pension\_0.1 (​**​**Cyan**​**​ line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 10%.
+  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.2 (Dark green line):** Both households and the government are modeled as R​**ule-Based Agents**​, with **100 households** and a tax-exemption level of 20%.
 
 ![Pension Q3 P1](../img/Pension%20Q3%20P1.png)
   
@@ -148,55 +150,4 @@ Each simulation scene has its own parameter file that describes how it differs f
   
   **Figure 2:** Bar charts showing income distributions by age group (left) and income bracket (right) under different exemption levels. Lower exemptions lead to larger income declines.
 * Generous tax incentives for personal pension contributions are associated with higher long-term household incomes: by increasing households’ willingness to participate in pension schemes, these exemptions channel savings into banks and financial markets, which in turn support greater income growth over time.
-
-  
-
-## **​4.​**​**Illustrative Experiment**
-
-### Experiment 1: How do tax incentives for personal pension savings impact social GDP?
-
-* **Experiment Description:**
-  Simulate the impact of varying tax-exemption thresholds on the GDP of the virtual economy.
-  
-* **Experimental Variables:**
-  
-  * Tax-exemption levels (e.g., +10%, +15%, +20%)
-  * Long-term GDP performance under each scenario
-  
-* **Baselines：**
-
-  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
-
-  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.15 (Blue line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 15%.
-  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.1 (Light green line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 10%.
-  * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.2 (Yellow line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 20%.
-  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.15 (Red line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 15%.
-  * **​rule\_based\_rule\_based\_100\_personal\_pension\_0.1 (​**​**Cyan**​**​ line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 10%.
-  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.2 (Dark green line):** Both households and the government are modeled as R​**ule-Based Agents**​, with **100 households** and a tax-exemption level of 20%.
-
-  
-* **Visualized Experimental Results：**
-![Pension Q3 P1](../img/Pension%20Q3%20P1.png)
-
-  **Figure 1:** GDP trajectories for household populations of 1,000 and 100 under differing exemption levels. Higher exemptions correlate with lower GDP.
-  
-  * Higher tax incentives for individual pension savings are associated with lower aggregate GDP, possibly because such incentives prompt households to sacrifice some consumption in favor of increased pension contributions, thereby reducing overall demand for goods and leading to a decline in GDP.
-
----
-
-### Experiment 2: How do tax incentives for pensions affect household income?
-
-* **Experiment Description:**
-  Simulate effects of varying tax-exemption levels on long-term individual incomes.
-
-* **Experimental Variables:**
-  
-  * Tax-exemption levels (+10%, +15%, +20%)
-  * Long-term income comparisons across age and income deciles
-* **Visualized Experimental Results：**
-![Pension Q3 P2](../img/Pension%20Q3%20P2.png)
-
-  **Figure 2:** Bar charts showing income distributions by age group (left) and income bracket (right) under different exemption levels. Lower exemptions lead to larger income declines.
-  
-  * Generous tax incentives for personal pension contributions are associated with higher long-term household incomes: by increasing households’ willingness to participate in pension schemes, these exemptions channel savings into banks and financial markets, which in turn support greater income growth over time.
 
