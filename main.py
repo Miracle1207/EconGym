@@ -16,7 +16,6 @@ from runner import Runner
 agent_algorithms = {
     "real": real_agent,
     "ppo": ppo_agent,
-    "sac": sac_agent,
     "rule_based": rule_agent,
     "bc": bc_agent,
     "llm": llm_agent,
@@ -40,37 +39,26 @@ def setup_government_agents(config, env):
     Initialize multiple government agents based on config if problem_scene is multi_gov.
     """
     if isinstance(env.government, dict):
-        # env.government is always a dictionary, but with different key counts
         gov_algs = {}
 
-        # Check if we have multiple government types (more than 1 key)
-        if len(env.government) > 1:
-            # Multiple governments: use specific algorithm names for each type
-            for gov_type, gov_agent in env.government.items():
-                alg_name = gov_type + "_gov_alg"
-                if alg_name in config['Trainer']:
-                    gov_alg = select_agent(config['Trainer'][alg_name], "government", gov_type, env, config['Trainer'])
-                    gov_algs[gov_type] = gov_alg
-                else:
-                    # Fallback to generic gov_alg if specific algorithm not found
-                    if 'gov_alg' in config['Trainer']:
-                        gov_alg = select_agent(config['Trainer']['gov_alg'], "government", gov_type, env,
-                                               config['Trainer'])
-                        gov_algs[gov_type] = gov_alg
-                    else:
-                        gov_algs[gov_type] = None
-        else:
-            # Single government: use generic gov_alg or specific algorithm
-            gov_type = list(env.government.keys())[0]
-            gov_alg = select_agent(config['Trainer']['gov_alg'], "government", gov_type, env, config['Trainer'])
+        for gov_type, gov_agent in env.government.items():
+            alg_name = gov_type + "_gov_alg"
+            gov_key = alg_name if alg_name in config['Trainer'] else 'gov_alg'
+
+            # Try to get the appropriate agent config, and select agent if found
+            gov_alg = None
+            if gov_key in config['Trainer']:
+                gov_alg = select_agent(config['Trainer'].get(gov_key), "government", gov_type, env, config['Trainer'])
+
+            if gov_alg is None:  # Log a warning if no algorithm is found for a given government type
+                print(f"Warning: No algorithm found for government type '{gov_type}' using key '{gov_key}'")
+
             gov_algs[gov_type] = gov_alg
 
         return gov_algs
+
     else:
-        # Legacy support for non-dictionary government (should not happen in current structure)
-        gov_alg = select_agent(config['Trainer']['gov_alg'], "government", env.government.type, env,
-                               config['Trainer']) if 'gov_alg' in config['Trainer'] else None
-        return gov_alg
+        raise ValueError("Government should be a dict")
 
 
 if __name__ == '__main__':
