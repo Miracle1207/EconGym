@@ -117,8 +117,11 @@ class Market(BaseEntity):
     
     def get_reward(self, society):
         """Calculate the firm's profit."""
-        profit = self.price * society.real_deals - self.WageRate * self.firm_labor_j - society.bank.lending_rate * self.Kt
-        return profit
+        if self.type == "perfect":
+            return 0.
+        else:
+            profit = self.price * society.real_deals - self.WageRate * self.firm_labor_j - society.bank.lending_rate * self.Kt
+            return profit
     
     def is_terminal(self):
         if np.sum(self.Kt_next) < 0:

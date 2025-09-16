@@ -148,15 +148,14 @@ Trainer:
 
 * **Baselines:**
 
-  Next, we provide explanations of the experimental settings corresponding to each line in the visualization, so that readers can better understand the results.
-
-  * ​**Blue line**​: Households are modeled as ​**Rule-Based Agents**​, the government as a ​**Rule-Based Agent**​; population size = ​**1000**​;Households use the​**​ OLG model**​; retirement age = ​**60**​.
-  * ​**Light green line**​: Households = ​**1000**​; retirement age = ​**65**​.
-  * ​**Yellow line**​: Households = ​**1000**​; retirement age = ​**70**​.
-  * ​**Red line**​: Households = ​**100**​; retirement age = ​**60**​.
-  * **Cyan**​​**​ line**​: Households = **100;** retirement age = ​**65**​.
-  * ​**Dark green line**​: Households = ​**100**​; retirement age = ​**70**​.
-
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_60.0 (Blue line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 1000 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_65.0 (Light green line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 1000 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_70.0 (Yellow line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 1000 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_60.0 (Red line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 100 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_65.0 (Cyan line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 100 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_70.0 (Dark green line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 100 households.
 
 * **Visualized Experimental Results：**
 

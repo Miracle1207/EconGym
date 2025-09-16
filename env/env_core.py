@@ -212,7 +212,7 @@ class EconomicSociety:
 
         # === Phase 5: Final Updates ===
         self.last_price_index = copy.copy(self.price_index)
-    
+
         return (
             next_obs,
             self.rewards,

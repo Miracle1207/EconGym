@@ -205,7 +205,7 @@ class Government(BaseEntity):
     def softsign(self, x):
         return x / (1.0 + np.abs(x))
     
-    def get_reward(self, society):
+    def get_reward(self,  society, gov_goal=None):
         """
         Compute the government's reward based on its goal.
 
@@ -217,29 +217,22 @@ class Government(BaseEntity):
           Delegates to `get_reward_central(inflation_rate, growth_rate)`.
         """
         SCALE = dict(
-            gdp_growth=0.05,  # s_g: 5% target
+            gdp_growth=0.015,
             gini_scale=0.05,  # s_gini
             sw_scale=0.10,  # s_sw (set from steady-state analysis)
         )
 
         self.growth_rate = (self.GDP + 1e-8) / (self.old_GDP + 1e-8) - 1
-    
+
+        # Assign self.gov_task to gov_goal if no valid value is provided for gov_goal
+        gov_goal = gov_goal or self.gov_task
         # Central bank uses its own reward
         if self.type == "central_bank":
-            return self.get_reward_central(society.inflation_rate, self.growth_rate)
-    
-        # Below: common routing for fiscal/pension/tax and other government types
-        gov_goal = self.gov_task
-    
+            return self.get_reward_central(society.inflation_rate, self.growth_rate) # \in (0,1)
+
         if gov_goal == "gdp":
-            # # Capital growth (%)
-            # capital_growth_rate = (
-            #         (society.market.Kt_next - society.market.Kt) / society.market.Kt * 100
-            # )
-            # return capital_growth_rate.mean()
-            # GDP growth (%)
             log_gdp_growth = np.log(self.GDP + 1e-8) - np.log(self.old_GDP + 1e-8)
-            return self.softsign(log_gdp_growth / SCALE["gdp_growth"]) * 100
+            return self.softsign(log_gdp_growth / SCALE["gdp_growth"])   # \in (-1,1)
     
         elif gov_goal == "gini":
             # Wealth Gini improvement
@@ -266,17 +259,51 @@ class Government(BaseEntity):
     
         elif gov_goal == "gdp_gini":
             # mixed goal
-            gini_penalty = - society.gini_weight * (society.wealth_gini * society.income_gini)
-            welfare = society.welfare_weight * np.sum(society.households_reward)
-            return self.growth_rate + gini_penalty + welfare
+            gdp_rew = self.get_reward(society, gov_goal='gdp')
+            gini_rew = self.get_reward(society, gov_goal='gini')
+            return gdp_rew + gini_rew
     
         elif gov_goal == "pension_gap":
-            # Minimizing "pension_gap" is equivalent to maximizing the pension fund surplus,
             pension_surplus = sum(-self.calculate_pension(society.households))
-            return pension_surplus
+            return self.get_pension_reward(pension_surplus)
     
         else:
             raise ValueError("Invalid government goal specified.")
+
+    def get_pension_reward(self, pension_surplus, scale=10, beta=8):
+        """
+        Compute the reward for pension fund sustainability.
+
+        This function:
+        - Rewards increasing pension surplus.
+        - Applies a penalty for extreme surpluses or deficits.
+        - Uses a logarithmic transformation to handle large surpluses and ensures diminishing returns.
+        - Normalizes the reward using the tanh function to keep it within a bounded range.
+
+        Parameters:
+        -----------
+        pension_surplus : float
+            The surplus or deficit of the pension fund.
+
+        scale : float, optional, default=10
+            The scaling factor for normalizing the final reward.
+
+        beta : float, optional, default=8
+            A factor that adjusts the sensitivity to surpluses.
+
+        Returns:
+        --------
+        normalized_reward : float
+            The normalized reward, constrained within a bounded range, typically [-1, 1].
+        """
+    
+        # Log transformation for diminishing returns and penalty for extreme surpluses
+        pension_growth = np.log(1 + pension_surplus) - beta
+    
+        # Normalize the reward using tanh
+        normalized_reward = np.tanh(pension_growth / scale)
+    
+        return normalized_reward
 
     def is_terminal(self):
         '''

@@ -23,7 +23,7 @@ def save_args(path, args):
 
 
 class data_agent:
-    def __init__(self, envs, args, agent_name=None):
+    def __init__(self, envs, args, agent_name=None, type=None):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args

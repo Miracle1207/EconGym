@@ -218,6 +218,7 @@ class Household(BaseEntity):
             self.h_ij_ratio = 1
             self.c_ij_ratio = 1
 
+
     def step(self, society, t):
         # Step forward in time based on household type
         if "OLG" in self.type or 'personal_pension' in self.type:
@@ -279,10 +280,8 @@ class Household(BaseEntity):
         goods_supply = society.market.Yt_j
         success_households_deals = np.minimum(households_demand, goods_supply)
 
-        self.final_consumption = consumption_ij / np.sum(consumption_ij,
-                                                         axis=0) * success_households_deals.T  # Proportionally distribute the sold goods among all households.
-        self.consumption = self.compute_ces_consumption(consumption_ij=self.final_consumption,
-                                                        epsilon=society.market.epsilon)
+        self.final_consumption = consumption_ij / np.sum(consumption_ij, axis=0) * success_households_deals.T  # Proportionally distribute the sold goods among all households.
+        self.consumption = self.compute_ces_consumption(consumption_ij=self.final_consumption, epsilon=society.market.epsilon)
         money_for_consumption = np.sum(self.final_consumption * society.market.price.T, axis=1).reshape(-1, 1)
 
         # === Step 4: Compute next-period asset ===
@@ -524,11 +523,10 @@ class Household(BaseEntity):
         # Update population count
         self.households_n = len(self.age)
         self.is_old = self.age >= retire_age
-        # self.update_action_space()  # todo:到底有没有用？？
-        self.old_percent = self.old_n / self.households_n  # 当前老年人口比例
+        self.old_percent = self.old_n / self.households_n  # old / all_population
         self.dependency_ratio = self.old_n / (
-                self.households_n - self.old_n + 1e-8)  # Dependency ratio（赡养比），用来衡量养老压力或抚养负担。
-
+                    self.households_n - self.old_n + 1e-8)  # Dependency ratio，measure the pressure of pension
+    
     def calculate_death_probability(self, age_array):
         """Vectorized function to return death probability by age."""
         prob = np.zeros_like(age_array, dtype=np.float32)
@@ -574,26 +572,29 @@ class Household(BaseEntity):
         estate_tax = np.sum(at_die) - total_inherited
         return total_inherited, estate_tax
 
-    def get_reward(self, consumption=None, working_hours=None, alpha=6.68e-6):
-        """Compute household utility based on CRRA utility of consumption and disutility of labor."""
+    def get_reward(self, consumption=None, working_hours=None, alpha=0.5, beta=5):
+        """Compute household utility based on CRRA utility \in (-10,15) of consumption and disutility of labor."""
         if consumption is None:
             consumption = self.consumption  # Dixit–Stiglitz
-
+    
         if working_hours is None:
             working_hours = self.ht
-
+    
+        working_ratio = working_hours / 2512 * beta
         crra = self.CRRA
         if 1 - crra == 0:
             utility_c = np.log((consumption + 1e-8))
         else:
             utility_c = (consumption ** (1 - crra)) / (1 - crra)
-
+    
         if 1 + self.IFE == 0:
-            utility_h = np.log(working_hours)
+            utility_h = np.log(working_ratio)
         else:
-            utility_h = (working_hours ** (1 + self.IFE) / (1 + self.IFE))
-
-        current_utility = utility_c - alpha * utility_h + 21  # 21 is max disutility
+            utility_h = (working_ratio ** (1 + self.IFE) / (1 + self.IFE))
+    
+        # Calculate total utility and apply an offset to ensure positive rewards
+        current_utility = utility_c - alpha * utility_h
+    
         return current_utility
 
     def sigmoid(self, x):
