@@ -146,9 +146,9 @@ Trainer:
   * Different retirement ages
   * Long-term GDP performance under each scenario
 
-* **Baselines：**
+* **Baselines:**
 
-  Next,we provide explanations of the experimental settings corresponding to each line in the visualization, so that readers can better understand the results.
+  Next, we provide explanations of the experimental settings corresponding to each line in the visualization, so that readers can better understand the results.
 
   * ​**Blue line**​: Households are modeled as ​**Rule-Based Agents**​, the government as a ​**Rule-Based Agent**​; population size = ​**1000**​;Households use the​**​ OLG model**​; retirement age = ​**60**​.
   * ​**Light green line**​: Households = ​**1000**​; retirement age = ​**65**​.
