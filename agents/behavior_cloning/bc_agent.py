@@ -4,7 +4,7 @@ import copy
 import torch
 import numpy as np
 import pandas as pd
-from agents.models import mlp_net
+from agents.rl.models import mlp_net
 import torch.nn.functional as F
 from torch.optim.lr_scheduler import LambdaLR
 import torch.nn.utils.rnn as rnn_utils

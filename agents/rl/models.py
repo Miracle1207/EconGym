@@ -91,7 +91,17 @@ class mlp_net(nn.Module):
         x_a = torch.tanh(self.fc1_a(x))
         x_a = torch.tanh(self.fc2_a(x_a))
         mean = torch.sigmoid(self.action_mean(x_a))  # in (0,1)
-        sigma = torch.sigmoid(self.sigma_log).expand_as(mean)  # in (0,1)
+        
+        # Handle both 1D and 2D inputs properly
+        if mean.dim() == 1:
+            # For 1D input (e.g., government agent), sigma_log is [1, num_actions]
+            # We need to squeeze the first dimension to match mean's shape
+            sigma_log = self.sigma_log.squeeze(0)  # Remove the batch dimension
+        else:
+            # For 2D input (e.g., households with batch), expand normally
+            sigma_log = self.sigma_log.expand(mean.shape)
+        
+        sigma = torch.exp(sigma_log)  # Convert log to actual sigma value
 
         pi = (mean, 0.1 * sigma)
 

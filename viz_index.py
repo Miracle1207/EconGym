@@ -9,7 +9,7 @@ import os
 from omegaconf import OmegaConf
 from werkzeug.utils import secure_filename
 
-from agents.ddpg_agent import ddpg_agent
+from agents.rl.ddpg_agent import ddpg_agent
 from agents.rl.ppo_agent import ppo_agent
 from agents.real_data.real_data import real_agent
 from agents.rule_based import rule_agent

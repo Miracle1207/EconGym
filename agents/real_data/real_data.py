@@ -1,16 +1,10 @@
 import numpy as np
 import torch
-from torch import optim
 import os, sys
 
 sys.path.append(os.path.abspath('../../..'))
-from agents.models import CloneModel
-from agents.log_path import make_logpath
-from datetime import datetime
-from env.evaluation import save_parameters
-import os
+from agents.rl.models import CloneModel
 import copy
-import wandb
 import pickle
 from torch.distributions.normal import Normal
 

@@ -1,9 +1,7 @@
-import os
-
 import copy
 import torch
 import numpy as np
-from agents.models import mlp_net
+from agents.rl.models import mlp_net
 import torch.nn.functional as F
 from torch.optim.lr_scheduler import LambdaLR
 import torch.nn.utils.rnn as rnn_utils
@@ -52,17 +50,24 @@ class RunningMeanStd:
 
 
 class ppo_agent:
-    def __init__(self, envs, args, agent_name="households"):
+    def __init__(self, envs, args, type=None, agent_name="households"):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
-        
+        self.agent_type = type
+
         env_agent_name = "households" if agent_name == "households" else agent_name
 
-        self.agent = getattr(self.envs, env_agent_name)
-        self.obs_dim = self.agent.observation_space.shape[0]
-        self.action_dim = self.agent.action_space.shape[-1]
+        if env_agent_name == "government":
+            self.government_agent = self.envs.government[type]
+            self.obs_dim = self.government_agent.observation_space.shape[0]
+            self.action_dim = self.government_agent.action_space.shape[0]
+
+        else:
+            self.agent = getattr(self.envs, env_agent_name)
+            self.obs_dim = self.agent.observation_space.shape[0]
+            self.action_dim = self.agent.action_space.shape[-1]
 
         if self.args.cuda:
             self.device = "cuda"
@@ -114,62 +119,131 @@ class ppo_agent:
 
     def train(self, transition_dict):
         sum_loss = torch.tensor([0., 0.], dtype=torch.float32).to(self.device)
-    
-        global_obses = torch.tensor(np.array(transition_dict['global_obs']), dtype=torch.float32).to(self.device)
-        next_global_obses = torch.tensor(np.array(transition_dict['next_global_obs']), dtype=torch.float32).to(
-            self.device)
-        inverse_dones = torch.tensor([x - 1 for x in np.array(transition_dict['done'])], dtype=torch.float32).to(
+
+        # Extract data from new nested dictionary structure
+        obs_dict = transition_dict['obs_dict']
+        next_obs_dict = transition_dict['next_obs_dict']
+        action_dict = transition_dict['action_dict']
+        reward_dict = transition_dict['reward_dict']
+        done_list = transition_dict['done']
+
+        inverse_dones = torch.tensor([x - 1 for x in np.array(done_list)], dtype=torch.float32).to(
             self.device).unsqueeze(-1)
-    
-        if self.agent_name == "pension_gov":
-            gov_actions = torch.tensor(np.array(transition_dict['pension_gov_action']), dtype=torch.float32).to(
-                self.device)
-        elif self.agent_name == "central_bank_gov":
-            gov_actions = torch.tensor(np.array(transition_dict['central_bank_gov_action']), dtype=torch.float32).to(
-                self.device)
-        else:
-            gov_actions = torch.tensor(np.array(transition_dict['gov_action']), dtype=torch.float32).to(self.device)
-    
-        gov_rewards = torch.tensor(np.array(transition_dict['gov_reward']), dtype=torch.float32).to(
-            self.device).unsqueeze(-1)
-    
-        if self.agent_name in ("government", "pension_gov", "tax_gov", "central_bank_gov"):
-            obs_tensor = global_obses
-            action_tensor = self.inverse_action_wrapper(gov_actions)
+
+        # Extract government data based on agent type
+        if self.agent_name == "government":
+            # Get government observations and actions based on government type
+            if self.agent_type == "pension":
+                gov_obs_list = [obs['government']['pension'] for obs in obs_dict]
+                next_gov_obs_list = [obs['government']['pension'] for obs in next_obs_dict]
+                gov_action_list = [action['government']['pension'] for action in action_dict]
+                gov_reward_list = [reward['government']['pension'] for reward in reward_dict]
+            elif self.agent_type == "tax":
+                gov_obs_list = [obs['government']['tax'] for obs in obs_dict]
+                next_gov_obs_list = [obs['government']['tax'] for obs in next_obs_dict]
+                gov_action_list = [action['government']['tax'] for action in action_dict]
+                gov_reward_list = [reward['government']['tax'] for reward in reward_dict]
+            elif self.agent_type == "central_bank":
+                gov_obs_list = [obs['government']['central_bank'] for obs in obs_dict]
+                next_gov_obs_list = [obs['government']['central_bank'] for obs in next_obs_dict]
+                gov_action_list = [action['government']['central_bank'] for action in action_dict]
+                gov_reward_list = [reward['government']['central_bank'] for reward in reward_dict]
+
+            gov_obses = torch.tensor(np.array(gov_obs_list), dtype=torch.float32).to(self.device)
+            next_gov_obses = torch.tensor(np.array(next_gov_obs_list), dtype=torch.float32).to(self.device)
+            gov_actions = torch.tensor(np.array(gov_action_list), dtype=torch.float32).to(self.device)
+            gov_rewards = torch.tensor(np.array(gov_reward_list), dtype=torch.float32).to(self.device).unsqueeze(-1)
+
+            obs_tensor = gov_obses
+            # action_tensor = self.inverse_action_wrapper(gov_actions)
+            action_tensor = gov_actions
             reward_tensor = gov_rewards
-            next_obs_tensor = next_global_obses
-    
+            next_obs_tensor = next_gov_obses
+
         elif self.agent_name == "households":
+            # Extract household data from new structure
+            house_obs_list = [obs['households'] for obs in obs_dict]
+            next_house_obs_list = [obs['households'] for obs in next_obs_dict]
+            house_action_list = [action['households'] for action in action_dict]
+            house_reward_list = [reward['households'] for reward in reward_dict]
+
             # Convert household inputs to padded tensors
-            private_obses = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['private_obs']]
-            house_actions = [torch.tensor(act, dtype=torch.float32) for act in transition_dict['house_action']]
-            house_rewards = [torch.tensor(rwd, dtype=torch.float32) for rwd in transition_dict['house_reward']]
-            next_private_obses = [torch.tensor(obs, dtype=torch.float32) for obs in transition_dict['next_private_obs']]
-        
-            obs_tensor = rnn_utils.pad_sequence(private_obses, batch_first=True).to(self.device)
+            house_obses = [torch.tensor(obs, dtype=torch.float32) for obs in house_obs_list]
+            house_actions = [torch.tensor(act, dtype=torch.float32) for act in house_action_list]
+            house_rewards = [torch.tensor(rwd, dtype=torch.float32) for rwd in house_reward_list]
+            next_house_obses = [torch.tensor(obs, dtype=torch.float32) for obs in next_house_obs_list]
+
+            obs_tensor = rnn_utils.pad_sequence(house_obses, batch_first=True).to(self.device)
             action_tensor = rnn_utils.pad_sequence(house_actions, batch_first=True).to(self.device)
             reward_tensor = rnn_utils.pad_sequence(house_rewards, batch_first=True).to(self.device)
-            next_obs_tensor = rnn_utils.pad_sequence(next_private_obses, batch_first=True).to(self.device)
-        
+            next_obs_tensor = rnn_utils.pad_sequence(next_house_obses, batch_first=True).to(self.device)
+
             # Adjust inverse_dones to shape (batch, n_households, 1)
             households_n = obs_tensor.size(1)
             inverse_dones = inverse_dones.unsqueeze(-1).repeat(1, households_n, 1)
-    
+
+        elif self.agent_name == "market":
+            # Prepare market tensors (shape typically: [T, firm_n, feat])
+            if self.agent_type == "perfect":
+                return None, None
+
+            market_obs_list = [obs.get('market', []) for obs in obs_dict]
+            # # If market observations are missing, skip training safely
+            # if len(market_obs_list) == 0 or (isinstance(market_obs_list[0], list) and len(market_obs_list[0]) == 0):
+            #     return None, None
+
+            next_market_obs_list = [obs.get('market', []) for obs in next_obs_dict]
+            market_action_list = [action.get('market', []) for action in action_dict]
+            market_reward_list = [reward.get('market', []) for reward in reward_dict]
+
+            obs_tensor = torch.tensor(np.array(market_obs_list), dtype=torch.float32).to(self.device)
+            next_obs_tensor = torch.tensor(np.array(next_market_obs_list), dtype=torch.float32).to(self.device)
+            action_tensor = torch.tensor(np.array(market_action_list), dtype=torch.float32).to(self.device)
+            reward_tensor = torch.tensor(np.array(market_reward_list), dtype=torch.float32).to(self.device)
+            # Ensure reward has a trailing singleton dim for value loss broadcasting
+            if reward_tensor.dim() == 2:
+                reward_tensor = reward_tensor.unsqueeze(-1)
+
+            # Match inverse_dones across firm dimension if present
+            if obs_tensor.dim() >= 3:
+                firms_n = obs_tensor.size(1)
+                inverse_dones = inverse_dones.unsqueeze(-1).repeat(1, firms_n, 1)
+        elif self.agent_name == "bank":
+            # Non-profit bank has no trainable actions/rewards
+            if self.agent_type == 'non_profit':
+                return None, None
+            # Commercial bank branch
+            bank_obs_list = [obs.get('bank', []) for obs in obs_dict]
+            # If no observations are provided for bank, skip training gracefully
+            if len(bank_obs_list) == 0 or (isinstance(bank_obs_list[0], list) and len(bank_obs_list[0]) == 0):
+                return None, None
+
+            next_bank_obs_list = [obs.get('bank', []) for obs in next_obs_dict]
+            bank_action_list = [action.get('bank', []) for action in action_dict]
+            bank_reward_list = [reward.get('bank', 0.0) for reward in reward_dict]
+
+            obs_tensor = torch.tensor(np.array(bank_obs_list), dtype=torch.float32).to(self.device)
+            next_obs_tensor = torch.tensor(np.array(next_bank_obs_list), dtype=torch.float32).to(self.device)
+            action_tensor = torch.tensor(np.array(bank_action_list), dtype=torch.float32).to(self.device)
+            reward_tensor = torch.tensor(np.array(bank_reward_list), dtype=torch.float32).to(self.device)
+            if reward_tensor.dim() == 1:
+                reward_tensor = reward_tensor.unsqueeze(-1)
+
         else:
             return None, None  # Skip training for unsupported agents
-    
+
         # Forward pass
         next_value, next_pi = self.net(next_obs_tensor)
         td_target = reward_tensor + self.args.gamma * next_value * inverse_dones
         value, pi = self.net(obs_tensor)
         td_delta = td_target - value
-    
+
         advantage = self.compute_advantage(self.args.gamma, self.args.tau, td_delta.cpu()).to(self.device)
-    
+
         mu, std = pi
         action_dists = torch.distributions.Normal(mu.detach(), std.detach())
         old_log_probs = action_dists.log_prob(action_tensor)
-    
+
         for i in range(self.args.update_each_epoch):
             value, pi = self.net(obs_tensor)
             mu, std = pi
@@ -181,23 +255,24 @@ class ppo_agent:
             actor_loss = torch.mean(-torch.min(surr1, surr2))
             critic_loss = torch.mean(F.mse_loss(value, td_target.detach()))
             total_loss = actor_loss + self.args.vloss_coef * critic_loss
-        
+
             self.optimizer.zero_grad()
             total_loss.backward()
             torch.nn.utils.clip_grad_norm_(self.net.parameters(), 0.5)
             self.optimizer.step()
-        
+
             sum_loss[0] += actor_loss
             sum_loss[1] += critic_loss
-    
+
         self.scheduler.step()
         return sum_loss[0], sum_loss[1]
 
-    def get_action(self, global_obs_tensor, private_obs_tensor, gov_action=None,env=None):
-        if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-            obs_tensor = global_obs_tensor.reshape(-1, self.obs_dim)
-        else:
-            obs_tensor = private_obs_tensor
+    def get_action(self, obs_tensor):
+        if self.agent_name == "bank" and self.agent_type == "non_profit":
+            return np.random.randn(self.action_dim)
+        if self.agent_name == "market" and self.agent_type == "perfect":
+            firm_n = len(obs_tensor)
+            return np.random.randn(firm_n, self.action_dim)
         # === 1. Running mean/std update ===
         if self.step_counter < self.max_warmup_steps:
             obs_np = obs_tensor.detach().cpu().numpy()
@@ -213,14 +288,15 @@ class ppo_agent:
         mu, sigma = pi
         action_dist = torch.distributions.Normal(mu, sigma)
         action = action_dist.sample()
-        if self.agent_name == "government" and self.envs.government.type == "tax" or self.agent_name == "tax_gov":
-            action[0][2] = 0
-            action[0][3] = 0
-
-        if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-            return self.gov_action_wrapper(action.cpu().numpy().flatten())
-        else:
-            return action.cpu().numpy()
+        # if self.agent_name == "government" and self.envs.government.type == "tax" or self.agent_name == "tax_gov":
+        #     action[0][2] = 0
+        #     action[0][3] = 0
+        #
+        # if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
+        #     return self.gov_action_wrapper(action.cpu().numpy().flatten())
+        # else:
+        #     return action.cpu().numpy()
+        return action.cpu().numpy()
 
     def gov_action_wrapper(self, gov_action):
         return self.agent.real_action_min + (self.agent.real_action_max - self.agent.real_action_min) * gov_action
