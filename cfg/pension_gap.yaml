@@ -42,7 +42,7 @@ Environment:
 
 Trainer:
   house_alg: "bc"
-  gov_alg: "rule_based"
+  gov_alg: "ppo"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1
