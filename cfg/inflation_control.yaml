@@ -28,7 +28,7 @@ Environment:
     - entity_name: 'bank'
       entity_args:
         params:
-          type: 'non_profit'   # [ 'non_profit', 'commercial' ]
+          type: 'commercial'   # [ 'non_profit', 'commercial' ]
           n: 1
           lending_rate: 0.0345
           deposit_rate: 0.0345
