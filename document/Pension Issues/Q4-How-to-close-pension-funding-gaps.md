@@ -54,7 +54,7 @@ Acting as both system designer and fiscal backer, the Pension Authority must add
 **Firm → Perfect Competiton**  
 Wages and employment are determined by supply and demand and directly affect households’ contribution capacity and retirement savings. Embedding this market mechanism in the experiment is essential.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 Pension‐fund investment returns influence system sustainability. An arbitrage‐free model ensures proper long‐term rate dynamics and fiscal‐return mechanisms.
 
 ---
