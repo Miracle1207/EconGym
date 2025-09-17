@@ -50,7 +50,7 @@ As the authority that establishes and collects inheritance tax, the Tax Policy D
 **Firm → Perfect Competition**  
 A perfectly competitive setting ensures efficient price formation, allowing clear observation of how an inheritance tax shifts supply and demand.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 No-Arbitrage Platform reliably reflect household asset allocation and returns across different life stages without introducing leverage dynamics or risk-preference distortions, making them well-suited for analyzing the medium- and long-term effects of inheritance tax on saving behavior and wealth accumulation paths.
 
 ---
