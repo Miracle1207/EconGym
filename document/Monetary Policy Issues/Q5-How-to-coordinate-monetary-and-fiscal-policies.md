@@ -37,53 +37,36 @@ As an example, we selected the following roles from the social role classificati
 | Firm                  | Perfect Competition | Wage and price adjustments reflect policy shock transmission paths, affecting firm hiring and household incomes.                                                                                 |
 | Bank    | Commercial Banks             | Profit‐seeking commercial banks provide a realistic channel to simulate the effects of coordinated fiscal and monetary policies.                                                                |
 
-### Individual → Ramsey Model
+---
 
-* Households optimize their labor supply, savings, and consumption decisions based on life-cycle optimization principles. As the microfoundation of policy transmission, their behaviors provide crucial feedback to both fiscal and monetary policies.
+### Rationale for Selected Roles
 
-### Government → Fiscal Authority & Central Bank
+**Individual → Ramsey Model**  
+Households optimize their labor supply, savings, and consumption decisions based on life-cycle optimization principles. As the microfoundation of policy transmission, their behaviors provide crucial feedback to both fiscal and monetary policies.
 
-* **Fiscal Authority :** Responsible for designing tax and spending policies, adjusting aggregate demand and income distribution, and managing public debt to ensure fiscal sustainability. Its decisions directly affect households’ disposable income and government funding allocations, making it a key instrument for influencing growth and equity.
-* **Central Bank:** Controls inflation, stabilizes prices, and maintains financial-system liquidity by adjusting interest rates and money supply. Its policies have broad but indirect impacts on consumption, investment, and credit behavior, positioning it as a central actor in macroeconomic stabilization.
+**Government → Fiscal Authority & Central Bank**  
+**Fiscal Authority :** Responsible for designing tax and spending policies, adjusting aggregate demand and income distribution, and managing public debt to ensure fiscal sustainability. Its decisions directly affect households’ disposable income and government funding allocations, making it a key instrument for influencing growth and equity.**Central Bank:** Controls inflation, stabilizes prices, and maintains financial-system liquidity by adjusting interest rates and money supply. Its policies have broad but indirect impacts on consumption, investment, and credit behavior, positioning it as a central actor in macroeconomic stabilization.
 
-### Firm → Perfect Competition
+**Firm → Perfect Competition**  
+Wages and goods prices are determined by supply and demand, acting as the intermediary mechanism through which fiscal and monetary policies influence household and firm behavior.
 
-* Wages and goods prices are determined by supply and demand, acting as the intermediary mechanism through which fiscal and monetary policies influence household and firm behavior.
-
-### Bank → Commercial Banks
-
-* Simulate the formation of deposit and lending rates, reflecting how central-bank policies transmit to investment, interest rates, and liquidity.
+**Bank → Commercial Banks**  
+Simulate the formation of deposit and lending rates, reflecting how central-bank policies transmit to investment, interest rates, and liquidity.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type    | Role Description                                                                                                                             |
-| ------------------------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | RL Agent         | Learn optimal labor, consumption, and saving strategies in response to a dynamic policy environment.                                         |
 | Government             | RL Agent         | Use reinforcement learning to jointly adjust fiscal and monetary tools, achieving optimal growth–stability coordination.                    |
 | Firm                 | Rule-Based Agent | Wages and prices are set by supply and demand; rules capture rapid market feedback to policy shocks.                                         |
 | Bank  | Rule-Based Agent | Interest rates and investment returns feed back savings and policy changes via rules, maintaining capital‐market equilibrium and liquidity. |
 
-### Individual → RL Agent
 
-* In a complex policy environment (taxes, interest rates, prices), households must dynamically adjust labor, consumption, and saving strategies. An RL Agent learns optimal behavioral patterns, enhancing the flexibility and adaptiveness of micro‐level responses in the simulation.
-
-### Government → RL Agent
-
-* Modeled as a joint Treasury–Central Bank agent, the government uses reinforcement learning to explore dynamic, coordinated policy paths under multiple objectives (e.g., maximizing GDP, controlling inflation, minimizing inequality).
-
-### Firm → Rule-Based Agent
-
-* Wages and goods prices adjust according to standard supply–demand rules, reflecting how macro policies transmit through market mechanisms.
-
-### Bank  → Rule-Based Agent
-
-* Simulate capital‐market interest‐rate dynamics; rule‐based adjustments to investment returns capture the transmission channels between monetary policy and saving behavior.
-
----
 
 ## 4. Illustrative Experiments
 
