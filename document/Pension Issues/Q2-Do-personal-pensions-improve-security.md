@@ -39,56 +39,35 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfect Competiton          | Assess how firms react to changes in individual pension policies, such as wage setting and investment decisions |
 | Bank | No-Arbitrage Platform | Model how capital markets absorb and allocate individual pension savings                                        |
 
-### **Individual → Overlapping Generations (OLG) Model**
+---
 
-* Captures how pension policies affect savings, investment, and retirement planning across age cohorts. The OLG framework yields precise insights into intergenerational behavior.
+### Rationale for Selected Roles
 
-### **Government →  Pension Authority**
+**Individual → Overlapping Generations (OLG) Model**  
+Captures how pension policies affect savings, investment, and retirement planning across age cohorts. The OLG framework yields precise insights into intergenerational behavior.
 
-* Designs and adjusts individual pension regulations, directly influencing personal saving, consumption, and investment. Focuses specifically on pension rules, whereas the Ministry of Finance oversees the broader government budget.
+**Government →  Pension Authority**  
+Designs and adjusts individual pension regulations, directly influencing personal saving, consumption, and investment. Focuses specifically on pension rules, whereas the Ministry of Finance oversees the broader government budget.
 
-### **Firm → Perfect Competiton**
+**Firm → Perfect Competiton**  
+Firms’ production, investment, and wage decisions respond to changes in personal pension incentives. Perfectly Competitive Market ensures that increased households' savings are fully reflected in capital-market prices.
 
-* Firms’ production, investment, and wage decisions respond to changes in personal pension incentives. Perfectly Competitive Market ensures that increased households' savings are fully reflected in capital-market prices.
-
-### **Bank → No-Arbitrage Platform**
-
-* Channel pension contributions into various financial investments and determine capital allocation. Arbitrage-Free Financial Institutions simulate the impact of different investment strategies, evaluating how pension reforms shock capital markets.
+**Bank → No-Arbitrage Platform**  
+Channel pension contributions into various financial investments and determine capital allocation. Arbitrage-Free Financial Institutions simulate the impact of different investment strategies, evaluating how pension reforms shock capital markets.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type                             | Role Description                                                                              |
-| ------------------------ | ------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent / Rule-Based Agent | Learn or define real individual behavior patterns to simulate saving and consumption decisions |
 | Government             | Data-Based Agent / Rule-Based Agent       | Formulate individual pension policies based on historical data or adjust policy parameters    |
 | Firm                 | Rule-Based Agent                          | Simulate firms’ investment and wage‐setting decisions                                       |
 | Bank | Rule-Based Agent                          | Assess how pension savings influence capital markets                                          |
 
-### **Individual → Behavior Cloning (BC) Agent / Rule-Based Agent**
-
-* The impact of individual pension policies on household saving and consumption behaviors needs to be simulated based on actual household decision patterns.A Behavior Cloning Agent, trained on real-world household decision data, can more accurately mimic savings–consumption choices across income and age cohorts.
-* A Rule-Based Agent can explicitly encode life-cycle saving and consumption rules—e.g., setting age-, income-, and retirement-expectation–specific marginal propensities to consume and save. When micro-level data or longitudinal behavioral tracking are lacking, rule-based methods grounded in established literature (such as the life-cycle hypothesis and behavioral economics models) ensure both interpretability and controllability.
-* By contrast, reinforcement learning–based agents may converge to implausible “optimal” strategies.
-
-### **Government → Data-Based Agent / Rule-Based Agent**
-
-* The formulation of government pension policies depends on empirical data—such as tax revenues, investment return rates, and the effects of retirement-age changes.
-* A Data-Based Agent is well suited for calibrating policy parameters using historical datasets and forecasting long-term fiscal sustainability.
-* A Rule-Based Agent is appropriate for implementing a fixed individual pension framework, which is particularly practical in environments where the personal pension system remains under development.
-
-### **Firm → Rule-Based Agent**
-
-* Models firms’ investment and wage-setting rules (e.g., adjusting capital outlays based on marginal returns). Rule-Based Agents are cost-effective and align with economic theory compared to reinforcement learning.
-
-### **Bank → Rule-Based Agent**
-
-* Sets target returns and risk-management strategies for pension fund investments under market yield and macroeconomic constraints. Rules ensure predictable simulations; data-driven or RL methods may be limited by historical data or computational complexity.
-
----
 ## **4. Running the Experiment**
 
 ### **4.1 Quick Start**
