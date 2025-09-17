@@ -8,7 +8,7 @@ from omegaconf import ListConfig
 
 class Bank(BaseEntity):
     name = 'bank'
-
+    
     def __init__(self, entity_args):
         super().__init__()
         self.entity_args = entity_args
@@ -18,33 +18,32 @@ class Bank(BaseEntity):
         self.action_space = Box(
             low=self.action_space['low'], high=self.action_space['high'], shape=(self.action_dim,), dtype=np.float32
         )
-
+    
     def reset(self, **custom_cfg):
         households_at = custom_cfg['households_at']
         if isinstance(self.initial_action, (list, ListConfig)):
             self.initial_action = np.array(self.initial_action) + np.random.randn(
                 self.action_dim) * self.action_space.high
-
+        
         self.current_account = np.sum(households_at)
-
+        
         self.deposit_rate = self.entity_args['params'].deposit_rate
         self.lending_rate = self.entity_args['params'].lending_rate
         self.last_deposit_rate = copy.copy(self.deposit_rate)
         self.last_lending_rate = copy.copy(self.lending_rate)
         # self.last_lending_rate_j = copy.copy(self.lending_rate)
-
-
+    
     def get_action(self, actions):
         if self.type == 'commercial':
             # For commercial banks, actions are lending rate and deposit rate
             lending_rate, deposit_rate = actions
             self.lending_rate = np.clip(lending_rate, self.base_interest_rate + 0.01, self.base_interest_rate + 0.03)
             self.deposit_rate = np.clip(deposit_rate, self.base_interest_rate - 0.01, self.base_interest_rate)
-
+    
     def step(self, society):
         # Retrieve the first government agent from the society's government dictionary
         self.gov_agent = society.main_gov
-    
+        
         # Check if the society has a 'government' attribute
         if hasattr(society, 'government'):
             # If 'central_bank' exists in the government dictionary, prioritize it
@@ -57,48 +56,41 @@ class Bank(BaseEntity):
                 # If no central bank, assign values from the first government agent
                 self.reserve_ratio = self.gov_agent.reserve_ratio
                 self.base_interest_rate = self.gov_agent.base_interest_rate
-        
-        if self.type == "non_profit":
-            repay_Kt = np.sum((self.last_lending_rate + 1 - self.depreciation_rate) * society.market.Kt)
-            repay_Bt = (1 + self.last_lending_rate) * self.gov_agent.Bt
-            pay_At = (1 + self.last_deposit_rate) * np.sum(society.households.at)
-            society.market.Kt_next = repay_Kt + repay_Bt - pay_At + np.sum(society.households.at_next) - self.gov_agent.Bt_next
-
-        elif self.type == "commercial":
-            self.commercial_step(society)
-        else:
-            raise ValueError(f"Invalid bank type: '{self.type}'. Expected 'non_profit' or 'commercial'.")
-        self.last_deposit_rate = copy.copy(self.deposit_rate)
-        self.last_lending_rate = copy.copy(self.lending_rate)
-    
-    def commercial_step(self, society):
+        if society.step_cnt == 0:
+            self.current_account -= self.gov_agent.Bt + np.sum(society.market.Kt)
         # Settle the previous period's borrowing interest and deposit rate
         previous_settlement = - (1 + self.last_deposit_rate) * np.sum(society.households.at) \
                               + np.sum((self.last_lending_rate + 1 - self.depreciation_rate) * society.market.Kt) \
                               + (1 + self.last_lending_rate) * self.gov_agent.Bt  # Government debt rates are usually based on the central bank's benchmark rate.
-    
-        current_deposit = np.sum(society.households.at_next)  # Current deposits in the bank
-    
-        total_deposit = self.current_account + previous_settlement + current_deposit
-    
-        society.market.Kt_next = self.compute_next_kt(society, total_deposit)
-    
-        current_loan = np.sum(society.market.Kt_next) + self.gov_agent.Bt_next  # Current loans issued
-        self.current_account += previous_settlement + current_deposit - current_loan  # Current account balance
-        self.profit = np.sum(self.lending_rate * society.market.Kt_next) + self.lending_rate * self.gov_agent.Bt_next - self.deposit_rate * current_deposit
         
+        current_deposit = np.sum(society.households.at_next)  #  Deposits at this step in the bank
+        
+        total_deposit = self.current_account + previous_settlement + current_deposit   # 当前账户有多少存款
+        
+        society.market.Kt_next = self.compute_next_kt(society, total_deposit)
+        
+        current_loan = np.sum(society.market.Kt_next) + self.gov_agent.Bt_next  # Current loans issued
+        
+        self.current_account += previous_settlement + current_deposit - current_loan  # Current account balance
+        
+        self.profit = np.sum(
+            self.lending_rate * society.market.Kt_next) + self.lending_rate * self.gov_agent.Bt_next - self.deposit_rate * current_deposit
+        # print(f"Step {society.step_cnt} -- bank profit {self.profit} -- lending rate {self.lending_rate} -- deposit rate {self.deposit_rate} -- Kt next {society.market.Kt_next} -- Bt next {self.gov_agent.Bt_next} -- current deposit {current_deposit}")
+        
+        self.last_deposit_rate = copy.copy(self.deposit_rate)
+        self.last_lending_rate = copy.copy(self.lending_rate)
+    
     def compute_next_kt(self, society, total_deposit):
         consumption_sum = society.households.final_consumption.sum(axis=0)[:, np.newaxis]
         investment = society.market.price * (society.market.Yt_j - self.gov_agent.gov_spending - consumption_sum)
         Kt_next = investment + (1 - self.depreciation_rate) * society.market.Kt
-
+        
         upper_bound_loan = total_deposit * (1 - self.reserve_ratio)
         if np.sum(Kt_next) + self.gov_agent.Bt_next > upper_bound_loan:
-            kt_prob = Kt_next /(np.sum(Kt_next) + 1e-8)
+            kt_prob = Kt_next / (np.sum(Kt_next) + 1e-8)
             Kt_next = (upper_bound_loan - self.gov_agent.Bt_next) * kt_prob
         return Kt_next
-            
-
+    
     def get_reward(self):
         """Profit is based on the interest spread between loans and deposits."""
         if self.type == "non_profit":
@@ -107,7 +99,6 @@ class Bank(BaseEntity):
             return self.profit
         else:
             raise ValueError(f"Invalid bank type: '{self.type}'. Expected 'non_profit' or 'commercial'.")
-
+    
     def is_terminal(self):
         return False
-

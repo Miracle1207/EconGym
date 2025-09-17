@@ -280,7 +280,7 @@ class Household(BaseEntity):
         goods_supply = society.market.Yt_j
         success_households_deals = np.minimum(households_demand, goods_supply)
 
-        self.final_consumption = consumption_ij / np.sum(consumption_ij, axis=0) * success_households_deals.T  # Proportionally distribute the sold goods among all households.
+        self.final_consumption = consumption_ij / (np.sum(consumption_ij, axis=0) + 1e-8) * success_households_deals.T  # Proportionally distribute the sold goods among all households.
         self.consumption = self.compute_ces_consumption(consumption_ij=self.final_consumption, epsilon=society.market.epsilon)
         money_for_consumption = np.sum(self.final_consumption * society.market.price.T, axis=1).reshape(-1, 1)
 

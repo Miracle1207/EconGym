@@ -66,18 +66,18 @@ class Market(BaseEntity):
         self.Zt = np.exp(log_next_z)
     
     def reset(self, **custom_cfg):
-        np.random.seed(0)
         households_n = custom_cfg['households_n']
         GDP = custom_cfg['GDP']
+        households_asset = custom_cfg['households_at']
+        real_debt_rate = custom_cfg['real_debt_rate']
         real_capital_rate = 18.3 * 0.01
         real_total_hours = 265888.875e6  # total hours worked, large L
         real_population = 333428e3
 
-        
         self.Zt = self.Z * (1 + np.random.rand(self.firm_n, 1))
-        
         self.Lt = (real_total_hours / real_population) * households_n
-        self.Kt = real_capital_rate * GDP / self.firm_n * np.ones((self.firm_n, 1))
+        # self.Kt = real_capital_rate * GDP / self.firm_n * np.ones((self.firm_n, 1))
+        self.Kt = np.sum(households_asset) - GDP * real_debt_rate
         self.Kt_next = copy.copy(self.Kt)
         self.price = np.ones((self.firm_n, 1))
         self.WageRate = self.price * self.Zt * (1 - self.alpha) * np.power(self.Kt / self.Lt, self.alpha)
