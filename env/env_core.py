@@ -263,7 +263,7 @@ class EconomicSociety:
         self.bank.reset(households_at=self.households.at)
 
         self.market.reset(households_n=self.households.households_n, GDP=gov_agent.GDP,
-                          households_at=self.households.at)
+                          households_at=self.households.at, real_debt_rate=gov_agent.real_debt_rate)
 
         self.last_price_index = 1
         self.ini_income_gini = self.gini_coef(self.households.income)
@@ -283,6 +283,9 @@ class EconomicSociety:
         
         episode_completed = self.step_cnt >= self.episode_length
         agent_terminal = any(self.recursive_decompose_dict(self.agents, lambda a: a.is_terminal()))
+        # if gini_invalid or data_nan or episode_completed or agent_terminal:
+        #     print(self.recursive_decompose_dict(self.agents, lambda a: a.is_terminal()))
+        #     print(1)
         
         return gini_invalid or data_nan or episode_completed or agent_terminal
 

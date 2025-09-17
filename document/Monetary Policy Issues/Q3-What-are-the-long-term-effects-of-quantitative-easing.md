@@ -24,59 +24,43 @@ Using an economic-simulation platform, this study investigates the macroeconomic
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                | Role Description                                                                                                                                                |
-| ------------------------ | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | Ramsey Model                 | Simulate consumption and saving decisions across income groups to analyze wealth‐distribution effects.                                                         |
-| Government             | Central Bank                 | As the executor of monetary policy, set interest rates and asset‐purchase volumes, directly controlling market liquidity and financial conditions.             |
-| Firm                 | Perfect Competition | Under perfect competition, firms adjust production and investment in response to changes in financing costs, reflecting QE’s transmission to the real economy. |
-| Bank | Commercial Banks             | Profit‐maximizing banks transmit QE effects via credit supply and interest‐rate channels, influencing corporate financing and household asset allocation.     |
+| Social Role | Selected Type        | Role Description                                                                                                             | Observation                                                                                                  | Action                                                             | Reward                         |
+| ----------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------ |
+| Individual  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                    | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility) |
+| Government  | Central Bank         | Central Bank adjusts nominal interest rates and reserve requirements, transmitting monetary policy to households and firms. | — (same as above)                                                                                            | $$a_t^{\text{cb}} = \{ \phi_t, \iota_t \}$$<br>Reserve ratio, benchmark rate           | Inflation/GDP stabilization    |
+| Firm       | Perfect Competition  | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                       | /                                                                                                            | /                                                                | Zero (long-run)                |
+| Bank       | Commercial Banks     | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions               | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
 
-### Individual → Ramsey Model
 
-* The Ramsey model is well suited to simulate a representative household’s optimal consumption and saving decisions in response to long-term interest-rate changes. Under QE, it captures how households adjust savings based on expected returns and prices, allowing evaluation of policy effects on asset accumulation and intertemporal welfare—especially for analyzing wealth‐distribution shifts and utility distortions induced by QE.
+---
 
-### Government → Central Bank
+### Rationale for Selected Roles
 
-* Within the QE framework, the central bank is the sole policy implementer, responsible for setting asset‐purchase volumes, adjusting the policy rate, and guiding market expectations.
+**Individual → Ramsey Model**  
+The Ramsey model is well suited to simulate a representative household’s optimal consumption and saving decisions in response to long-term interest-rate changes. Under QE, it captures how households adjust savings based on expected returns and prices, allowing evaluation of policy effects on asset accumulation and intertemporal welfare—especially for analyzing wealth‐distribution shifts and utility distortions induced by QE.
 
-### Firm → Perfect Competition
+**Government → Central Bank**  
+Within the QE framework, the central bank is the sole policy implementer, responsible for setting asset‐purchase volumes, adjusting the policy rate, and guiding market expectations.
 
-* In a perfectly competitive market, price, capital, and labor allocations respond directly to policy shocks, facilitating analysis of QE’s transmission to real economic activity (e.g., investment, output, wages). Its transparent structure also aids in measuring how financial‐variable changes pass through to the real economy.
+**Firm → Perfect Competition**  
+In a perfectly competitive market, price, capital, and labor allocations respond directly to policy shocks, facilitating analysis of QE’s transmission to real economic activity (e.g., investment, output, wages). Its transparent structure also aids in measuring how financial‐variable changes pass through to the real economy.
 
-### Bank → Commercial Banks
-
-* Commercial banks are the core nodes in QE’s transmission mechanism: their funding sources, lending behavior, and rate‐setting directly affect credit supply. After asset purchases depress long‐term rates, banks act as intermediaries to expand lending and adjust risk preferences, thereby altering corporate financing capacity and household consumption choices—making them the critical bridge between central‐bank policy and microeconomic responses.
+**Bank → Commercial Banks**  
+Commercial banks are the core nodes in QE’s transmission mechanism: their funding sources, lending behavior, and rate‐setting directly affect credit supply. After asset purchases depress long‐term rates, banks act as intermediaries to expand lending and adjust risk preferences, thereby altering corporate financing capacity and household consumption choices—making them the critical bridge between central‐bank policy and microeconomic responses.
 
 ---
 
 ## ​3.​ Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                                  |
-| ------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Learns actual household consumption and investment behaviors under changing interest rates to simulate response differences across income groups. |
 | Government             | Rule-Based Agent       | Sets interest-rate and asset-purchase rules, ensuring interpretability and adherence to central-bank protocols.                                   |
 | Firm                 | Rule-Based Agent       | Models firms adjusting output and investment according to marginal principles, faithfully reproducing supply–demand dynamics.                    |
 | Bank | Rule-Based Agent       | Captures banks’ lending adjustments based on rate rules, providing a stable and controllable representation of financial transmission channels.  |
 
-### Individual → BC Agent
-
-* The BC Agent can learn consumption and saving behaviors of different income groups under a quantitative-easing regime from historical data. Compared with rule-based methods, it offers richer heterogeneity expression and, unlike RL methods, greater stability, making it suitable for simulating QE’s real impact on household behavior.
-
-### Government → Rule-Based Agent
-
-* Quantitative easing relies on predetermined rules (e.g., asset-purchase volumes, interest-rate paths). Using a Rule-Based Agent accurately expresses the policy reaction function, ensuring central-bank actions are transparent and controllable, and avoiding policy deviations caused by RL instability.
-
-### Firm → Rule-Based Agent
-
-* Firms in a perfectly competitive market follow profit-maximization principles. A Rule-Based Agent can simulate mechanisms such as marginal returns to capital and production decisions; its simple structure and efficient execution are well suited to capturing how changes in financing costs transmit to real output.
-
-### Bank → Rule-Based Agent
-
-* Commercial banks set lending rates and adjust credit supply based on policy rates and risk premiums. Rule-Based Agents facilitate clear modeling of monetary-policy transmission channels and, compared with RL or data-driven methods, better align with the financial system’s structural setup.
-
----
 
 ## ​4.​ Illustrative Experiment
 

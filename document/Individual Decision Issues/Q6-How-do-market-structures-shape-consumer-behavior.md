@@ -47,62 +47,39 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Multiple Market Structures               | Simulate how firms adjust labor demand and production decisions in response to technological advancements.                    |
 | Bank | No-Arbitrage Platform | Measure the impact of technological progress on financial markets, such as shifts in borrowing demand and investment returns. |
 
-### Individual → Ramsey Model
+---
 
-* **Ramsey Model:** Since the focus is on how wage changes under different market structures affect individual consumption decisions—rather than age effects—we model households using a representative infinite-horizon heterogeneous-agent framework.
+### Rationale for Selected Roles
 
-### Government → Not Applicable
+**Individual → Ramsey Model**  
+Since the focus is on how wage changes under different market structures affect individual consumption decisions—rather than age effects—we model households using a representative infinite-horizon heterogeneous-agent framework.
 
-* This study examines how wage changes in different market structures influence individual consumption behavior and price formation mechanisms. It focuses solely on market dynamics and household responses; policy‐making or institutional interventions (fiscal, monetary, regulatory) are excluded, so government does not act as an active decision-maker in the model.
+**Government → Not Applicable**  
+This study examines how wage changes in different market structures influence individual consumption behavior and price formation mechanisms. It focuses solely on market dynamics and household responses; policy‐making or institutional interventions (fiscal, monetary, regulatory) are excluded, so government does not act as an active decision-maker in the model.
 
-### Firm → Multiple Market Structures
+**Firm → Multiple Market Structures**  
+We consider four market structures:
+**Perfectly Competitive Market:** firms freely compete; wages respond to labor supply.
+**Monopoly:** a single firm sets the price.
+**Oligopoly:** a few firms compete strategically.
+**Monopolistic Competition:** many firms with differentiated products and some pricing power.
 
-* We consider four market structures:
-  * **Perfectly Competitive Market:** firms freely compete; wages respond to labor supply.
-  * **Monopoly:** a single firm sets the price.
-  * **Oligopoly:** a few firms compete strategically.
-  * **Monopolistic Competition:** many firms with differentiated products and some pricing power.
-
-### Bank → No-Arbitrage Platform
-
-* **No-Arbitrage Platform:** We abstract from profit-seeking bank behavior and instead focus on how capital markets adjust to technological and wage shocks under no-arbitrage conditions.
+**Bank → No-Arbitrage Platform**  
+We abstract from profit-seeking bank behavior and instead focus on how capital markets adjust to technological and wage shocks under no-arbitrage conditions.
 
 ---
 
 ## **3.Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                                                    |
-| ------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Trained on real‐world data to replicate households’ consumption, saving, and labor decisions in response to wage changes, enhancing realism.                      |
 | Government             | Rule‐Based Agent      | Maintains consistent policy settings across market structures; uses fixed rules to observe market feedback, avoiding optimization‐driven strategy shifts.          |
 | Firm                 | Rule‐Based Agent      | Focuses on how market structure shapes wage‐ and price‐formation; employs rules to model firm pricing and wage behavior, sidestepping strategic game simulations. |
 | Bank | Rule‐Based Agent      | Simulates interest‐rate impacts on prices and wages via preset rules to capture macro feedback channels, without modeling profit‐maximizing bank strategies.      |
 
-### **Individual → BC Agent**
-
-* This study is an economic simulation rather than an optimal-control exercise, households are represented by BC Agent.BC Agents are **trained on historical micro-survey data via behavior cloning** to reproduce household decisions on consumption, saving, and labour supply in response to wage fluctuations, making the simulation more realistic. For implementation details see the description of the Behavior cloning agent.
-
-### **Government → Rule-Based Agent**
-
-* A single rule set guarantees that policy choices are applied uniformly under all market scenarios.
-
-### **Firm → Rule-Based Agent**
-
-* The focus is on wage-setting across market structures—not on strategic games among firms—so we adopt:Rule-based agent with **structure-specific pricing rules**:
-  * Perfect competition – Price equals marginal cost (P = MC); firms are price-takers, and wages equal the marginal product of labour.
-  * Monopoly – A single firm sets wages under profit-maximisation.
-  * Oligopoly – Wages are influenced by rival giants; tacit wage coordination may emerge.
-  * Monopolistic competition – Wage formation resembles the oligopoly case but with many differentiated producers.
-
-### **Bank → Rule-Based Agent**
-
-* **Rule-based agent** with macro-monetary rules:
-  * When higher wages fuel inflation, the central bank raises interest rates to stabilise prices.
-  * When falling wages signal weak demand, the central bank cuts rates to spur activity.  Concrete rule sets can likewise be edited in the rule-based-agent module.
-
----
 
 ## 4. Illustrative Experiments
 

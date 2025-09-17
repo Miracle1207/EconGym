@@ -31,7 +31,7 @@ def select_agent(alg, agent_name, agent_type, env, trainer_config):
     if alg not in agent_algorithms:
         raise ValueError(f"Unsupported algorithm: {alg}")
     if alg == "saez" or alg == "us_federal":
-        env.government.tax_type = alg
+        env.government['tax'].tax_type = alg
     return agent_algorithms[alg](env, trainer_config, agent_name=agent_name, type=agent_type)
 
 

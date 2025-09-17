@@ -29,61 +29,66 @@ Based on an economic simulation platform, this study investigates how increasing
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                                                 |
-| ------------------------ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model                             | Analyze how households at different wealth levels respond to inheritance-tax policy, including changes in saving, consumption, and labor supply. |
-| Government             | Fiscal Authority                  | Design and adjust inheritance-tax policy and assess its impact on public finances.                                                               |
-| Firm                 | Perfect Competition      | Observe how shifts in consumer demand affect firms’ production and pricing strategies.                                                          |
-| Bank | No-Arbitrage Platform | Study capital-market reactions to inheritance-tax policy, particularly changes in saving rates and investment behavior.                          |
+| Social Role | Selected Type       | Role Description                                             | Observation                                                  | Action                                                       | Reward                                   |
+| ----------- | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$                               | — (same as above)<br/>OLG includes pension if retired |
+| Government  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                     | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.       | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending            | GDP growth, equality, welfare          |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                   | /                                                                                                                                                    | /                                                                                          | Zero (long-run)                        |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.     | /                                                                                                                                                    | No rate control                                                                            | No profit                              |
 
-### **Individual → Overlapping Generations (OLG) Model**
 
-* The OLG framework tracks lifecycle patterns of income, saving, and estate transfers, making it an ideal tool to study how inheritance tax influences intergenerational wealth transmission, labor incentives, and consumption decisions.
+---
 
-### **Government → Fiscal Authority**
+### Rationale for Selected Roles
 
-* As the authority that establishes and collects inheritance tax, the Tax Policy Department shapes policy features—such as exemption thresholds and redistribution rules—and directly affects fiscal revenue and aggregate demand. Modeling this actor enables simulation of policy adjustments’ transmission through the public budget.
+**Individual → Overlapping Generations (OLG) Model**  
+The OLG framework tracks lifecycle patterns of income, saving, and estate transfers, making it an ideal tool to study how inheritance tax influences intergenerational wealth transmission, labor incentives, and consumption decisions.
 
-### **Firm → Perfect Competition**
+**Government → Fiscal Authority**  
+As the authority that establishes and collects inheritance tax, the Tax Policy Department shapes policy features—such as exemption thresholds and redistribution rules—and directly affects fiscal revenue and aggregate demand. Modeling this actor enables simulation of policy adjustments’ transmission through the public budget.
 
-* A perfectly competitive setting ensures efficient price formation, allowing clear observation of how an inheritance tax shifts supply and demand.
+**Firm → Perfect Competition**  
+A perfectly competitive setting ensures efficient price formation, allowing clear observation of how an inheritance tax shifts supply and demand.
 
-### **Bank →  No-Arbitrage Platform**
-
-* No-Arbitrage Platform reliably reflect household asset allocation and returns across different life stages without introducing leverage dynamics or risk-preference distortions, making them well-suited for analyzing the medium- and long-term effects of inheritance tax on saving behavior and wealth accumulation paths.
+**Bank → Non-Profit Platform**  
+No-Arbitrage Platform reliably reflect household asset allocation and returns across different life stages without introducing leverage dynamics or risk-preference distortions, making them well-suited for analyzing the medium- and long-term effects of inheritance tax on saving behavior and wealth accumulation paths.
 
 ---
 
 ## ​3.​ Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type                             | Role Description                                                                                                                       |
-| ------------------------ | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Rule-Based Agent / Behavior Cloning Agent | Use a rule-based agent to model household decision processes.Employ behavior cloning to learn patterns from empirical data.           |
 | Government             | Data-Based Agent                          | Reproduce changes in public finances after inheritance-tax implementation within the simulation environment using historical tax data. |
 | Firm                 | Rule-Based Agent                          | Encode market supply–demand rules to simulate consumer behavior under inheritance tax.                                                |
 | Bank | Rule-Based Agent                          | Configure financial-market operations based on macroeconomic variables.                                                                |
 
-### **Individual → Rule-Based Agent / Behavior Cloning Agent**
+---
 
-* The Rule-Based Agent is simpler to implement, while the Behavior Cloning Agent can track real household decision patterns, making it well suited for evaluating intergenerational behavioral adjustments.
+## **4. Running the Experiment**
 
-### **Government → Data-Based Agent**
+### **4.1 Quick Start**
 
-* The government’s behavior model is built on historical data and can dynamically simulate how different inheritance-tax settings affect fiscal revenue, redistribution efficiency, and the wealth structure of society, aiding assessment of policy adaptability and control effectiveness across economic environments.
+To run the simulation with a specific problem scene, use the following command:
 
-### **Firm → Rule-Based Agent**
+```Bash
+python main.py --problem_scene ""
+```
 
-* Market responses primarily manifest in changes to wages and capital returns; a rule-based agent efficiently reproduces the indirect effects of price mechanisms—under perfect competition—on household labor supply and saving behavior, offering clarity and facilitating causal inference.
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **Bank → Rule-Based Agent**
+### **4.2 Problem Scene Configuration**
 
-* Financial institutions operate under stable rules and can simulate how inheritance-tax interventions reshape household asset allocation and long-term wealth accumulation trajectories, making them ideal for observing structural adjustments in saving behavior under different tax regimes.
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
 
 ---
 
-## 4. Illustrative Experiment
+## **​5.​**​**Illustrative Experiment**
 
 ```Python
 # Estate tax logic (triggered upon individual death)
@@ -104,50 +109,66 @@ For each simulation step:
 ### Experiment 1: Macroeconomic Impact of Estate Tax
 
 * **Experiment Description: ​**
+  
   Compare macroeconomic indicators under different estate tax rates.
-* **Involved Social Roles:**
-  
-  * *Individual:* OLG Model
-  * *Government: ​*Fiscal Authority
-* **AI Agents:**
-  
-  * *Individual: ​*Behavior Cloning Agent
-  * *Government: ​*Data-Based Agent
 * **Experimental Variables:**
   
   * Estate tax rates (0%, 10%, 15%)
   * Social output (GDP)
-* **Visualized Experimental Results：**
-![Fiscal Q4 P1](../img/Fiscal%20Q4%20P1.png)
+* **Baselines:**
+
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  **Figure 1:** The blue, yellow, and green lines represent social GDP under inheritance-tax rates of 15%, 10%, and 0%, respectively. Imposing an inheritance tax clearly raises aggregate output, but increasing the rate from 10% to 15% yields little additional benefit.
+  * **estate\_15%\_bc\_saez\_100\_OLG (Blue line):** Households are modeled as Behavior Cloning (BC) Agents under the OLG framework, with the estate tax rate set to 15%.
+  * **estate\_0%\_bc\_saez\_100\_OLG (Green line):** Households are modeled as Behavior Cloning (BC) Agents under the OLG framework, with the estate tax rate set to 0%.
+  * **estate\_10%\_bc\_saez\_100\_OLG (Yellow line):** Households are modeled as Behavior Cloning (BC) Agents under the OLG framework, with the estate tax rate set to 10%.
+* **Visualized Experimental Results：**
+
+![Fiscal Q2P1 inherit](../img/Fiscal%20Q2P1%20inherit.png)
+  
+  **Figure 1:**  Imposing an inheritance tax clearly raises aggregate output, but increasing the rate from 10% to 15% yields little additional benefit.
 * Compared to a zero–tax scenario, introducing an inheritance tax improves the efficiency of wealth circulation and thus boosts GDP. The inheritance-tax policy also carries a signaling effect, but further rate increases have diminishing returns for GDP growth.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Experiment 2: Household Impact of Estate Tax
 
 * **Experiment Description: ​**
+  
   Compare household income, consumption, and labor behaviors under different estate tax rates.
-* **Involved Social Roles:**
-  
-  * *Individual: ​*OLG Model
-  * *Government:* Fiscal Authority
-* **AI Agents:**
-  
-  * *Individual:* Behavior Cloning Agent
-  * *Government: ​*Data-Based Agent
 * **Experimental Variables:**
   
   * Estate tax rates (0%, 10%, 15%)
   * Simulated households stratified by age and income
   * Household wealth
-  * Individual working hours
+  * Household working hours
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.The bar charts show household wealth distributions under different estate tax policies.
+  
+  * **Agent Settings:**
+    
+    * **estate\_0%\_bc\_saez\_100\_OLG (Green bars):** Estate tax rate set to 0%.
+    * **estate\_10%\_bc\_saez\_100\_OLG (Yellow bars):** Estate tax rate set to 10%.
+    * **estate\_15%\_bc\_saez\_100\_OLG (Blue bars):** Estate tax rate set to 15%.
+  * **Panel Interpretation:**
+    
+    * **Left panel:** Different bar colors represent household wealth by **age cohorts** (e.g., <24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
+    * **Right panel:** Different bar colors represent household wealth by **income/wealth classes** (rich, middle, poor, and mean).
 * **Visualized Experimental Results：**
-![Fiscal Q4 P2](../img/Fiscal%20Q4%20P2.png)
   
-  **Figure 2: ​**Higher estate taxes (blue bars) consistently reduce household wealth across different age groups (left) and income levels (right).
+![Fiscal Q2P2 inherit](../img/Fiscal%20Q2P2%20inherit.png)
   
-![Fiscal Q4 P3](../img/Fiscal%20Q4%20P3.png)
+  **Figure 2: ​**Higher estate taxes consistently reduce household wealth across different age groups and income levels.
+  
+![Fiscal Q2P3 inherit](../img/Fiscal%20Q2P3%20inherit.png)
+  
+  **​ Figure 3:** Higher estate taxes enhance labor incentives for low-income households but discourage labor among middle-income groups; minimal age-based effects observed.
+* Estate taxes decrease household wealth.
+* Estate taxes exhibit clear labor incentives differences based on income: enhancing labor incentives among low-income groups while discouraging middle-income groups.
+
+
+  
+
   
   **​ Figure 3:** Higher estate taxes enhance labor incentives for low-income households but discourage labor among middle-income groups; minimal age-based effects observed.
 * Estate taxes decrease household wealth.

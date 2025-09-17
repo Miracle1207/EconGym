@@ -26,60 +26,43 @@ Using an economic-simulation platform, this study examines the macroeconomic eff
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                | Role Description                                                                                   |
-| ------------------------ | ------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| Individual             | Ramsey Model                 | Optimize consumption and saving decisions in response to changing interest rates.                  |
-| Government             | Central Bank                 | Establish negative interest-rate policy, adjust the policy rate, and monitor inflation targets.    |
-| Firm                 | Perfect Competition | Reflect how firms adjust production scale, labor demand, and investment based on financing costs.  |
-| Bank | Commercial Banks             | Combine bank lending behavior with policy implementation to comprehensively assess policy impacts. |
+| Social Role | Selected Type        | Role Description                                                                                                             | Observation                                                                                                  | Action                                                             | Reward                         |
+| ----------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------ |
+| Individual  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                    | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility) |
+| Government  | Central Bank         | Central Bank adjusts nominal interest rates and reserve requirements, transmitting monetary policy to households and firms. | — (same as above)                                                                                            | $$a_t^{\text{cb}} = \{ \phi_t, \iota_t \}$$<br>Reserve ratio, benchmark rate           | Inflation/GDP stabilization    |
+| Firm       | Perfect Competition  | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                       | /                                                                                                            | /                                                                | Zero (long-run)                |
+| Bank       | Commercial Banks     | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions               | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
 
-### Individual → Ramsey Model
+---
 
-* The Ramsey model assumes **infinitely lived agents** with rational expectations who optimize consumption and saving in response to interest-rate changes. This framework is well suited to analyze how a negative-rate policy influences households’ propensities to consume and save, thereby affecting macroeconomic dynamics.
-* Since this experiment focuses on the aggregate impact of negative rates rather than intergenerational decision-making, we employ the Ramsey model instead of an OLG setup.
+### Rationale for Selected Roles
 
-### Government → Central Bank
+**Individual → Ramsey Model**  
+The Ramsey model assumes **infinitely lived agents** with rational expectations who optimize consumption and saving in response to interest-rate changes. This framework is well suited to analyze how a negative-rate policy influences households’ propensities to consume and save, thereby affecting macroeconomic dynamics.
+Since this experiment focuses on the aggregate impact of negative rates rather than intergenerational decision-making, we employ the Ramsey model instead of an OLG setup.
 
-* Negative interest-rate policy is a standard monetary-policy tool set and executed by the central bank, encompassing rate setting, reserve requirements, and asset-purchase operations. Compared with the treasury, the central bank is the appropriate authority for simulating systemic effects of rate changes on the economy.
+**Government → Central Bank**  
+Negative interest-rate policy is a standard monetary-policy tool set and executed by the central bank, encompassing rate setting, reserve requirements, and asset-purchase operations. Compared with the treasury, the central bank is the appropriate authority for simulating systemic effects of rate changes on the economy.
 
-### Firm → Perfect Competition
+**Firm → Perfect Competition**  
+In a perfectly competitive market, prices are determined by supply and demand. This setting helps clearly identify the transmission channels through which negative rates affect real output, labor supply, and capital investment, avoiding distortions from market power.
 
-* In a perfectly competitive market, prices are determined by supply and demand. This setting helps clearly identify the transmission channels through which negative rates affect real output, labor supply, and capital investment, avoiding distortions from market power.
-
-### Bank → Commercial Banks
-
-* Commercial banks **link lending behavior with policy implementation**. Modeling them explicitly allows us to simulate how negative rates prompt banks to expand credit, thereby spurring corporate investment and promoting overall economic growth.
+**Bank → Commercial Banks**  
+Commercial banks **link lending behavior with policy implementation**. Modeling them explicitly allows us to simulate how negative rates prompt banks to expand credit, thereby spurring corporate investment and promoting overall economic growth.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                            |
-| ------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | The BC Agent learns saving and consumption patterns from real household data to simulate behavior under changing interest rates.            |
 | Government             | Rule-Based Agent       | Central-bank policy adjustments follow fixed rules.                                                                                         |
 | Firm                 | Rule-Based Agent       | The market responds according to supply–demand rules (e.g., lower rates boost investment); the simple rule-based approach ensures control. |
 | Bank | Rule-Based Agent       | Commercial banks respond to base-rate changes by expanding loans or cutting deposit rates.                                                  |
 
-### Individual → BC Agent
-
-* The BC Agent can learn household consumption and saving behaviors under different interest-rate environments, capturing non-linear adjustment paths that rule-based agents struggle to model and thus uniting interpretability with practicability.
-
-### Government → Rule-Based Agent
-
-* In this experiment’s crisis context, the central bank enforces a fixed negative-rate policy (e.g., –1%), and the rule-based agent simulates this preset monetary-policy framework; reinforcement-learning approaches may introduce unintended policy deviations.
-
-### Firm → Rule-Based Agent
-
-* The market mechanism hinges on supply, demand, and price adjustments; a rule-based agent can quickly reproduce price responses to interest-rate changes, facilitating clear evaluation of transmission channels and avoiding unnecessary strategic noise.
-
-### Bank → Rule-Based Agent
-
-* Financial institutions’ reactions to rate changes manifest in asset-yield adjustments and lending behavior; a rule-based agent efficiently encodes these stable logics, making it ideal for assessing negative-rate impacts on saving returns and capital allocation.
-
----
 
 ## 4. Illustrative Experiment
 

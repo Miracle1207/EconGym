@@ -26,59 +26,42 @@ Using an economic-simulation platform, this study examines the mechanisms by whi
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                            | Role Description                                                                                                                          |
-| ------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | Ramsey Model                             | Rationally choose preferred goods, reflecting the marginal utility of variety and price sensitivity.                                      |
-| Government             | Fiscal Authority                     | Oversee market competition and product‐classification policies, assessing when policy intervention is needed to limit excessive variety. |
-| Firm                 | Monopolistic Competition Market          | Firms employ product‐differentiation strategies to compete for market share, serving as the direct source of changes in variety.         |
-| Bank  | No-Arbitrage Platform | Provide capital support and feedback on long‐term investment efficiency and macroeconomic return paths.                                  |
+| Social Role | Selected Type            | Role Description                                                                                                                                                           | Observation                                                                                                                                                                                                 | Action                                                                                                   | Reward                                                                                     |
+| ----------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Individual  | Ramsey Model             | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                                                                  | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                                                                        | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment               | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)                                                 |
+| Government  | Fiscal Authority         | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                                                                        | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.                        | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending                          | GDP growth, equality, welfare                                                               |
+| Firm       | Monopolistic Competition | Monopolistic Competitors offer differentiated products with CES demand and endogenous entry, supporting studies of consumer preference and market variety.                 | $$o_t^{\text{mono-comp}} = \{ K_t^j, L_t^j, Z_t^j, p_{t-1}^j, W_{t-1}^j \}$$<br>Firm-specific capital, labor, productivity, last price/wage. Here, $$j$$ denotes the firm index.                           | $$a_t^{\text{mono-comp}} = \{ p_t^j, W_t^j \}$$<br>Price and wage decisions for firm $$j$$            | $$r_t^{\text{mono-comp}} = p_t^j y_t^j - W_t^j L_t^j - R_t K_t^j$$<br>Profits = Revenue – costs for firm $$j$$ |
+| Bank       | Non-Profit Platform      | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.                                                        | /                                                                                                                                                                                                           | No rate control                                                                                          | No profit                                                                                  |
 
-### Individual → Ramsey Model
+---
 
-* Households maximize utility when choosing products, showing sensitivity to prices, variety, and brand preferences; they are the core agents for measuring welfare changes.
+### Rationale for Selected Roles
 
-### Government → Fiscal Authority
+**Individual → Ramsey Model**  
+Households maximize utility when choosing products, showing sensitivity to prices, variety, and brand preferences; they are the core agents for measuring welfare changes.
 
-* As the regulatory authority, the government may set standards or implement incentives/restrictions on firms’ diversification behaviors; its policy‐response mechanisms should be incorporated into the model.
+**Government → Fiscal Authority**  
+As the regulatory authority, the government may set standards or implement incentives/restrictions on firms’ diversification behaviors; its policy‐response mechanisms should be incorporated into the model.
 
-### Firm → Monopolistic Competition Market
+**Firm → Monopolistic Competition Market**  
+Firms hold pricing power and engage in non‐price competition through differentiation strategies, forming the key structural foundation of the simulation.
 
-* Firms hold pricing power and engage in non‐price competition through differentiation strategies, forming the key structural foundation of the simulation.
-
-### Bank → No-Arbitrage Platform
-
-* Provide business loans and household‐savings platforms, reflecting the efficiency of resource allocation over long‐run paths and aiding analysis of macro‐efficiency changes.
+**Bank → Non-Profit Platform**  
+Provide business loans and household‐savings platforms, reflecting the efficiency of resource allocation over long‐run paths and aiding analysis of macro‐efficiency changes.
 
 ---
 
 ## **3. Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                         |
-| ------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Reproduce consumers’ reactions to prices and product variety based on real preference data.                                             |
 | Government             | Rule-Based Agent       | Monitor product-differentiation trends under fixed policy rules, identifying intervention thresholds and boundaries.                     |
 | Firm                 | RL Agent               | Firms dynamically adjust product strategies via reinforcement learning to optimize profits and market share.                             |
 | Bank | Rule-Based Agent       | Reflect resource-allocation efficiency in the financial system and simulate how interest-rate changes affect firms’ expansion capacity. |
 
-### Individual → BC Agent
-
-* A Behavior Cloning Agent trained on historical consumption data simulates consumer choice preferences, capturing real‐world reactions to brand, category, and other variety factors, thereby enhancing the fidelity of consumer behavior in the simulation.
-
-### Government → Rule-Based Agent
-
-* The government applies fixed policy rules based on market structure and welfare indicators (e.g., “issue antitrust guidance when market concentration exceeds a threshold”), creating a controlled environment for policy experiments.
-
-### Firm → RL Agent
-
-* Firms use reinforcement learning to discover profit‐maximizing strategies—such as whether to expand product lines, set price levels, or enter/exit markets—thus modeling the endogenous evolution of the variety–efficiency trade‐off.
-
-### Bank → Rule-Based Agent
-
-* Interest‐rate and lending policies automatically adjust according to economic variables (e.g., market returns, asset distributions), ensuring stable foundational operations of the financial market.
-
----
 
 ## 4. Illustrative Experiments
 

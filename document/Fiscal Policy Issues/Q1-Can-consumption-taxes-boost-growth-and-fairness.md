@@ -14,11 +14,12 @@ Taking the United States as an example, consumption tax typically consists of a 
 
 ### 1.2 Research Questions
 
-Based on an economic simulation platform, this study investigates whether increasing consumption tax can stimulate economic growth and enhance social equity. Specific questions include:
+Using an economic simulation platform, this study examines the effects of increasing consumption tax on growth and fairness, focusing on:
 
-* Impact of consumption tax on overall socio-economic activities (GDP, social welfare levels).
-* Impact of consumption tax on income inequality (Gini coefficient).
-* Impact of increased consumption tax on different income groups (wealth, consumption, household utility).
+* **GDP**​**​ Effects:** Does raising consumption tax promote or hinder long-term economic growth?
+* **Social Fairness:** How does higher consumption tax influence social equity, such as reducing inequality or redistributing resources across groups?
+* **Household Consumption:** How does consumption tax change household spending behavior, and what are its implications for welfare and living standards?
+
 
 ### 1.3 Research Significance
 
@@ -40,82 +41,83 @@ As an example, we selected the following roles from the social role classificati
 | Firm            | Perfect Competition          | Observe how changes in consumer demand influence firms' production and pricing strategies.                                                                                                                    |
 | Bank  | No-Arbitrage Platform | Study how capital markets respond to consumption tax policies, particularly changes in saving rates and investment behaviors.                                                                                 |
 
-### Individual → Ramsey Model/OLG Model
+### Rationale for Selected Roles
 
-* **Ramsey Model and OLG Model are both suitable for this study.** The Ramsey Model analyzes aggregate macroeconomic responses from representative households’ optimal intertemporal decisions, ideal for studying long-term equilibrium trends. The OLG Model captures heterogeneity across age groups in income, consumption, and tax burdens, enabling analysis of the intergenerational fairness effects of consumption taxes.
+**Individual → Ramsey Model/OLG Model**  
+**Ramsey Model and OLG Model are both suitable for this study.** The Ramsey Model analyzes aggregate macroeconomic responses from representative households’ optimal intertemporal decisions, ideal for studying long-term equilibrium trends. The OLG Model captures heterogeneity across age groups in income, consumption, and tax burdens, enabling analysis of the intergenerational fairness effects of consumption taxes.
 
-### Government → Fiscal Authority
+**Government → Fiscal Authority**  
+The Tax Policy Department directly formulates and implements consumption tax policies, fully simulating tax collection, income redistribution, and fiscal expenditure responses. Compared with pension and central bank departments, the Treasury more accurately reflects the impact of consumption tax on tax structures, government budgets, and social equity.
+Pension and monetary policy are not core variables in this study and thus are not used.
 
-* The Tax Policy Department directly formulates and implements consumption tax policies, fully simulating tax collection, income redistribution, and fiscal expenditure responses. Compared with pension and central bank departments, the Treasury more accurately reflects the impact of consumption tax on tax structures, government budgets, and social equity.
-* Pension and monetary policy are not core variables in this study and thus are not used.
+**Firm → Perfect Competition**  
+Selecting perfectly competitive markets helps eliminate distortions, making the impact of consumption tax policies on supply-demand dynamics, pricing, and distribution clearer.
+Monopolistic markets have non-market-determined prices and complex corporate strategies, potentially obscuring the economic effects of consumption taxes and reducing experimental clarity.
 
-### Firm → Perfect Competition
-
-* Selecting perfectly competitive markets helps eliminate distortions, making the impact of consumption tax policies on supply-demand dynamics, pricing, and distribution clearer.
-* Monopolistic markets have non-market-determined prices and complex corporate strategies, potentially obscuring the economic effects of consumption taxes and reducing experimental clarity.
-
-### Bank→ No-Arbitrage Platform
-
-* No-Arbitrage Platform are more suitable for analyzing long-term wealth accumulation and asset allocation responses, without active participation in credit expansion. They clearly reflect savings and investment behavior under policy changes.
-* Commercial banks involve complex behaviors like lending, interest spreads, and financial risks, less suited for focused macroeconomic policy analysis.
+**Bank→ No-Arbitrage Platform**  
+No-Arbitrage Platform are more suitable for analyzing long-term wealth accumulation and asset allocation responses, without active participation in credit expansion. They clearly reflect savings and investment behavior under policy changes.
+Commercial banks involve complex behaviors like lending, interest spreads, and financial risks, less suited for focused macroeconomic policy analysis.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                  |
+| Economic Role | Agent Algorithm        | Description                                                                                  
 | ------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------- |
 | Individual            | Behavior Cloning Agent | Learn behavioral patterns from empirical data via behavior cloning.                               |
 | Government             | Data-Based Agent       | Predict changes in public finance after implementing a consumption tax using historical tax data. |
 | Firm                 | Rule-Based Agent       | Encode supply–demand rules to simulate consumer behavior under a consumption tax.                |
 | Bank | Rule-Based Agent       | Define financial-market operations based on macroeconomic variables.                              |
 
-### Individual → Behavior Cloning Agent
+## **4. Running the Experiment**
 
-* Behavior Cloning Agents learn consumption and saving behaviors from real household data, ensuring clarity of decision logic and enhancing model authenticity.
+### **4.1 Quick Start**
 
-### Government → Data-Based Agent
+To run the simulation with a specific problem scene, use the following command:
 
-* The government uses historical data to predict consumption tax effects, aiding dynamic adjustments of fiscal policies and improving model accuracy and reliability.
+```Bash
+python main.py --problem_scene ""
+```
 
-### Firm → Rule-Based Agent
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-* Market behaviors can be explicitly modeled through price-supply-demand rules, clearly showing the direct transmission paths of consumption tax effects.
+### **4.2 Problem Scene Configuration**
 
-### Bank → Rule-Based Agent
-
-* Financial institutions primarily handle asset allocation and interest rate transmission. Rule-based settings clearly express their stable behavior, suitable for macro-policy transmission analysis.
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
 ---
 
-## 4. Illustrative Experiment
+## 5. **Illustrative Experiment**
 
 ### Experiment 1: Impact of Increased Consumption Tax on Macroeconomy and Social Welfare
 
 * **Experiment Description:**
+  
   Comparing macroeconomic indicators and welfare levels across different consumption tax rates.
-* ​**Involved Social Roles**​:
-  * *​Individual：​*OLG Model
-  * *​Government：​*Fiscal Authority
-* **AI**​**​ Agents：**
-  * *​Individual：​*Behavior Cloning Agent
-  * *​Government：​*Data-Based Agent
 * **Experimental Variables:**
+  
   * Different consumption tax rates (0%, 7%, 9%)
   * Simulated GDP growth trends
   * Simulated social welfare levels
   * Simulated household income inequality (Gini coefficient)
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue line):** Households are modeled using the OLG model with Behavior Cloning Agents following Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 0%.
+  * ​**consumption\_tax\_7%\_bc\_saez\_100\_OLG (Light green line):** Households are modeled using the OLG model with Behavior Cloning Agents following Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 7%.
+  * ​**consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow line)​:** Households are modeled using the OLG model with Behavior Cloning Agents following Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 9%.
 * **Visualized Experimental Results:**
 
 ![Fiscal Q3 P1](../img/Fiscal%20Q3%20P1.png)
 
-**Figure 1: ​**Blue, green, and yellow lines represent GDP under 0%, 7%, and 9% consumption tax rates, respectively. Higher taxes (yellow line) slightly increase GDP but show minimal difference compared to no tax.
+**Figure 1: ​**Blue, green, and yellow lines represent GDP under 0%, 7%, and 9% consumption tax rates, respectively. Higher taxes slightly increase GDP but show minimal difference compared to no tax.
 
 ![Fiscal Q3 P2](../img/Fiscal%20Q3%20P2.png)
 
-**Figure 2: ​**Higher consumption taxes (yellow, green lines) have almost no long-term effect on total social welfare.
+**Figure 2: ​**Higher consumption taxes have almost no long-term effect on total social welfare.
 
 ![Fiscal Q3 P3](../img/Fiscal%20Q3%20P3.png)
 
@@ -128,27 +130,38 @@ As an example, we selected the following roles from the social role classificati
 ### Experiment 2: Impact of Increased Consumption Tax on Household Wealth and Individual Utility
 
 * **Experiment Description:**
+  
   Comparing household wealth and individual utility across different consumption tax rates.
-* ​**Involved Social Roles**​:
-  * *​Individual：​*OLG Model
-  * *​Government：​*Fiscal Authority
-* **AI Agents:**
-  * *​Individual：​*Behavior Cloning Agent
-  * *​Government：​*Data-Based Agent
 * **Experimental Variables:**
+  
   * Different consumption tax rates (0%, 7%, 9%)
   * Household structure stratified by income levels
   * Household wealth levels
-  * Person utility
+  * Household utility
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **Agent Settings:**
+    * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue bars):** Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 0%.
+    * **consumption\_tax\_7%\_bc\_saez\_100\_OLG (Green bars): ​**Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 7%.
+    * **consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow bars): ​**Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 9%.
+  * **Panel Interpretation:**
+    * **Left panel:** Different bar colors represent household wealth by **age cohorts** (e.g., <24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
+    * **Right panel:** Different bar colors represent household wealth by **income/wealth classes** (rich, middle, poor, and mean).
+
 * **Visualized Experimental Results:**
 
 ![Fiscal Q3 P4](../img/Fiscal%20Q3%20P4.png)
 
-**Figure 4: ​**Different consumption taxes and household income levels. Blue, green, and yellow lines represent 0%, 7%, and 9% tax rates. Higher consumption taxes result in higher income levels across different age groups (left figure) and economic conditions (right figure), especially benefiting young individuals (25-34 years).
+**Figure 4: ​**Different consumption taxes and household income levels. Higher consumption taxes result in higher income levels across different age groups and economic conditions, especially benefiting young individuals (25-34 years).
 
 ![Fiscal Q3 P5](../img/Fiscal%20Q3%20P5.png)
 
 **Figure 5: ​**Consumption tax effects on household utility are not significant overall, but higher taxes notably reduce utility for individuals aged 25-34 and 45-54 years.
 
 * Higher consumption taxes increase household income, notably benefiting young individuals, but simultaneously reduce utility for certain age groups. This indicates income gains do not fully offset welfare losses from higher consumption costs.
+
+
+
 

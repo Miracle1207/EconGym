@@ -12,11 +12,11 @@ Pension schemes not only secure elderly livelihoods but also shape national savi
 
 ### 1.3 Research Questions
 
-Using an economic-simulation platform, this study examines the long-term impacts of different national pension systems on economies, specifically:
+Using an economic simulation platform, this study investigates the comparative impacts of pension systems across countries, specifically examining:
 
-* How do structural differences (e.g., pay-as-you-go vs. funded schemes) affect government finances and household welfare?
-* What is the effect of retirement-age policies on labor supply and aggregate output?
-* How do replacement rates and contribution levels influence intergenerational equity and saving behavior?
+* **Retirement Age:** Is the statutory retirement age the key factor through which different pension systems shape long-term economic outcomes?
+* **Contribution Levels:** What are the economic consequences of higher or lower contribution rates for both households and government budgets?
+* **System Design:** How do different structural models (pay-as-you-go vs. fully funded vs. mixed systems) affect fiscal sustainability and household welfare?
 
 ### 1.4 Research Significance
 
@@ -29,82 +29,90 @@ Using an economic-simulation platform, this study examines the long-term impacts
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                            | Role Description                                                                                                            |
-| ------------------------ | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model      | Simulate life‐cycle behaviors, capturing sensitivity in retirement, saving, and consumption decisions.                     |
-| Government             | Pension Authority                       | Design and implement pension policies, including contribution rates, replacement rates, and subsidy mechanisms.             |
-| Firm                 | Perfectly Competitive Market             | Model how wages and employment dynamically adjust with labor‐force participation, affecting the pension contribution base. |
-| Bank | No-Arbitrage Platform | Simulate pension‐fund investment returns and fiscal debt costs to assess system sustainability.                            |
+| Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
+| Government  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | — (same as above)                                                                                                                                    | $$a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                          |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
-### Individual → Overlapping Generations (OLG) Model 
+---
 
-* Use the Overlapping Generations framework to model life‐cycle differences in retirement, saving, and consumption decisions across countries.
+### Rationale for Selected Roles
 
-### Government → Pension Authority
+**Individual → Overlapping Generations (OLG) Model**  
+Use the Overlapping Generations framework to model life‐cycle differences in retirement, saving, and consumption decisions across countries.
 
-* Implement and manage various pension-system parameters, including contribution rates, replacement rates, and fiscal subsidies.
+**Government → Pension Authority**  
+Implement and manage various pension-system parameters, including contribution rates, replacement rates, and fiscal subsidies.
 
-### Firm → Perfectly Competitive Market
+**Firm → Perfect Competition**  
+Reflect how changes in labor‐force participation under different pension regimes dynamically adjust wages and the contribution base through market mechanisms.
 
-* Reflect how changes in labor‐force participation under different pension regimes dynamically adjust wages and the contribution base through market mechanisms.
-
-### Bank → No-Arbitrage Platform
-
-* Simulate investment‐return trajectories under funded pension schemes or capture interest‐rate fluctuations tied to government‐bond–based subsidy mechanisms.
+**Bank → Non-Profit Platform**  
+Simulate investment‐return trajectories under funded pension schemes or capture interest‐rate fluctuations tied to government‐bond–based subsidy mechanisms.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                      |
-| ------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Reproduce how residents of different countries react behaviorally to pension systems, capturing heterogeneity.        |
 | Government             | Rule-Based Agent       | Implement rule-based templates of each country’s pension policies, facilitating comparative experiments.             |
 | Firm                 | Rule-Based Agent       | Adjust wages via supply–demand rules, supporting market responses under varying demographic structures.              |
 | Bank | Rule-Based Agent       | Feedback pension-fund asset changes or fiscal pressure through macro-level rules governing interest and return rates. |
 
-### Individual → Behavior Cloning Agent
+## **4. Running the Experiment**
 
-* Simulate typical household consumption, saving, and retirement habits across countries, such as “Nordic residents save little and rely on public pensions” and “a high share of Americans delay retirement.”
+### **4.1 Quick Start**
 
-### Government → Rule-Based Agent
+To run the simulation with a specific problem scene, use the following command:
 
-* Implement each country’s pension policy as a set of rules (e.g., “China template,” “US template,” “Sweden template”) to facilitate cross‐system comparisons.
+```Bash
+python main.py --problem_scene ""
+```
 
-### Firm → Rule-Based Agent
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-* Model wages determined by labor supply and demand, with rules capturing market wage and employment adjustment processes.
+### **4.2 Problem Scene Configuration**
 
-### Bank → Rule-Based Agent
-
-* Use rules to model investment returns or government‐bond yields based on demographic structure and fiscal expenditure changes.
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
 ---
 
-## **4. Illustrative Experiments**
+## ​**5. Illustrative Experiments**
 
-### Experiment 1: Parametric Adjustment of a Specific Country's Pension System
+### Experiment: Parametric Adjustment of a Specific Country's Pension System
 
 * **Experiment Description:**
+  
   Using the predefined U.S. pension system in the model as the baseline, we introduce slight policy adjustments regarding early and delayed retirement—for example, reducing pension benefits by 25%–30% for early retirees, and increasing benefits by 25%–30% for those who delay retirement.
-* **Involved Social Roles:**
-  * *Individuals: OLG model*
-  * *Government: Pension Authority*
-* **AI**​**​ Agents:**
-  * *Individuals:* Behavior Cloning Agent
-  * *Government:* Rule‐Based Agent
-  * *Market:* Rule‐Based Agent
 * **Experimental Variables:**
+  
   * Pension benefit adjustments for early and delayed retirement
   * GDP level of the simulated economy
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **pension\_across\_countries\_OLG\_1000\_bc\_pension\_rule\_based\_age\_62\_rate\_0.75 (Blue line):** Households are modeled as Behavior Cloning Agents with the OLG framework, and the government is modeled as a Rule-Based Agent. Retirement age is 62, with pension benefits reduced by 25%.
+  * **pension\_across\_countries\_OLG\_1000\_bc\_pension\_rule\_based\_age\_62\_rate\_0.7 (Green line):** Households are modeled as Behavior Cloning Agents with the OLG framework, and the government is modeled as a Rule-Based Agent. Retirement age is 62, with pension benefits reduced by 30%.
+  * **pension\_across\_countries\_OLG\_1000\_bc\_pension\_rule\_based\_age\_70\_rate\_1.25 (Yellow line):** Households are modeled as Behavior Cloning Agents with the OLG framework, and the government is modeled as a Rule-Based Agent. Retirement age is 70, with pension benefits increased by 25%.
+  * **pension\_across\_countries\_OLG\_1000\_bc\_pension\_rule\_based\_age\_70\_rate\_1.3 (Red line):** Households are modeled as Behavior Cloning Agents with the OLG framework, and the government is modeled as a Rule-Based Agent. Retirement age is 70, with pension benefits increased by 30%.
+  * **pension\_across\_countries\_OLG\_1000\_bc\_pension\_rule\_based\_baseline (Light Blue line):** Households are modeled as Behavior Cloning Agents with the OLG framework, and the government is modeled as a Rule-Based Agent. This baseline follows the predefined U.S. pension system with standard retirement rules.
 * **Visualized Experimental Results：**
 
 ![Pension Q5 P1](../img/PensionQ5P1.png)
 
-**Figure 1: ​**Long-Term GDP Comparison Under Different Pension Policies  Using the current U.S. pension system as the baseline (light blue line), adjusting the "pension penalty" for early retirement has little impact on GDP growth (dark blue and green lines). However, increasing the "additional pension benefits" for delayed retirement leads to significantly higher long-term GDP levels (red and yellow lines).
+**Figure 1: ​**Long-Term GDP Comparison Under Different Pension Policies Using the current U.S. pension system as the baseline, adjusting the "pension penalty" for early retirement has little impact on GDP growth. However, increasing the "additional pension benefits" for delayed retirement leads to significantly higher long-term GDP levels.
 
 * Compared to imposing "penalties" for early retirement, **offering incentives for voluntary delayed retirement ​**more effectively enhances overall economic stability and vitality, and contributes to higher aggregate GDP in the long run.
+
+
+
+
 
 

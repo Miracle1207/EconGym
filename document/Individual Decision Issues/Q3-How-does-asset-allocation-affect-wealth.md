@@ -24,60 +24,43 @@ This study leverages an economic simulation platform to examine “How do asset�
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                 |
-| ------------------------ | --------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Individual             | Ramsey Model                          | Simulates individual saving–investment decisions and long‑term wealth trajectories.            |
-| Bank | Commercial Banks                      | Offer a savings channel and set the benchmark interest rate.                                     |
-| Bank | No-Arbitrage Platform  | Model the returns and volatility of risky investments.                                           |
-| Firm                 | Perfect Competition          | Provides the macro backdrop of economic growth and capital returns, shaping investment behavior. |
+| Social Role | Selected Type       | Role Description                                                                                                    | Observation                                                                                                  | Action                                                                                 | Reward                                              |
+| ----------- | ------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Individual  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)          |
+| Bank       | Commercial Banks    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions               | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                            | No rate control                                                                         | No profit                                           |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.               | /                                                                                                            | /                                                                                      | Zero (long-run)                                     |
 
-### **Individual →Ramsey Model**
+---
 
-* The Ramsey Model analyzes **individuals’ continuous saving and investment decisions over their life spans**, emphasizing intertemporal optimization and utility maximization. It thus captures personal financial behavior and its impact on long-term wealth accumulation.
+### Rationale for Selected Roles
 
-### **Government → Not Applicable**
+**Individual →Ramsey Model**  
+The Ramsey Model analyzes **individuals’ continuous saving and investment decisions over their life spans**, emphasizing intertemporal optimization and utility maximization. It thus captures personal financial behavior and its impact on long-term wealth accumulation.
 
-* In this experiment, we focus on the interaction between households and financial institutions (providing liquidity/lending or modeling high-risk investments) to assess how different financial behaviors affect individual utility, wealth trajectories, and, by extension, broader economic outcomes. **We do not assign a dedicated government department.**
+**Government → Not Applicable**  
+In this experiment, we focus on the interaction between households and financial institutions (providing liquidity/lending or modeling high-risk investments) to assess how different financial behaviors affect individual utility, wealth trajectories, and, by extension, broader economic outcomes. **We do not assign a dedicated government department.**
 
-### **Firm → Perfect Competition**
+**Firm → Perfect Competition**  
+A perfectly competitive market provides a baseline backdrop for both economic growth and investment returns. Firm profits influence market yields, and this setting realistically simulates overall growth rates and capital returns, underpinning the valuation of high-risk investments.
 
-* A perfectly competitive market provides a baseline backdrop for both economic growth and investment returns. Firm profits influence market yields, and this setting realistically simulates overall growth rates and capital returns, underpinning the valuation of high-risk investments.
-
-### **Bank → Commercial Banks / No-Arbitrage Platform**
-
-* **Commercial Banks:** Act as the core conduit for savings, offering stable returns and liquidity guarantees. Changes in bank deposit rates directly influence asset-allocation decisions.
-* **No-Arbitrage Platform:** Represent high-risk investment channels in the market, modeling the uncertain returns of volatile assets. They determine the potential returns and volatility faced by investors in the risk-taking segment.
+**Bank → Commercial Banks / Non-Profit Platform**  
+**Commercial Banks:** Act as the core conduit for savings, offering stable returns and liquidity guarantees. Changes in bank deposit rates directly influence asset-allocation decisions.
+**No-Arbitrage Platform:** Represent high-risk investment channels in the market, modeling the uncertain returns of volatile assets. They determine the potential returns and volatility faced by investors in the risk-taking segment.
 
 ---
 
 ## **​3.Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role                           | AI Agent Type     | Role Description                                                                                           |
-| --------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual                            | RL Agent          | Optimizes the saving–investment mix, balancing risk and return to maximize wealth and utility.            |
 | Commercial Banks                      | Rule‑Based Agent | Supplies stable savings returns and models the interest‑rate mechanism.                                   |
 | No-Arbitrage Platform | Rule‑Based Agent | Generates uncertain investment returns, creating a realistic market‑risk environment.                     |
 | Market                                | Rule‑Based Agent | Delivers background capital‑return rates and macroeconomic conditions that influence investment behavior. |
 
-### **Individual → RL Agent**
-
-* Reinforcement learning is well suited to optimize decisions in complex, uncertain environments. The agent dynamically adjusts its savings–investment ratio based on historical return experience to maximize intertemporal utility. By contrast, rule‐based agents lack flexibility, and purely data‐driven methods are constrained by static historical training data.
-
-### **Financial Institutions(Commercial Banks) → Rule‐Based Agent**
-
-* Commercial banks operate under well‐defined institutional rules (e.g., fixed or slowly adjusting deposit rates), making rule‐based modeling appropriate for simulating their behavior.
-
-### **Financial Institutions(No-Arbitrage Platform)  → Rule‐Based Agent**
-
-* Risk‐asset returns can be specified to follow a given probability distribution, generating controlled return paths. These institutions do not actively optimize investments but serve as exogenous market conditions.
-
-### **Firm → Rule‐Based Agent**
-
-* Firms’ revenue behaviors derive from production functions and market mechanisms, which can be effectively simulated via rule‐based models of fundamental economic dynamics.
-
----
 
 ## **​4. Illustrative Experiments**
 

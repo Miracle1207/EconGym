@@ -204,6 +204,9 @@ class Government(BaseEntity):
 
     def softsign(self, x):
         return x / (1.0 + np.abs(x))
+
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
     
     def get_reward(self,  society, gov_goal=None):
         """
@@ -217,9 +220,8 @@ class Government(BaseEntity):
           Delegates to `get_reward_central(inflation_rate, growth_rate)`.
         """
         SCALE = dict(
-            gdp_growth=0.015,
-            gini_scale=0.05,  # s_gini
-            sw_scale=0.10,  # s_sw (set from steady-state analysis)
+            gdp_growth=0.05,
+            gini_scale=0.167,
         )
 
         self.growth_rate = (self.GDP + 1e-8) / (self.old_GDP + 1e-8) - 1
@@ -232,7 +234,9 @@ class Government(BaseEntity):
 
         if gov_goal == "gdp":
             log_gdp_growth = np.log(self.GDP + 1e-8) - np.log(self.old_GDP + 1e-8)
-            return self.softsign(log_gdp_growth / SCALE["gdp_growth"])   # \in (-1,1)
+            # reward = self.softsign(log_gdp_growth / SCALE["gdp_growth"])
+            reward = self.sigmoid(log_gdp_growth / SCALE["gdp_growth"])
+            return np.array([reward])  # \in (0,1)
     
         elif gov_goal == "gini":
             # Wealth Gini improvement
@@ -245,23 +249,25 @@ class Government(BaseEntity):
             after_tax_income_gini = society.gini_coef(society.households.post_income)
             impr_i = before_tax_income_gini - after_tax_income_gini
             # return (delta_income_gini + delta_wealth_gini) * 100
-            r = self.softsign((impr_w + impr_i) / (2 * SCALE["gini_scale"]))   # \in (-1,1)
-            return r
+            reward = self.sigmoid((impr_w + impr_i) / (2 * SCALE["gini_scale"]))  # \in (0,1)
+            return np.array([reward])
     
         elif gov_goal == "social_welfare":
             # Sum of household utilities (social welfare)
-            return np.sum(society.households_reward)
+            social_welfare = np.sum(society.households.get_reward())
+            return np.array([social_welfare])
     
         elif gov_goal == "mean_welfare":
             # When population changes (OLG), mean welfare ≠ social welfare.
             # Mean welfare better reflects policy effects without population-size confounds.
-            return np.mean(society.households_reward)
+            mean_welfare = np.mean(society.households.get_reward())
+            return np.array([mean_welfare])
     
         elif gov_goal == "gdp_gini":
             # mixed goal
             gdp_rew = self.get_reward(society, gov_goal='gdp')
             gini_rew = self.get_reward(society, gov_goal='gini')
-            return gdp_rew + gini_rew
+            return (gdp_rew + gini_rew)/2  # \in (0,1)
     
         elif gov_goal == "pension_gap":
             pension_surplus = sum(-self.calculate_pension(society.households))
@@ -270,7 +276,7 @@ class Government(BaseEntity):
         else:
             raise ValueError("Invalid government goal specified.")
 
-    def get_pension_reward(self, pension_surplus, scale=10, beta=8):
+    def get_pension_reward(self, pension_surplus, scale=10, beta=10):
         """
         Compute the reward for pension fund sustainability.
 
@@ -294,14 +300,14 @@ class Government(BaseEntity):
         Returns:
         --------
         normalized_reward : float
-            The normalized reward, constrained within a bounded range, typically [-1, 1].
+            The normalized reward, constrained within a bounded range, typically [0, 1].
         """
     
         # Log transformation for diminishing returns and penalty for extreme surpluses
         pension_growth = np.log(1 + pension_surplus) - beta
     
         # Normalize the reward using tanh
-        normalized_reward = np.tanh(pension_growth / scale)
+        normalized_reward = self.sigmoid(pension_growth / scale)
     
         return normalized_reward
 

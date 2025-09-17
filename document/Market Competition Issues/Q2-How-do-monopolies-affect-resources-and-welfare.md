@@ -34,65 +34,43 @@ This study uses an economic simulation platform to examine how monopolistic mark
 
 Select the following roles from the social role classification of the economic simulation platform:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                                |
-| ------------------------ | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | Ramsey Model                          | Household consumption decisions respond to price change.                                                                        |
-| Government             | Fiscal Authority                  | The government may implement specific fiscal policies, such as price regulation.                                                |
-| Firm                 | Monopoly                        | Monopolistic pricing follows fixed market rules, e.g., profit maximization, cost-plus pricing, or government-regulated pricing. |
-| Bank  | No-Arbitrage Platform | Financial markets follow the no-arbitrage principle; investment and pricing adjust based on market rules.                       |
+| Social Role | Selected Type        | Role Description                                                                                                    | Observation                                                                                                  | Action                                                                                 | Reward                                              |
+| ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Individual  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)          |
+| Government  | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                 | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist. | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending          | GDP growth, equality, welfare                       |
+| Firm       | Monopoly             | Monopoly Firms set prices and wages to maximize profits under aggregate demand constraints.                        | $$o_t^{\text{mono}} = \{ K_t, L_{t}, Z_t, p_{t-1}, W_{t-1} \}$$<br>Capital, labor, productivity, last price/wage | $$a_t^{\text{mono}} = \{ p_t, W_t \}$$<br>Price and wage decisions                     | $$r_t^{\text{mono}} = p_t Y_t - W_t L_t - R_t K_t$$<br>Profits = Revenue – costs |
+| Bank       | Non-Profit Platform  | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                            | No rate control                                                                         | No profit                                           |
 
-### **Individual →Ramsey Model**
+---
 
-* **​ Ramsey Model** is used to capture how price changes in a monopoly market influence household consumption decisions, focusing on differences across individuals rather than across age groups.
-* Although the Overlapping Generations (OLG) model accounts for intergenerational decision-making—e.g., younger individuals tend to save more for the future—the focus here is not on age-specific behavior, but rather on heterogeneity unrelated to the life stage.
+### Rationale for Selected Roles
 
-### **Government → Fiscal Authority**
+**Individual →Ramsey Model**  
+**​ Ramsey Model** is used to capture how price changes in a monopoly market influence household consumption decisions, focusing on differences across individuals rather than across age groups.
+Although the Overlapping Generations (OLG) model accounts for intergenerational decision-making—e.g., younger individuals tend to save more for the future—the focus here is not on age-specific behavior, but rather on heterogeneity unrelated to the life stage.
 
-* The Treasury Department may implement price control policies to ensure market fairness and balance social welfare under monopolistic conditions.
+**Government → Fiscal Authority**  
+The Treasury Department may implement price control policies to ensure market fairness and balance social welfare under monopolistic conditions.
 
-### **Firm → Monopoly**
+**Firm → Monopoly**  
+The model studies how monopolistic pricing behavior influences market competition and broader socioeconomic outcomes.
 
-* The model studies how monopolistic pricing behavior influences market competition and broader socioeconomic outcomes.
-
-### **Bank → No-Arbitrage Platform**
-
-* These sets ensure the efficiency of capital markets and help analyze the indirect effects of monopoly structures on the financial system.
+**Bank → Non-Profit Platform**  
+These sets ensure the efficiency of capital markets and help analyze the indirect effects of monopoly structures on the financial system.
 
 ---
 
 ## **3. Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type             | Role Description                                                                                                                                                    |
-| ------------------------ | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent    | Learns consumer behavior from historical data, including price sensitivity, consumption patterns, and responses to monopoly pricing.                                |
 | Government             | Rule-Based Agent/RL Agent | The government should be able to execute regulatory functions through predefined rules, or interact with the market to implement more targeted regulatory policies. |
 | Firm                 | RL Agent                  | Possesses pricing power and typically sets prices based on a profit-maximization strategy.                                                                          |
 | Bank| Rule-Based Agent          | Operates under the no-arbitrage principle; uses rule-based mechanisms to maintain market stability and analyze capital flows under monopoly pricing.                |
 
-### **Individual → BC Agent**
-
-* Since households are modeled using an **immortal heterogeneous agent** framework, there is no need to account for intergenerational behavioral links. A BC agent can learn consumer behavior patterns—such as ​**price sensitivity**​, consumption preferences, and responses to monopoly pricing—from historical data.
-* During the simulation, the BC agent can directly **imitate observed consumption behavior** without complex policy optimization, thus improving ​**computational efficiency**​.
-
-### **Government → Rule-Based Agent / RL Agent**
-
-* Basic government pricing regulations—such as **price ceilings** and ​**tax policies**​—are typically based on fixed rules, making them suitable for modeling with a rule-based agent.
-* However, if the government needs to **interact more effectively with the market** and respond more precisely to monopoly behavior—such as implementing **antitrust** or ​**wage policies**​—a reinforcement learning (RL) agent may be required to learn adaptive strategies through interaction.
-
-### **Firm → RL Agent**
-
-* Monopoly firms have **pricing power** and typically pursue ​**profit maximization**​, which aligns well with the use of an RL agent.
-* An RL agent allows for analysis of **optimal pricing strategies** and their **societal impacts** under dynamic market conditions.
-
-### **Bank → Rule-Based Agent**
-
-* As financial institutions follow the ​**no-arbitrage principle**​, their **pricing and investment strategies** are usually rule-based rather than learned through complex models.
-* A rule-based agent can ensure **market stability** and simulate capital flows in response to different pricing scenarios.
-* This setup enables the analysis of how **monopolistic pricing strategies** affect the capital market—for example, through changes in **financing costs** or ​**investment returns**​.
-
----
 
 ## **4. Illustrative Experiment**
 

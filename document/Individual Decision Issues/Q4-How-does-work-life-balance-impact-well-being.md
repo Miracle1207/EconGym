@@ -30,53 +30,40 @@ In economics, utility is the key variable for measuring individual well‐being 
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                                                                                     |
-| ------------------------ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model                             | To simulate variations in work-leisure preferences across life-cycle stages (youth, middle age, older age) and capture the trajectory of long-term utility evolution.                |
-| Firm                 | Perfect Competition         | Firms adjust employment arrangements (e.g., flexible working hours) to attract labor in line with worker preferences, reflecting market supply–demand equilibrium mechanisms.       |
-| Bank | No-Arbitrage Platform | To offer life-cycle financial products (retirement savings, insurance, etc.) that allow individuals to smooth consumption and hedge risks under changing work–life balance regimes. |
+| Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
-### Individual → **Overlapping Generations (OLG) Model**
 
-* The Overlapping Generations framework simulates ​**age‑specific labor and consumption choices**​. Preferences for work–life balance vary across the life cycle—young workers may ​**strive for career growth**​, whereas middle‑aged and older cohorts prioritize ​**health and family time**​.
+---
 
-### Government → Not Applicable
+### Rationale for Selected Roles
 
-* In the work–life balance experiments, the government must coordinate across multiple departments, for example: the Ministry of Labor enforces maximum working‐hour limits; the pension authority calibrates relevant pension regulations; and the tax authority adapts fiscal rules to the evolving social environment.
+**Individual → Overlapping Generations (OLG) Model**  
+The Overlapping Generations framework simulates ​**age‑specific labor and consumption choices**​. Preferences for work–life balance vary across the life cycle—young workers may ​**strive for career growth**​, whereas middle‑aged and older cohorts prioritize ​**health and family time**​.
 
-### Firm → Perfect Competition
+**Government → Not Applicable**  
+In the work–life balance experiments, the government must coordinate across multiple departments, for example: the Ministry of Labor enforces maximum working‐hour limits; the pension authority calibrates relevant pension regulations; and the tax authority adapts fiscal rules to the evolving social environment.
 
-* Firms compete for talent through ​**wages and flexible work policies**​. Workers choose environments that best match their balance preferences, forcing companies to adapt HR strategies.
+**Firm → Perfect Competition**  
+Firms compete for talent through ​**wages and flexible work policies**​. Workers choose environments that best match their balance preferences, forcing companies to adapt HR strategies.
 
-### Bank →No-Arbitrage Platform
-
-* Provide ​**life‑cycle financial products**​—retirement accounts, health insurance, liquidity support. As work–life patterns shift, so do saving needs and demand for these services.
+**Bank →Non-Profit Platform **  
+Provide ​**life‑cycle financial products**​—retirement accounts, health insurance, liquidity support. As work–life patterns shift, so do saving needs and demand for these services.
 
 ---
 
 ## **​3. Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type     | Role Description                                                                                                                                                                                                                 |
-| ------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | RL Agent          | Simulate households’ work–life balance decisions using reinforcement learning.                                                                                                                                                 |
 | Firm                 | Rule‑Based Agent | Firms adapt hiring strategies and workplace arrangements (e.g., offering flexible hours) according to labor-market supply–demand dynamics and worker preferences, exhibiting predictable behavior.                              |
 | Bank | Rule‑Based Agent | Financial institutions deliver standardized life-cycle services—such as savings advice or insurance products—based on individuals’ life-cycle stage and income volatility, making them well-suited for rule-based simulation. |
-
-### **Individual → RL Agent**
-
-* Reinforcement learning excels at modeling optimal household​**​ decision‐making**​. Here, each household maximizes utility to choose its work–life balance, more accurately reflecting the pursuit of “work–life balance.” In contrast, rule‐based agents offer no flexibility for parameter adjustment, and purely data‐driven agents can only infer strategies from historical observations.
-
-### **Firm → Rule-Based Agent**
-
-* In a Perfectly Competitive Market, firms tailor employment terms (e.g., flexible working hours) to labor‐market preferences. These adaptive behaviors can be effectively captured by rule‐based agents.
-
-### **Bank → Rule-Based Agent**
-
-* Financial institutions offer a range of products (e.g., liquidity support when working hours fall) based on labor‐market conditions. Rule‐based agents adjust financial strategies according to predefined rules to fulfill simulation requirements.
-
----
 
 ## **​4. Illustrative Experiment**
 

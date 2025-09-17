@@ -76,24 +76,31 @@ class ppo_agent:
 
         self.net = mlp_net(state_dim=self.obs_dim, num_actions=self.action_dim).to(self.device)
 
-        self.load_exist_policy = False  # choose from "test" or "train". if test, get action from trained ppo policy.
+        # Initialize the MLP network
+        self.net = mlp_net(state_dim=self.obs_dim, num_actions=self.action_dim).to(self.device)
 
-        if self.load_exist_policy == True and agent_name == "households":
-            if "OLG" in self.envs.households.type:
-                self.net.load_state_dict(torch.load("agents/models/trained_policy/ppo_OLG/ppo_net.pt",
-                                                    weights_only=True))  # 30,31   # 这个 policy 不能风投，当时没设置
-            elif "ramsey" in self.envs.households.type:
-                self.net = mlp_net(state_dim=self.obs_dim, num_actions=3).to(
-                    self.device)  # 训练的是 action_dim =3,如果不要最后一维，可以截掉
-                self.net.load_state_dict(
-                    torch.load("agents/models/trained_policy/ppo_Ramsey/ppo_net.pt", weights_only=True))
-        elif self.load_exist_policy == True and agent_name == "government":
-            if self.envs.government.type == "tax":
-                self.net.load_state_dict(
-                    torch.load("agents/models/bc_ppo/100/gdp/run8/ppo_net.pt", weights_only=True))
-            # elif self.envs.government.type == "central_bank":
-            #     self.net.load_state_dict(
-            #         torch.load("agents/models/bc_ppo/100/gdp/run15/ppo_net.pt", weights_only=True))
+        # Flag to choose whether to load an existing policy or not
+        self.load_exist_policy = False  # Set to True to load the trained policy
+
+        # Check if the policy should be loaded
+        if self.load_exist_policy:
+            if agent_name == "households":
+                # Load policy for household agent based on its type
+                if "OLG" in self.envs.households.type:
+                    # Load PPO policy for OLG type households
+                    self.net.load_state_dict(
+                        torch.load("agents/models/trained_policy/ppo_OLG/ppo_net.pt", weights_only=True))
+                elif "ramsey" in self.envs.households.type:
+                    # Load PPO policy for Ramsey type households
+                    self.net = mlp_net(state_dim=self.obs_dim, num_actions=3).to(self.device)  # Action dim = 3
+                    self.net.load_state_dict(
+                        torch.load("agents/models/trained_policy/ppo_Ramsey/ppo_net.pt", weights_only=True))
+    
+            elif agent_name == "government":
+                # Load policy for government agent if type is 'tax'
+                if self.envs.government.type == "tax":
+                    self.net.load_state_dict(
+                        torch.load("agents/models/bc_ppo/100/gdp/run8/ppo_net.pt", weights_only=True))
 
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.args.p_lr, eps=1e-5)
         lambda_function = lambda epoch: 0.97 ** (epoch // 10)

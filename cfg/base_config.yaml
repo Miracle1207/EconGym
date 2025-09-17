@@ -116,8 +116,8 @@ Environment:
         params:
           type: "perfect"
           type_list: ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
-          alpha: 0.25
-          Z: 10.0
+          alpha: 0.36
+          Z: 1.0
           sigma_z: 0.0038
           epsilon: 0.5
           real_action_max: [1e8]

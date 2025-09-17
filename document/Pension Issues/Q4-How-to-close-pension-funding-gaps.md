@@ -19,7 +19,9 @@ The main drivers of the pension gap include:
 Using an economic‐simulation platform, this study examines the effectiveness of various policy tools in addressing the pension gap, specifically:
 
 * **Government strategies:** How do different policy options (delayed retirement, higher contribution rates, optimized pension‐fund investment) affect fiscal sustainability?
+* **Household Actions:** How can individuals, through reinforcement learning behaviors that maximize long-term benefits, contribute to reducing the pension gap? Can individual actions work in synergy with policy measures to jointly narrow the gap?
 * **Policy‐mix design and evaluation:** How can the government combine policies optimally to reduce the pension gap, and what are the subsequent impacts on economic growth, labor markets, and income distribution?
+
 
 ### 1.4 Research Significance
 
@@ -31,85 +33,106 @@ Using an economic‐simulation platform, this study examines the effectiveness o
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                                                                                 |
-| ------------------------ | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual           | OLG Model   | Use the OLG framework to capture lifecycle differences in contribution, saving, and post-retirement benefit receipt behavior.                                                    |
-| Government             | Pension Authority                    | Manage pension revenue and expenditure balance, including collection of social‐insurance contributions, pension disbursements, fiscal subsidies, and government‐bond issuance. |
-| Firm                 | Perfect Competiton          | Model how wages and employment rates—driven by labor supply and demand—indirectly affect total pension contributions.                                                          |
-| Bank | No-Arbitrage Platform | Simulate pension‐fund investment behavior and how long-term interest‐rate movements impact fund returns and fiscal support capacity.                                           |
+| Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
+| Government  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | — (same as above)                                                                                                                                    | $$a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                          |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
-### Individual → Overlapping Generations (OLG) Model
 
-* This study focuses on intergenerational wealth transfers, contribution behaviors, and retirement decisions. The Overlapping Generations (OLG) framework captures how cohorts at different ages respond to the pension system, accurately reflecting household heterogeneity under aging.
+---
 
-### Government → Pension Authority  
+### Rationale for Selected Roles
 
-* Acting as both system designer and fiscal backer, the Pension Authority must address the pension gap through policy levers such as taxation, bond issuance, and structural reforms.
+**Individual → Overlapping Generations (OLG) Model**  
+This study focuses on intergenerational wealth transfers, contribution behaviors, and retirement decisions. The Overlapping Generations (OLG) framework captures how cohorts at different ages respond to the pension system, accurately reflecting household heterogeneity under aging.
 
-### Firm → Perfect Competiton
+**Government → Pension Authority**  
+Acting as both system designer and fiscal backer, the Pension Authority must address the pension gap through policy levers such as taxation, bond issuance, and structural reforms.
 
-* Wages and employment are determined by supply and demand and directly affect households’ contribution capacity and retirement savings. Embedding this market mechanism in the experiment is essential.
+**Firm → Perfect Competiton**  
+Wages and employment are determined by supply and demand and directly affect households’ contribution capacity and retirement savings. Embedding this market mechanism in the experiment is essential.
 
-### Bank → No-Arbitrage Platform
-
-* Pension‐fund investment returns influence system sustainability. An arbitrage‐free model ensures proper long‐term rate dynamics and fiscal‐return mechanisms.
+**Bank → Non-Profit Platform**  
+Pension‐fund investment returns influence system sustainability. An arbitrage‐free model ensures proper long‐term rate dynamics and fiscal‐return mechanisms.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type               | Role Description                                                                                                                        |
-| ------------------------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent      | Reproduce real-world lifecycle-based decisions on contributions, savings, and retirement using behavior cloning.                        |
 | Government             | Rule-Based Agent / RL Agent | Define rule-based triggers (e.g., bond issuance, tax hikes) in response to pension shortfalls, or employ RL to optimize pension policy. |
 | Firm                 | Rule-Based Agent            | Map labor-market responses via supply–demand rules, reflecting wage and employment dynamics.                                           |
 | Bank | Rule-Based Agent            | Set investment-return adjustments based on long-term interest rates and demographic shifts using explicit rules.                        |
 
-### Individual → Behavior Cloning Agent
+## **4. Running the Experiment**
 
-* Household decisions exhibit bounded rationality and path dependence (e.g., long-tenured workers favor stable contributions and timely retirement). A Behavior Cloning Agent trained on historical data better captures these realistic strategies.
+### **4.1 Quick Start**
 
-### Government → Rule-Based Agent / RL Agent
+To run the simulation with a specific problem scene, use the following command:
 
-* Pension reforms typically follow fiscal thresholds (e.g., tax hikes when shortfall exceeds a limit). A Rule-Based Agent encodes clear reaction rules to efficiently simulate policy logic.
-* For multi-objective trade-offs (balancing pension sustainability, fiscal deficits, and household welfare),the RL Agent enables the government to learn optimal actions—such as adjusting retirement age, tax rates, or subsidy levels—through trial-and-error.
+```Bash
+python main.py --problem_scene ""
+```
 
-### Firm → Rule-Based Agent
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-* Wages and employment are driven by supply–demand dynamics. Rule-Based Agents quickly reflect price adjustments arising from shifts in labor-market structure.
+### **4.2 Problem Scene Configuration**
 
-### Bank → Rule-Based Agent
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-* Interest-rate and return mechanisms in financial markets follow economic laws (e.g., diminishing marginal returns to capital). A Rule-Based Agent facilitates building investment-return models linked to demographic shifts and government-bond issuance.
+### **Example ​**​**YAML**​**​ Configuration: ​**
 
 ---
 
-## 4. Illustrative Experiments
+## 5.Illustrative Experiments
 
-### 4.1 Experiment: Optimal Pension Policy Solution
+### Experiment: Optimal Pension Policy Solution
 
 * **Experiment Description:**
+  
   Train reinforcement learning models using the minimization of the pension gap as the reward function, and compare the outcomes across different RL algorithms as well as between RL-based policies and baseline scenarios.
-* **Involved Social Roles:**
-  * *Government:* Pension Department
-  * *Individual*​*s:* OLG Model
-* **AI**​**​ Agents:**
-  * *Government:* RL Agent/Rule-Based Agent
-  * *Individual*​*s:* RL Agent/Behavior Cloning Agent/Rule-Based Agent
 * **Experimental Variables:**
+  
   * Pension replacement rate
   * GDP impact
+* **Baselines:**
+  
+  We constructed the simulated economic environment using **Individuals modeled as Behavior Cloning (BC) Agents with the OLG framework** and the **​Government modeled as different strategies (​**​​**DDPG**​**, ​**​​**PPO**​​**)**​. The bar charts illustrate household pension distributions under alternative household–government policy combinations:
+  
+  * **Policy settings (groups of bars):**
+    * ​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the DDPG algorithm.
+    * ​**pension\_gap\_OLG\_1000\_bc\_pension\_ppo**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the PPO algorithm.
+    * ​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is implemented as a Rule-Based Agent.
+    * ​**pension\_gap\_OLG\_1000\_ppo\_pension\_ppo**​: Households are modeled as RL Agents (PPO) , using the OLG model with 1000 households, and the government is also trained using the PPO algorithm.
+  * **Color coding (within each group):**
+    * Left panel: Different bar colors represent **age cohorts** (<24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
+    * Right panel: Different bar colors represent **wealth classes** (rich, middle, poor, and mean).
 * **Visualized Experimental Results：**
 
 ![Pension Q4 P1](../img/PensionQ4P1.png)
 
-**Figure 1:** Pension outcomes under different training strategies, considering four combinations of household and government policies: BC\_DDPG, BC\_PPO, BC\_Rule-Based, and PPO\_PPO (with the first referring to the household strategy and the second to the government strategy).From the age-based breakdown (left panel), the BC\_PPO combination yields the highest total pension surplus. RL-based government strategies significantly reduce pension gaps among young and middle-aged groups, with the PPO\_PPO strategy achieving the smallest pension deficit for young individuals.From the wealth-based breakdown (right panel), the BC\_PPO strategy again results in the highest overall pension surplus. The PPO\_PPO combination substantially lowers the pension gap for wealthy households (blue bars).
+**Figure 1:** From the age-based breakdown, the BC\_PPO combination yields the highest total pension surplus. RL-based government strategies significantly reduce pension gaps among young and middle-aged groups, with the PPO\_PPO strategy achieving the smallest pension deficit for young individuals.From the wealth-based breakdown, the BC\_PPO strategy again results in the highest overall pension surplus. The PPO\_PPO combination substantially lowers the pension gap for wealthy households (blue bars).
+
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the DDPG algorithm.
+  * **pension\_gap\_OLG\_1000\_bc\_pension\_ppo***​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the PPO algorithm.
+  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is implemented as a Rule-Based Agent.
+  * ​**pension\_gap\_OLG\_1000\_ppo\_pension\_ppo**: Households are modeled as RL Agents (PPO) , using the OLG model with 1000 households, and the government is also trained using the PPO algorithm.
 
 ![Pension Q4 P2](../img/PensionQ4P2.png)
 
-**Figure 2:** GDP trajectories under different training strategies. The BC\_DDPG combination achieves both stronger long-term GDP growth and a longer simulation duration (blue line), while the PPO\_PPO strategy results in the lowest GDP level.
+**Figure 2:** GDP trajectories under different training strategies. The BC\_DDPG combination achieves both stronger long-term GDP growth and a longer simulation duration, while the PPO\_PPO strategy results in the lowest GDP level.
 
 * Although RL strategies are effective in reducing the pension gap, this optimization may come at the cost of **economic growth—particularly ​**when households also adopt RL-based decision-making. Overall, the combination where households follow Behavior Cloning and the government adopts an RL Agent strikes the best balance between sustained economic development and minimizing the pension gap.
+
+
 

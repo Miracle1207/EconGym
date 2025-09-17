@@ -29,59 +29,43 @@ This study leverages an economic simulation platform to investigate the long-ter
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                  |
-| ------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model                             | Analyze the impact of technological progress on the labor market across different age groups                      |
-| Government            | Fiscal Authority                  | Study how the government responds to unemployment and income distribution issues caused by tech progress          |
-| Firm                 | Perfect Competition                   | Simulate how firms adjust labor demand and production decisions in response to technological change               |
-| Bank | No-Arbitrage Platform | Assess the impact of technological progress on financial markets, such as borrowing demand and investment returns |
+| Social Role | Selected Type       | Role Description                                                                                                                                     | Observation                                                                                                                                          | Action                                                                                   | Reward                                 |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------- |
+| Individual  | OLG Model           | Analyze how households at different wealth levels respond to inheritance-tax policy, including changes in saving, consumption, and labor supply.    | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$                               | — (same as above)<br/>OLG includes pension if retired |
+| Government  | Fiscal Authority    | Design and adjust inheritance-tax policy and assess its impact on public finances.                                                                  | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.       | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending            | GDP growth, equality, welfare          |
+| Firm       | Perfect Competition | Observe how shifts in consumer demand affect firms’ production and pricing strategies.                                                              | /                                                                                                                                                    | /                                                                                          | Zero (long-run)                        |
+| Bank       | Non-Profit Platform | Study capital-market reactions to inheritance-tax policy, particularly changes in saving rates and investment behavior.                             | /                                                                                                                                                    | No rate control                                                                            | No profit                              |
 
-### **Individual → Overlapping Generations (OLG) Model**
 
-* The OLG model is particularly suitable for **studying the direct impact of technological progress on the labor market**. It allows for the simulation of labor-related issues associated with demographic structure changes across different generations.
+---
 
-### **Government → Fiscal Authority  ​**
+### Rationale for Selected Roles
 
-* Technological progress may lead to **rising income inequality or increased unemployment**. The government, through the Treasury Department , is responsible for formulating policy responses—such as taxation or subsidies—to mitigate these effects.
+**Individual → Overlapping Generations (OLG) Model**  
+The OLG model is particularly suitable for **studying the direct impact of technological progress on the labor market**. It allows for the simulation of labor-related issues associated with demographic structure changes across different generations.
 
-### **Firm → Perfect Competition**
+**Government → Fiscal Authority**  
+Technological progress may lead to **rising income inequality or increased unemployment**. The government, through the Treasury Department , is responsible for formulating policy responses—such as taxation or subsidies—to mitigate these effects.
 
-* In a perfectly competitive market, wages are determined by supply and demand. This structure allows the model to **more directly reflect the impact of technological progress** on firm-level wage setting and labor demand.
+**Firm → Perfect Competition**  
+In a perfectly competitive market, wages are determined by supply and demand. This structure allows the model to **more directly reflect the impact of technological progress** on firm-level wage setting and labor demand.
 
-### **Bank → No-Arbitrage Platform**
-
-* Technological progress can influence investment returns and capital market dynamics. Therefore, arbitrage-free financial institutions are selected to simulate impacts on variables such as interest rates. Commercial banks are not selected in this context, as their focus is primarily on deposit and lending activities, which have a more limited scope of influence in this setting.
+**Bank → Non-Profit Platform**  
+Technological progress can influence investment returns and capital market dynamics. Therefore, arbitrage-free financial institutions are selected to simulate impacts on variables such as interest rates. Commercial banks are not selected in this context, as their focus is primarily on deposit and lending activities, which have a more limited scope of influence in this setting.
 
 ---
 
 ## **3. Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type    | Role Description                                                                                             |
-| ------------------------ | ------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Rule-Based Agent | Determine household decisions on consumption, savings, and labor in response to technological progress.      |
 | Government             | RL Agent         | Regulate government behavior based on the principle of maximizing long-term social welfare.                  |
 | Firm                 | Rule-Based Agent | Define how firms adjust wages, production scale, and hiring decisions in response to technological change.   |
 | Bank  | Rule-Based Agent | Set interest rates and investment returns to assess the impact of technological progress on capital markets. |
 
-### **Individual → Rule-Based Agent**
-
-* Since this economic simulation does not involve optimal policy solving, household behavior can be modeled using rule-based agents. For example, a decision rule might state: "If wages increase, then consumption increases."
-
-### **Government → RL Agent**
-
-* Government behavior is modeled using a reinforcement learning (RL) agent, which learns how to **respond based on long-term reward optimization** through training and interaction with the environment.
-
-### **Firm → Rule-Based Agent**
-
-* In a perfectly competitive market, firms’ labor demand and production decisions can be defined by **economic supply** and ​**demand rules**​. Therefore, a rule-based agent is used to represent firm behavior under technological progress.
-
-### **Bank → Rule-Based Agent**
-
-* Interest rate adjustments in financial markets can be governed by economic principles. For example, "Technological progress increases the return on capital, which in turn affects the interest rate." Rule-based agents are used to simulate such mechanisms.
-
----
 
  ## **4. Illustrative Experiment**
 
