@@ -29,12 +29,13 @@ This study leverages an economic simulation platform to investigate the long-ter
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                  |
-| ------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model                             | Analyze the impact of technological progress on the labor market across different age groups                      |
-| Government            | Fiscal Authority                  | Study how the government responds to unemployment and income distribution issues caused by tech progress          |
-| Firm                 | Perfect Competition                   | Simulate how firms adjust labor demand and production decisions in response to technological change               |
-| Bank | No-Arbitrage Platform | Assess the impact of technological progress on financial markets, such as borrowing demand and investment returns |
+| Social Role | Selected Type       | Role Description                                                                                                                                     | Observation                                                                                                                                          | Action                                                                                   | Reward                                 |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------- |
+| Individual  | OLG Model           | Analyze how households at different wealth levels respond to inheritance-tax policy, including changes in saving, consumption, and labor supply.    | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$                               | — (same as above)<br/>OLG includes pension if retired |
+| Government  | Fiscal Authority    | Design and adjust inheritance-tax policy and assess its impact on public finances.                                                                  | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.       | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending            | GDP growth, equality, welfare          |
+| Firm       | Perfect Competition | Observe how shifts in consumer demand affect firms’ production and pricing strategies.                                                              | /                                                                                                                                                    | /                                                                                          | Zero (long-run)                        |
+| Bank       | Non-Profit Platform | Study capital-market reactions to inheritance-tax policy, particularly changes in saving rates and investment behavior.                             | /                                                                                                                                                    | No rate control                                                                            | No profit                              |
+
 
 ---
 
@@ -49,7 +50,7 @@ Technological progress may lead to **rising income inequality or increased unemp
 **Firm → Perfect Competition**  
 In a perfectly competitive market, wages are determined by supply and demand. This structure allows the model to **more directly reflect the impact of technological progress** on firm-level wage setting and labor demand.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 Technological progress can influence investment returns and capital market dynamics. Therefore, arbitrage-free financial institutions are selected to simulate impacts on variables such as interest rates. Commercial banks are not selected in this context, as their focus is primarily on deposit and lending activities, which have a more limited scope of influence in this setting.
 
 ---
