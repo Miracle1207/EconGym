@@ -33,52 +33,35 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Monopolistic Competition Market          | Firms employ product‐differentiation strategies to compete for market share, serving as the direct source of changes in variety.         |
 | Bank  | No-Arbitrage Platform | Provide capital support and feedback on long‐term investment efficiency and macroeconomic return paths.                                  |
 
-### Individual → Ramsey Model
+---
 
-* Households maximize utility when choosing products, showing sensitivity to prices, variety, and brand preferences; they are the core agents for measuring welfare changes.
+### Rationale for Selected Roles
 
-### Government → Fiscal Authority
+**Individual → Ramsey Model**  
+Households maximize utility when choosing products, showing sensitivity to prices, variety, and brand preferences; they are the core agents for measuring welfare changes.
 
-* As the regulatory authority, the government may set standards or implement incentives/restrictions on firms’ diversification behaviors; its policy‐response mechanisms should be incorporated into the model.
+**Government → Fiscal Authority**  
+As the regulatory authority, the government may set standards or implement incentives/restrictions on firms’ diversification behaviors; its policy‐response mechanisms should be incorporated into the model.
 
-### Firm → Monopolistic Competition Market
+**Firm → Monopolistic Competition Market**  
+Firms hold pricing power and engage in non‐price competition through differentiation strategies, forming the key structural foundation of the simulation.
 
-* Firms hold pricing power and engage in non‐price competition through differentiation strategies, forming the key structural foundation of the simulation.
-
-### Bank → No-Arbitrage Platform
-
-* Provide business loans and household‐savings platforms, reflecting the efficiency of resource allocation over long‐run paths and aiding analysis of macro‐efficiency changes.
+**Bank → No-Arbitrage Platform**  
+Provide business loans and household‐savings platforms, reflecting the efficiency of resource allocation over long‐run paths and aiding analysis of macro‐efficiency changes.
 
 ---
 
 ## **3. Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                         |
-| ------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Reproduce consumers’ reactions to prices and product variety based on real preference data.                                             |
 | Government             | Rule-Based Agent       | Monitor product-differentiation trends under fixed policy rules, identifying intervention thresholds and boundaries.                     |
 | Firm                 | RL Agent               | Firms dynamically adjust product strategies via reinforcement learning to optimize profits and market share.                             |
 | Bank | Rule-Based Agent       | Reflect resource-allocation efficiency in the financial system and simulate how interest-rate changes affect firms’ expansion capacity. |
 
-### Individual → BC Agent
-
-* A Behavior Cloning Agent trained on historical consumption data simulates consumer choice preferences, capturing real‐world reactions to brand, category, and other variety factors, thereby enhancing the fidelity of consumer behavior in the simulation.
-
-### Government → Rule-Based Agent
-
-* The government applies fixed policy rules based on market structure and welfare indicators (e.g., “issue antitrust guidance when market concentration exceeds a threshold”), creating a controlled environment for policy experiments.
-
-### Firm → RL Agent
-
-* Firms use reinforcement learning to discover profit‐maximizing strategies—such as whether to expand product lines, set price levels, or enter/exit markets—thus modeling the endogenous evolution of the variety–efficiency trade‐off.
-
-### Bank → Rule-Based Agent
-
-* Interest‐rate and lending policies automatically adjust according to economic variables (e.g., market returns, asset distributions), ensuring stable foundational operations of the financial market.
-
----
 
 ## 4. Illustrative Experiments
 
