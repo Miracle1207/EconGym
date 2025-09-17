@@ -123,7 +123,7 @@ For each simulation step:
   * **estate\_10%\_bc\_saez\_100\_OLG (Yellow line):** Households are modeled as Behavior Cloning (BC) Agents under the OLG framework, with the estate tax rate set to 10%.
 * **Visualized Experimental Results：**
 
-![Fiscal Q4 P1](../img/Fiscal%20Q4%20P1.png)
+![Fiscal Q2P1 inherit](../img/Fiscal%20Q2P1%20inherit.png)
   
   **Figure 1:**  Imposing an inheritance tax clearly raises aggregate output, but increasing the rate from 10% to 15% yields little additional benefit.
 * Compared to a zero–tax scenario, introducing an inheritance tax improves the efficiency of wealth circulation and thus boosts GDP. The inheritance-tax policy also carries a signaling effect, but further rate increases have diminishing returns for GDP growth.
@@ -154,11 +154,11 @@ For each simulation step:
     * **Right panel:** Different bar colors represent household wealth by **income/wealth classes** (rich, middle, poor, and mean).
 * **Visualized Experimental Results：**
   
-![Fiscal Q4 P2](../img/Fiscal%20Q4%20P2.png)
+![Fiscal Q2P2 inherit](../img/Fiscal%20Q2P2%20inherit.png)
   
   **Figure 2: ​**Higher estate taxes consistently reduce household wealth across different age groups and income levels.
   
-![Fiscal Q4 P3](../img/Fiscal%20Q4%20P3.png)
+![Fiscal Q2P3 inherit](../img/Fiscal%20Q2P3%20inherit.png)
   
   **​ Figure 3:** Higher estate taxes enhance labor incentives for low-income households but discourage labor among middle-income groups; minimal age-based effects observed.
 * Estate taxes decrease household wealth.
