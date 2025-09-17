@@ -36,21 +36,21 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfect Competition      | Observe how shifts in consumer demand affect firms’ production and pricing strategies.                                                          |
 | Bank | No-Arbitrage Platform | Study capital-market reactions to inheritance-tax policy, particularly changes in saving rates and investment behavior.                          |
 
-### **Individual → Overlapping Generations (OLG) Model**
+---
 
-* The OLG framework tracks lifecycle patterns of income, saving, and estate transfers, making it an ideal tool to study how inheritance tax influences intergenerational wealth transmission, labor incentives, and consumption decisions.
+### Rationale for Selected Roles
 
-### **Government → Fiscal Authority**
+**Individual → Overlapping Generations (OLG) Model**  
+The OLG framework tracks lifecycle patterns of income, saving, and estate transfers, making it an ideal tool to study how inheritance tax influences intergenerational wealth transmission, labor incentives, and consumption decisions.
 
-* As the authority that establishes and collects inheritance tax, the Tax Policy Department shapes policy features—such as exemption thresholds and redistribution rules—and directly affects fiscal revenue and aggregate demand. Modeling this actor enables simulation of policy adjustments’ transmission through the public budget.
+**Government → Fiscal Authority**  
+As the authority that establishes and collects inheritance tax, the Tax Policy Department shapes policy features—such as exemption thresholds and redistribution rules—and directly affects fiscal revenue and aggregate demand. Modeling this actor enables simulation of policy adjustments’ transmission through the public budget.
 
-### **Firm → Perfect Competition**
+**Firm → Perfect Competition**  
+A perfectly competitive setting ensures efficient price formation, allowing clear observation of how an inheritance tax shifts supply and demand.
 
-* A perfectly competitive setting ensures efficient price formation, allowing clear observation of how an inheritance tax shifts supply and demand.
-
-### **Bank →  No-Arbitrage Platform**
-
-* No-Arbitrage Platform reliably reflect household asset allocation and returns across different life stages without introducing leverage dynamics or risk-preference distortions, making them well-suited for analyzing the medium- and long-term effects of inheritance tax on saving behavior and wealth accumulation paths.
+**Bank → No-Arbitrage Platform**  
+No-Arbitrage Platform reliably reflect household asset allocation and returns across different life stages without introducing leverage dynamics or risk-preference distortions, making them well-suited for analyzing the medium- and long-term effects of inheritance tax on saving behavior and wealth accumulation paths.
 
 ---
 
@@ -58,30 +58,14 @@ As an example, we selected the following roles from the social role classificati
 
 *(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
 
-| Social Role            | AI Agent Type                             | Role Description                                                                                                                       |
-| ------------------------ | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Rule-Based Agent / Behavior Cloning Agent | Use a rule-based agent to model household decision processes.Employ behavior cloning to learn patterns from empirical data.           |
 | Government             | Data-Based Agent                          | Reproduce changes in public finances after inheritance-tax implementation within the simulation environment using historical tax data. |
 | Firm                 | Rule-Based Agent                          | Encode market supply–demand rules to simulate consumer behavior under inheritance tax.                                                |
 | Bank | Rule-Based Agent                          | Configure financial-market operations based on macroeconomic variables.                                                                |
 
-### **Individual → Rule-Based Agent / Behavior Cloning Agent**
 
-* The Rule-Based Agent is simpler to implement, while the Behavior Cloning Agent can track real household decision patterns, making it well suited for evaluating intergenerational behavioral adjustments.
-
-### **Government → Data-Based Agent**
-
-* The government’s behavior model is built on historical data and can dynamically simulate how different inheritance-tax settings affect fiscal revenue, redistribution efficiency, and the wealth structure of society, aiding assessment of policy adaptability and control effectiveness across economic environments.
-
-### **Firm → Rule-Based Agent**
-
-* Market responses primarily manifest in changes to wages and capital returns; a rule-based agent efficiently reproduces the indirect effects of price mechanisms—under perfect competition—on household labor supply and saving behavior, offering clarity and facilitating causal inference.
-
-### **Bank → Rule-Based Agent**
-
-* Financial institutions operate under stable rules and can simulate how inheritance-tax interventions reshape household asset allocation and long-term wealth accumulation trajectories, making them ideal for observing structural adjustments in saving behavior under different tax regimes.
-
----
 
 ## 4. Illustrative Experiment
 
