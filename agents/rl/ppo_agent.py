@@ -152,7 +152,7 @@ class ppo_agent:
             gov_obses = torch.tensor(np.array(gov_obs_list), dtype=torch.float32).to(self.device)
             next_gov_obses = torch.tensor(np.array(next_gov_obs_list), dtype=torch.float32).to(self.device)
             gov_actions = torch.tensor(np.array(gov_action_list), dtype=torch.float32).to(self.device)
-            gov_rewards = torch.tensor(np.array(gov_reward_list), dtype=torch.float32).to(self.device).unsqueeze(-1)
+            gov_rewards = torch.tensor(np.array(gov_reward_list), dtype=torch.float32).to(self.device)
 
             obs_tensor = gov_obses
             # action_tensor = self.inverse_action_wrapper(gov_actions)
@@ -188,9 +188,6 @@ class ppo_agent:
                 return None, None
 
             market_obs_list = [obs.get('market', []) for obs in obs_dict]
-            # # If market observations are missing, skip training safely
-            # if len(market_obs_list) == 0 or (isinstance(market_obs_list[0], list) and len(market_obs_list[0]) == 0):
-            #     return None, None
 
             next_market_obs_list = [obs.get('market', []) for obs in next_obs_dict]
             market_action_list = [action.get('market', []) for action in action_dict]
@@ -237,12 +234,22 @@ class ppo_agent:
         td_target = reward_tensor + self.args.gamma * next_value * inverse_dones
         value, pi = self.net(obs_tensor)
         td_delta = td_target - value
+        # If td_delta has an action or agent dimension (>1), reduce to a scalar per timestep
+        if td_delta.dim() >= 2 and td_delta.size(-1) > 1:
+            td_delta = td_delta.mean(dim=-1, keepdim=True)
 
         advantage = self.compute_advantage(self.args.gamma, self.args.tau, td_delta.cpu()).to(self.device)
+        # Ensure advantage is broadcastable to action log-prob shape later
+        if advantage.dim() < 1:
+            advantage = advantage.unsqueeze(-1)
 
         mu, std = pi
         action_dists = torch.distributions.Normal(mu.detach(), std.detach())
         old_log_probs = action_dists.log_prob(action_tensor)
+        # Make advantage broadcastable to log-prob shape
+        advantage_b = advantage
+        for _ in range(old_log_probs.dim() - advantage.dim()):
+            advantage_b = advantage_b.unsqueeze(-1)
 
         for i in range(self.args.update_each_epoch):
             value, pi = self.net(obs_tensor)
@@ -250,8 +257,12 @@ class ppo_agent:
             action_dists = torch.distributions.Normal(mu, std)
             log_probs = action_dists.log_prob(action_tensor)
             ratio = torch.exp(log_probs - old_log_probs)
-            surr1 = ratio * advantage
-            surr2 = torch.clamp(ratio, 1 - self.args.clip, 1 + self.args.clip) * advantage
+            # Recompute broadcastable advantage in case shapes changed
+            advantage_loop = advantage
+            for _ in range(log_probs.dim() - advantage.dim()):
+                advantage_loop = advantage_loop.unsqueeze(-1)
+            surr1 = ratio * advantage_loop
+            surr2 = torch.clamp(ratio, 1 - self.args.clip, 1 + self.args.clip) * advantage_loop
             actor_loss = torch.mean(-torch.min(surr1, surr2))
             critic_loss = torch.mean(F.mse_loss(value, td_target.detach()))
             total_loss = actor_loss + self.args.vloss_coef * critic_loss
@@ -288,35 +299,8 @@ class ppo_agent:
         mu, sigma = pi
         action_dist = torch.distributions.Normal(mu, sigma)
         action = action_dist.sample()
-        # if self.agent_name == "government" and self.envs.government.type == "tax" or self.agent_name == "tax_gov":
-        #     action[0][2] = 0
-        #     action[0][3] = 0
-        #
-        # if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-        #     return self.gov_action_wrapper(action.cpu().numpy().flatten())
-        # else:
-        #     return action.cpu().numpy()
+
         return action.cpu().numpy()
-
-    def gov_action_wrapper(self, gov_action):
-        return self.agent.real_action_min + (self.agent.real_action_max - self.agent.real_action_min) * gov_action
-
-    def inverse_action_wrapper(self, action):
-        if action.is_cuda:
-            action_np = action.cpu().numpy()  # 将张量从 GPU 移动到 CPU 并转换为 numpy 数组
-        else:
-            action_np = action.numpy()  # 如果 action 已经在 CPU 上，则直接转换为 numpy 数组
-
-        result_np = (action_np - self.agent.real_action_min) / (
-                self.agent.real_action_max - self.agent.real_action_min)
-
-        # 将计算结果转换回 PyTorch 的 tensor，并根据原始 action 是否在 GPU 上决定是否要将结果放回 GPU
-        result_tensor = torch.tensor(result_np, dtype=action.dtype)
-
-        if action.is_cuda:
-            return result_tensor.cuda()  # 如果原始 action 在 GPU 上，则将结果也放回 GPU
-        else:
-            return result_tensor  # 否则保持在 CPU 上
 
     def save(self, dir_path):
         torch.save(self.net.state_dict(), str(dir_path) + '/ppo_net.pt')

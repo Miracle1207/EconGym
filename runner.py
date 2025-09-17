@@ -174,8 +174,14 @@ class Runner:
             wandb.finish()
             
     def sub_agent_training(self, agent_name, agent_policy, transition_dict, loss):
+        # Ensure loss slots exist for this agent to avoid KeyError during accumulation
+        if agent_name not in loss['actor_loss']:
+            loss['actor_loss'][agent_name] = 0.0
+        if agent_name not in loss['critic_loss']:
+            loss['critic_loss'][agent_name] = 0.0
         if agent_policy.on_policy == True:
             actor_loss, critic_loss = agent_policy.train(transition_dict)
+            # For on-policy, overwrite with the latest epoch losses
             loss['actor_loss'][agent_name] = actor_loss
             loss['critic_loss'][agent_name] = critic_loss
         else:

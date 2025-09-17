@@ -1,6 +1,7 @@
 from env.env_core import EconomicSociety
 from agents.rule_based.rules_core import rule_agent
 from agents.rl.ppo_agent import ppo_agent
+from agents.rl.sac_agent import sac_agent
 from agents.behavior_cloning.bc_agent import bc_agent
 from agents.rl.ddpg_agent import ddpg_agent
 from agents.real_data.real_data import real_agent
@@ -15,6 +16,7 @@ from runner import Runner
 agent_algorithms = {
     "real": real_agent,
     "ppo": ppo_agent,
+    "sac": sac_agent,
     "rule_based": rule_agent,
     "bc": bc_agent,
     "llm": llm_agent,
