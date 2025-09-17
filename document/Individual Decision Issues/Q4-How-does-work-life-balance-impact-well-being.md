@@ -30,11 +30,12 @@ In economics, utility is the key variable for measuring individual well‐being 
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                                                                                     |
-| ------------------------ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model                             | To simulate variations in work-leisure preferences across life-cycle stages (youth, middle age, older age) and capture the trajectory of long-term utility evolution.                |
-| Firm                 | Perfect Competition         | Firms adjust employment arrangements (e.g., flexible working hours) to attract labor in line with worker preferences, reflecting market supply–demand equilibrium mechanisms.       |
-| Bank | No-Arbitrage Platform | To offer life-cycle financial products (retirement savings, insurance, etc.) that allow individuals to smooth consumption and hedge risks under changing work–life balance regimes. |
+| Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
+
 
 ---
 
@@ -49,7 +50,7 @@ In the work–life balance experiments, the government must coordinate across mu
 **Firm → Perfect Competition**  
 Firms compete for talent through ​**wages and flexible work policies**​. Workers choose environments that best match their balance preferences, forcing companies to adapt HR strategies.
 
-**Bank →No-Arbitrage Platform**  
+**Bank →Non-Profit Platform **  
 Provide ​**life‑cycle financial products**​—retirement accounts, health insurance, liquidity support. As work–life patterns shift, so do saving needs and demand for these services.
 
 ---
