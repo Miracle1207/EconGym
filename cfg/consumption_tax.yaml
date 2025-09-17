@@ -1,7 +1,7 @@
 Environment:
   env_core:
     problem_scene: "consumption_tax"
-    consumption_tax_rate: 0.06   # update consumption_tax_rate!!
+    consumption_tax_rate: 0.07   # update consumption_tax_rate!!
     episode_length: 300
   Entities:
     - entity_name: 'government'
@@ -13,7 +13,7 @@ Environment:
         params:
           type: 'ramsey'
           type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
-          households_n: 100
+          households_n: 1000
           action_dim: 2
           real_action_max: [1.0, 1.0]
           real_action_min: [-0.5, 0.0]
@@ -22,7 +22,7 @@ Environment:
 
 Trainer:
   house_alg: "bc"
-  gov_alg: "ppo"
+  gov_alg: "saez"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1

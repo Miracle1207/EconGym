@@ -57,27 +57,35 @@ class Bank(BaseEntity):
                 # If no central bank, assign values from the first government agent
                 self.reserve_ratio = self.gov_agent.reserve_ratio
                 self.base_interest_rate = self.gov_agent.base_interest_rate
-                
+        
+        if self.type == "non_profit":
+            repay_Kt = np.sum((self.last_lending_rate + 1 - self.depreciation_rate) * society.market.Kt)
+            repay_Bt = (1 + self.last_lending_rate) * self.gov_agent.Bt
+            pay_At = (1 + self.last_deposit_rate) * np.sum(society.households.at)
+            society.market.Kt_next = repay_Kt + repay_Bt - pay_At + np.sum(society.households.at_next) - self.gov_agent.Bt_next
+
+        elif self.type == "commercial":
+            self.commercial_step(society)
+        else:
+            raise ValueError(f"Invalid bank type: '{self.type}'. Expected 'non_profit' or 'commercial'.")
+        self.last_deposit_rate = copy.copy(self.deposit_rate)
+        self.last_lending_rate = copy.copy(self.lending_rate)
+    
+    def commercial_step(self, society):
         # Settle the previous period's borrowing interest and deposit rate
         previous_settlement = - (1 + self.last_deposit_rate) * np.sum(society.households.at) \
                               + np.sum((self.last_lending_rate + 1 - self.depreciation_rate) * society.market.Kt) \
-                              + self.last_lending_rate * self.gov_agent.Bt  # Government debt rates are usually based on the central bank's benchmark rate.
-
+                              + (1 + self.last_lending_rate) * self.gov_agent.Bt  # Government debt rates are usually based on the central bank's benchmark rate.
+    
         current_deposit = np.sum(society.households.at_next)  # Current deposits in the bank
-        
+    
         total_deposit = self.current_account + previous_settlement + current_deposit
-
+    
         society.market.Kt_next = self.compute_next_kt(society, total_deposit)
-        
-        self.current_loan = np.sum(society.market.Kt_next) + self.gov_agent.Bt_next  # Current loans issued
-
-        self.current_account += previous_settlement + current_deposit - self.current_loan  # Current account balance
-
+    
+        current_loan = np.sum(society.market.Kt_next) + self.gov_agent.Bt_next  # Current loans issued
+        self.current_account += previous_settlement + current_deposit - current_loan  # Current account balance
         self.profit = np.sum(self.lending_rate * society.market.Kt_next) + self.lending_rate * self.gov_agent.Bt_next - self.deposit_rate * current_deposit
-        # print(f"Step {society.step_cnt} -- bank profit {self.profit} -- lending rate {self.lending_rate} -- deposit rate {self.deposit_rate} -- Kt next {society.market.Kt_next} -- Bt next {self.gov_agent.Bt_next} -- current deposit {current_deposit}")
-        
-        self.last_deposit_rate = copy.copy(self.deposit_rate)
-        self.last_lending_rate = copy.copy(self.lending_rate)
         
     def compute_next_kt(self, society, total_deposit):
         consumption_sum = society.households.final_consumption.sum(axis=0)[:, np.newaxis]
