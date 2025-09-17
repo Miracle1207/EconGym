@@ -31,52 +31,35 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfect Competition | Under perfect competition, firms adjust production and investment in response to changes in financing costs, reflecting QE’s transmission to the real economy. |
 | Bank | Commercial Banks             | Profit‐maximizing banks transmit QE effects via credit supply and interest‐rate channels, influencing corporate financing and household asset allocation.     |
 
-### Individual → Ramsey Model
+---
 
-* The Ramsey model is well suited to simulate a representative household’s optimal consumption and saving decisions in response to long-term interest-rate changes. Under QE, it captures how households adjust savings based on expected returns and prices, allowing evaluation of policy effects on asset accumulation and intertemporal welfare—especially for analyzing wealth‐distribution shifts and utility distortions induced by QE.
+### Rationale for Selected Roles
 
-### Government → Central Bank
+**Individual → Ramsey Model**  
+The Ramsey model is well suited to simulate a representative household’s optimal consumption and saving decisions in response to long-term interest-rate changes. Under QE, it captures how households adjust savings based on expected returns and prices, allowing evaluation of policy effects on asset accumulation and intertemporal welfare—especially for analyzing wealth‐distribution shifts and utility distortions induced by QE.
 
-* Within the QE framework, the central bank is the sole policy implementer, responsible for setting asset‐purchase volumes, adjusting the policy rate, and guiding market expectations.
+**Government → Central Bank**  
+Within the QE framework, the central bank is the sole policy implementer, responsible for setting asset‐purchase volumes, adjusting the policy rate, and guiding market expectations.
 
-### Firm → Perfect Competition
+**Firm → Perfect Competition**  
+In a perfectly competitive market, price, capital, and labor allocations respond directly to policy shocks, facilitating analysis of QE’s transmission to real economic activity (e.g., investment, output, wages). Its transparent structure also aids in measuring how financial‐variable changes pass through to the real economy.
 
-* In a perfectly competitive market, price, capital, and labor allocations respond directly to policy shocks, facilitating analysis of QE’s transmission to real economic activity (e.g., investment, output, wages). Its transparent structure also aids in measuring how financial‐variable changes pass through to the real economy.
-
-### Bank → Commercial Banks
-
-* Commercial banks are the core nodes in QE’s transmission mechanism: their funding sources, lending behavior, and rate‐setting directly affect credit supply. After asset purchases depress long‐term rates, banks act as intermediaries to expand lending and adjust risk preferences, thereby altering corporate financing capacity and household consumption choices—making them the critical bridge between central‐bank policy and microeconomic responses.
+**Bank → Commercial Banks**  
+Commercial banks are the core nodes in QE’s transmission mechanism: their funding sources, lending behavior, and rate‐setting directly affect credit supply. After asset purchases depress long‐term rates, banks act as intermediaries to expand lending and adjust risk preferences, thereby altering corporate financing capacity and household consumption choices—making them the critical bridge between central‐bank policy and microeconomic responses.
 
 ---
 
 ## ​3.​ Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                                  |
-| ------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Learns actual household consumption and investment behaviors under changing interest rates to simulate response differences across income groups. |
 | Government             | Rule-Based Agent       | Sets interest-rate and asset-purchase rules, ensuring interpretability and adherence to central-bank protocols.                                   |
 | Firm                 | Rule-Based Agent       | Models firms adjusting output and investment according to marginal principles, faithfully reproducing supply–demand dynamics.                    |
 | Bank | Rule-Based Agent       | Captures banks’ lending adjustments based on rate rules, providing a stable and controllable representation of financial transmission channels.  |
 
-### Individual → BC Agent
-
-* The BC Agent can learn consumption and saving behaviors of different income groups under a quantitative-easing regime from historical data. Compared with rule-based methods, it offers richer heterogeneity expression and, unlike RL methods, greater stability, making it suitable for simulating QE’s real impact on household behavior.
-
-### Government → Rule-Based Agent
-
-* Quantitative easing relies on predetermined rules (e.g., asset-purchase volumes, interest-rate paths). Using a Rule-Based Agent accurately expresses the policy reaction function, ensuring central-bank actions are transparent and controllable, and avoiding policy deviations caused by RL instability.
-
-### Firm → Rule-Based Agent
-
-* Firms in a perfectly competitive market follow profit-maximization principles. A Rule-Based Agent can simulate mechanisms such as marginal returns to capital and production decisions; its simple structure and efficient execution are well suited to capturing how changes in financing costs transmit to real output.
-
-### Bank → Rule-Based Agent
-
-* Commercial banks set lending rates and adjust credit supply based on policy rates and risk premiums. Rule-Based Agents facilitate clear modeling of monetary-policy transmission channels and, compared with RL or data-driven methods, better align with the financial system’s structural setup.
-
----
 
 ## ​4.​ Illustrative Experiment
 
