@@ -109,48 +109,6 @@ class Runner:
                 "actor_loss": {},
                 "critic_loss": {}
             }
-            # for t in range(self.args.epoch_length):
-            #     obs_dict_tensor = self._get_tensor_inputs(obs_dict)
-            #     action_dict = self.agents_get_action(obs_dict_tensor)
-            #     next_obs_dict, rewards_dict, done = self.envs.step(action_dict, t)
-            #
-            #     on_policy_process = all(self.envs.recursive_decompose_dict(self.agents_policy, lambda a: a.on_policy))
-            #     if on_policy_process:
-            #         # on policy
-            #         transition_dict['obs_dict'].append(obs_dict)
-            #         transition_dict['next_obs_dict'].append(next_obs_dict)
-            #         transition_dict['action_dict'].append(action_dict)
-            #         transition_dict['reward_dict'].append(rewards_dict)
-            #         transition_dict['done'].append(float(done))
-            #
-            #     else:
-            #         # off policy: replay buffer
-            #         transition_dict['obs_dict'] = obs_dict
-            #         transition_dict['next_obs_dict'] = next_obs_dict
-            #         transition_dict['action_dict'] = action_dict
-            #         transition_dict['reward_dict'] = rewards_dict
-            #         transition_dict['done'] = float(done)
-            #
-            #         self.buffer.add(transition_dict)
-            #
-            #     obs_dict = next_obs_dict
-            #     if done:
-            #         obs_dict = self.envs.reset()
-            #
-            # for agent_name in self.agents_policy:
-            #     sub_agent_policy = self.agents_policy[agent_name]
-            #     if isinstance(sub_agent_policy, dict):
-            #         for name in sub_agent_policy:
-            #             sum_loss = self.sub_agent_training(agent_name=name,
-            #                                     agent_policy=sub_agent_policy[name],
-            #                                     transition_dict=transition_dict,
-            #                                     loss=sum_loss)
-            #
-            #     else:
-            #         sum_loss = self.sub_agent_training(agent_name=agent_name,
-            #                                 agent_policy=sub_agent_policy,
-            #                                 transition_dict=transition_dict,
-            #                                 loss=sum_loss)
  
             for t in range(self.args.epoch_length):
                 obs_dict_tensor = self._get_tensor_inputs(obs_dict)
@@ -197,7 +155,7 @@ class Runner:
                 
                 if self.wandb:
                     wandb.log(economic_idicators_dict)
-                    wandb.log(sum_loss) # todo: 不确定多层 dict 是否能存？
+                    wandb.log(sum_loss)
                 
                 print(
                     '[{}] Epoch: {} / {}, Frames: {}, Gov_Rewards: {:.3f}, House_Rewards: {:.3f}, Firm_Rewards: {:.3f}, Bank_Rewards: {:.3f},  years:{:.3f}'.format(
