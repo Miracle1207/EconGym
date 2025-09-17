@@ -38,52 +38,36 @@ As an example, we selected the following roles from the social role classificati
 | Firm                | Perfectly Competition          | Firms hire labor and produce goods in a perfectly competitive environment, responding to labor-supply changes driven by population aging. |
 | Bank | No-Arbitrage Platform | Serve as intermediaries offering saving and lending services, measuring how declines in the savings rate affect financial markets.        |
 
-### Individual → Overlapping Generations (OLG) Model
+---
 
-* To capture heterogeneity in consumption, saving, and labor-supply across age cohorts, we employ the Overlapping Generations (OLG) framework. The OLG model naturally represents intergenerational wealth transfers, demographic shifts, and life-cycle behaviors.
+### Rationale for Selected Roles
 
-### Government → Pension Authority
+**Individual → Overlapping Generations (OLG) Model**  
+To capture heterogeneity in consumption, saving, and labor-supply across age cohorts, we employ the Overlapping Generations (OLG) framework. The OLG model naturally represents intergenerational wealth transfers, demographic shifts, and life-cycle behaviors.
 
-* Facing rising pension expenditures and a shrinking tax base, the government’s Pension Department is directly responsible for formulating and adjusting policies related to population aging.
+**Government → Pension Authority**  
+Facing rising pension expenditures and a shrinking tax base, the government’s Pension Department is directly responsible for formulating and adjusting policies related to population aging.
 
-### Firm → Perfectly Competition
+**Firm → Perfectly Competition**  
+Wages in a perfectly competitive market are set by supply and demand, accurately reflecting price-mechanism adjustments in labor supply driven by demographic aging.
 
-* Wages in a perfectly competitive market are set by supply and demand, accurately reflecting price-mechanism adjustments in labor supply driven by demographic aging.
-
-### Bank → No-Arbitrage Platform
-
-* We simulate long-run capital-market structures—investment and return mechanisms—under demographic change. Since this experiment focuses on structural shifts rather than short-term credit behavior, we use a no-arbitrage intermediary rather than a commercial-bank role.
+**Bank → No-Arbitrage Platform**  
+We simulate long-run capital-market structures—investment and return mechanisms—under demographic change. Since this experiment focuses on structural shifts rather than short-term credit behavior, we use a no-arbitrage intermediary rather than a commercial-bank role.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                             |
-| ------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Replicate sensitivity differences of various income groups to interest-rate changes, reflecting realistic saving and consumption behaviors.  |
 | Government             | Rule-Based Agent       | Set benchmark rates and policy rules to control the permissible range of interest-margin fluctuations.                                       |
 | Firm                 | Rule-Based Agent       | Simulate firms’ direct responses to changes in financing costs, consistent with the perfect-competition assumption.                         |
 | Bank | Rule-Based Agent       | Commercial banks set margins according to preset strategies, facilitating the assessment of systemic effects under different margin regimes. |
 
-### Individual → Behavior Cloning Agent
 
-* Household behaviors (e.g., saving rates, retirement decisions) are often driven by historical patterns. Behavior Cloning reproduces the non-rational traits of older cohorts—such as savings inertia and rigid labor supply—observed in real data.
-
-### Government → Rule-Based Agent
-
-* Government fiscal decisions follow rule-based triggers (e.g., “if pension shortfall exceeds a threshold, raise the tax rate”), which aptly captures policy responses tied to explicit economic indicators.
-
-### Firm → Rule-Based Agent
-
-* Wage and employment dynamics are governed by supply–demand rules within a perfectly competitive framework, making rule-based modeling ideal for simulating labor-market adjustments.
-
-### Bank → Rule-Based Agent
-
-* Investment-return adjustments are set according to long-term interest-rate trends and demographic shifts, lending themselves naturally to rule-based agent implementation.
-
----
 ## **4. Running the Experiment**
 
 ### **4.1 Quick Start**
