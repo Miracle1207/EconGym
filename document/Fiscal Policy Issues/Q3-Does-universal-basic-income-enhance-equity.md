@@ -20,9 +20,9 @@ UBI faces three major hurdles: (i) ​**fiscal cost**​, (ii) ​**potential wo
 
 Using an economic-simulation platform, we explore how UBI affects:
 
-* **Income inequality** : Does UBI narrow the gap between rich and poor?
-* **Household labour supply** : How will total working hours change?
-* **Household wealth accumulation** : What is the impact on asset holdings?
+* ​**Income inequality**​: Does UBI narrow the gap between rich and poor?
+* ​**Household wealth**​: How does UBI influence the long-term accumulation and distribution of household assets?
+* ​**Household labor supply**​: How will total working hours change across different income groups, and does UBI reduce incentives to work?
 
 ### 1.4 Research Significance
 
@@ -73,19 +73,34 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent                          | Encode supply–demand rules to simulate labor-market responses under UBI.                                                    |
 | Bank | Rule-Based Agent                          | Define financial-market operations based on macroeconomic variables.                                                         |
 
+---
+## **4. Running the Experiment**
 
-## 4.​ Illustrative Experiment
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiment**
 
 ### Experiment 1: Impact of UBI on Social Equity
 
-* **Experiment Description: ​**  Compare the effects of two UBI levels on income distribution.
-* **Involved Social Roles:**
-  * *Firm:* Perfectly Competitive Market
-  * *Individual:* OLG Model
-  * *Government: ​*Fiscal Authority
-* **AI​ Agents:**
-  * *Individual: ​*Behavior Cloning Agent
-  * *Government: ​*RL Agent
+* **Experiment Description: ​**
+
+    Compare the effects of two UBI levels on income distribution.
 * **Experimental Variables:**
   * UBI amount (UBI = 0 or UBI = 50% of the base wage)
   * Income inequality (measured by the Gini coefficient of income)
@@ -108,11 +123,16 @@ For each time period t:
     government_expenditure += total UBI distributed
 ```
 
+* ​**Baselines**​:
+
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  * ​**baseline\_real\_ppo\_100\_OLG (Blue line)** : The baseline scenario where households are modeled under the OLG (Overlapping Generations) framework using Behavior Cloning (BC) strategies, while the government adopts PPO-based reinforcement learning policies. This setting does not include UBI transfers.
+  * ​**UBO\_real\_ppo\_100\_OLG (Green line)** ​: The experimental scenario where households are modeled under the OLG framework using Behavior Cloning (BC) strategies, while the government adopts PPO-based reinforcement learning policies. In this case, a Universal Basic Income (UBI) scheme is introduced, providing unconditional transfers to all households.
 * **Visualized Experimental Results：**
 
 ![Fiscal Q2 P1](../img/Fiscal%20Q2%20P1.png)
 
-**Figure 1: ​**In the simulation with UBI (green line), the income Gini coefficient is lower than in the economy without UBI, indicating that the UBI policy reduces wealth inequality.
+**Figure 1: ​**In the simulation with UBI, the income Gini coefficient is lower than in the economy without UBI, indicating that the UBI policy reduces wealth inequality.
 
 * The UBI policy effectively reduces the gap between rich and poor.
 
@@ -120,22 +140,33 @@ For each time period t:
 
 ### Experiment 2: UBI’s Effect on Household Labor Supply
 
-* **Experiment Description: ​**  Assess how varying UBI levels influence average working hours across income deciles.
-* **Involved Social Roles:**
-  * *Firm:* Perfectly Competitive Market
-  * *Individual:* OLG Model
-  * *Government:* Fiscal Authority
-* **AI**​**​ Agents:**
-  * *Individual: ​*Behavior Cloning Agent
-  * *Government: ​*RL Agent
+* **Experiment Description: ​**
+  
+  Assess how varying UBI levels influence average working hours across income deciles.
 * **Experimental Variables:**
+  
   * UBI level (UBI = 0 or UBI = 50% of the base wage)
   * Average working hours of households by income tier
+* ​**Baselines**​:
+
+  We constructed the simulated economic environment using Individuals modeled as Behavior Cloning Agents under the OLG (Overlapping Generations) framework and the Government modeled as a PPO-based RL Agent. The bar charts illustrate average household working hours under two different policy settings:
+  
+  * ​**Left group (baseline\_real\_ppo\_100\_OLG)** : Represents the baseline policy without Universal Basic Income (UBI).
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
+  * ​**Right group (UBO\_real\_ppo\_100\_OLG)** : Represents the Universal Basic Income (UBI) policy, where households receive unconditional transfers.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
 * **Visualized Experimental Results：**
 
 ![Fiscal Q2 P2](../img/Fiscal%20Q2%20P2.png)
 
-**Figure 2: ​**Implementing the UBI policy (right-hand bar chart) reduces labor hours across all income brackets.
+**Figure 2: ​**Implementing the UBI policy reduces labor hours across all income brackets.
 
 * Implementing the UBI policy significantly reduces working hours across all income groups. Note that in our simulation of 100 households, the top 10% income cohort is small, so some high-income households opt out of labor entirely.
+
 
