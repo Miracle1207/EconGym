@@ -37,12 +37,13 @@ Using an economic-simulation platform, we explore how UBI affects:
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                             |
-| ------------------------ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-|      Individual        | OLG Model                             | Analyze how different age cohorts respond to UBI—tracking changes in saving, consumption, and labor supply. |
-| Government             | Fiscal Authority                   | Design and adjust UBI policy, and evaluate its impact on public finances.                                    |
-| Firm         | Perfect Competition         | Observe shifts in labor demand and supply under UBI, as well as changes in wages and employment.             |
-| Bank | No-Arbitrage Platform | Study capital-market reactions to UBI, particularly alterations in saving rates and investment behavior.     |
+| Social Role | Selected Type       | Role Description                                             | Observation                                                  | Action                                                       | Reward                                   |
+| ----------- | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$                               | — (same as above)<br/>OLG includes pension if retired |
+| Government  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                     | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.       | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending            | GDP growth, equality, welfare          |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                   | /                                                                                                                                                    | /                                                                                          | Zero (long-run)                        |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.     | /                                                                                                                                                    | No rate control                                                                            | No profit                              |
+
 
 ---
 
@@ -57,7 +58,7 @@ The Fiscal Authority is directly responsible for funding and administering UBI, 
 **Firm → Perfect Competition**  
 A perfectly competitive market eliminates distortions from market power, allowing a clear assessment of UBI’s influence on labor supply.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 UBI may alter saving rates and investment patterns; a no-arbitrage framework is ideal for analyzing these financial dynamics.
 
 ---
