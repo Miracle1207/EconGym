@@ -48,7 +48,7 @@ This study focuses on the behavioral responses of households and firms to increa
 **Firm  → Perfect Competition**  
 Firms in the market primarily seek ​**profit maximization**​, and thus they may adopt the **"996" model** to boost short-term productivity. However, excessively long working hours may lead to a decline in ​**labor productivity**​, hinder **innovation** capabilities, and potentially cause an imbalance in the labor market's supply and demand. Companies need to strike a balance between work hours and production efficiency, while also considering **worker welfare** and ​**talent attraction**​.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 The primary role of **financial institutions** is to provide ​**loans**​, ​**investment opportunities**​, and ​**asset management**​. Long working hours may influence **workers' consumption** and ​**savings decisions**​. For example, excessive working hours may suppress consumption, leading to an increase in ​**household savings rates**​, which in turn can impact the ​**capital markets**​.
 
 ---
