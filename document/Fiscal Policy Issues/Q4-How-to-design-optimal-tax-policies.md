@@ -6,14 +6,15 @@
 
 * Taxation is the government’s core tool for **resource allocation, income redistribution, and macroeconomic stabilization.** Different tax structures (e.g., labor‐income taxes, capital‐gains taxes, consumption taxes) have varied impacts on economic efficiency, income distribution, and fiscal sustainability. Designing an “optimal tax policy” means maximizing social welfare—balancing growth incentives and equity—while ensuring fiscal balance.
 * Traditional optimal‐tax theory minimizes distortionary effects without harming efficiency. However, real economies feature heterogeneous agents, income inequality, and political constraints. Reinforcement Learning (RL) offers a powerful “policy search” approach to dynamically explore the optimal strategy space.
-
+  
 ### 1.2 Research Questions
 
-Using an economic‐simulation platform, this study investigates how a government can employ RL algorithms to dynamically optimize the tax mix, specifically:
+Using an economic-simulation platform, this study explores how governments can employ RL algorithms to design optimal tax policies, specifically examining:
 
-* Trade‐offs among labor‐income taxes, consumption taxes, and capital taxes.
-* Effects of rate adjustments on GDP, the Gini coefficient, and fiscal surplus.
-* Feedback mechanisms from tax policy to household saving, labor‐force participation, and consumption.
+* ​**Household Income**​: How do different tax policies affect household disposable income across income groups?
+* ​**Labor Supply**​: What is the impact of tax rate adjustments on household working hours and labor participation?
+* **GDP**​​**​ Effects**​: How do changes in the tax mix influence long-term GDP growth and fiscal sustainability?
+* ​**Social Equity**​: To what extent can optimized tax policies reduce inequality and improve overall fairness in the economy?
 
 ### 1.3 Research Significance
 
@@ -62,42 +63,82 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent | Model wages and employment reacting to tax changes via supply–demand mechanism rules.                                               |
 | Bank | Rule-Based Agent | Adjust interest rates and capital returns based on rules governing savings behavior and tax burdens.                                 |
 
-## 4. Illustrative Experiments
+---
 
-### Experiment 1: RL-Based Optimal Tax-Structure Policy Trial
+## **4. Running the Experiment**
 
-* **Experiment Description:** In the simulated economic environment, the government can use a reinforcement learning (RL) agent to automatically learn the optimal mix and rates of labor-income, consumption, and capital taxes. In this experiment, we compare the government’s use of reinforcement learning methods (DDPG), economic rule-based methods (Seaz Tax), and the real tax rates set by the U.S. federal government (2022), and discuss the impact of different tax rate settings and tax structures on the macroeconomy.
-* **Involved Social Roles:**
-  * *Individual:* Ramsey Model
-  * *Government:* Treasury Department
-  * *Market: ​*Perfectly Competitive Market
-  * *Financial Institutions:* Arbitrage-Free Financial Intermediaries
-* **AI**​**​ Agents:**
-  * *Individual:* Rule-Based Agent
-  * *Government:* RL Agent/Rule-Based Agent/Data-Based Agent
-  * *Market: ​*Rule-Based Agent
-  * *Financial Institutions: ​*Rule-Based Agent
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## 5.Illustrative Experiments
+
+### Experiment : RL-Based Optimal Tax-Structure Policy Trial
+
+* **Experiment Description:**
+
+  In the simulated economic environment, the government can use a reinforcement learning (RL) agent to automatically learn the optimal mix and rates of labor-income, consumption, and capital taxes. In this experiment, we compare the government’s use of reinforcement learning methods (DDPG), economic rule-based methods (Seaz Tax), and the real tax rates set by the U.S. federal government (2022), and discuss the impact of different tax rate settings and tax structures on the macroeconomy.
 * **Experimental Variables:**
+  
   * Different government department agents and their corresponding tax structures.
   * Macro indicators: GDP, wealth Gini coefficient, average household wealth
-* **Visualized Experimental Results:**
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.The bar charts show household wealth distributions under different tax policies.
+  * **Left group (optimal\_tax\_ramsey\_100\_bc\_tax\_saez):** Households are modeled under the Ramsey Model with Behavior Cloning Agents, while the government adopts the Saez rule-based tax formula to determine optimal taxation.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
+  * **Middle group (optimal\_tax\_ramsey\_100\_bc\_tax\_ddpg):** Households follow the Ramsey Model with Behavior Cloning Agents, and the government employs a DDPG-based RL algorithm to dynamically adjust tax rates over time.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
+  * **Right group (optimal\_tax\_ramsey\_100\_bc\_tax\_us\_federal):** Households are modeled with the Ramsey Model and Behavior Cloning Agents, while the government applies the U.S. federal tax system as the benchmark baseline.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
+* **Visualized Experimental Results：**
+
 ![Fiscal Q4 P1](../img/Fiscal%20Q4%20P1.png)
 
-​**Figure 1**​: Comparison of household wealth under different tax policies at T=192years. The tax system trained by the RL-Agent (red bar) results in higher average household wealth, with the average wealth of the wealthier households (blue bar) significantly higher than the other two tax systems. The simulated economy using the Seaz rule (left chart) has the second highest average household wealth, while the simulated economy using the real U.S. tax system (right chart) shows the lowest average household wealth.
+​**Figure 1**​: Comparison of household wealth under different tax policies at T=192 years. The tax system trained by the RL-Agent (middle chart) results in higher average household wealth, with the average wealth of the wealthier households (blue bar) significantly higher than the other two tax systems. The simulated economy using the Seaz rule (left chart) has the second highest average household wealth, while the simulated economy using the real U.S. tax system (right chart) shows the lowest average household wealth.
 
 ![Fiscal Q4 P2](../img/Fiscal%20Q4%20P2.png)
 
-​**Figure 2**:At T=192 years, the phenomenon reflected in household wealth is identical, where the tax system trained by the RL-Agent maximizes consumption across different wealth tiers of households.
+​**Figure 2**​:At T=192 years, the phenomenon reflected in household wealth is identical, where the tax system trained by the RL-Agent maximizes consumption across different wealth tiers of households.
+
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  * **optimal\_tax\_ramsey\_100\_bc\_tax\_saez (Blue line):** Households are modeled under the Ramsey Model with Behavior Cloning Agents, while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.
+  * **optimal\_tax\_ramsey\_100\_bc\_tax\_ddpg (Green line):** Households follow the Ramsey Model with Behavior Cloning Agents, and the government employs a **DDPG-based RL algorithm** to dynamically adjust tax rates over time.
+  * **optimal\_tax\_ramsey\_100\_bc\_tax\_us\_federal (Yellow line):** Households are modeled with the Ramsey Model and Behavior Cloning Agents, while the government applies the **U.S. federal tax system** as the benchmark baseline.
 
 ![Fiscal Q4 P3](../img/Fiscal%20Q4%20P3.png)
 
-​**Figure 3**​: Comparison of long-term GDP growth levels under different tax policies. The RL-Agent economy has the fastest GDP growth (green line), followed by the economy with the Seaz rule (blue line). The simulated economy using the real U.S. tax system experiences the lowest household consumption and GDP growth (yellow line).
+​**Figure 3**​: Comparison of long-term GDP growth levels under different tax policies. The RL-Agent economy has the fastest GDP growth, followed by the economy with the Seaz rule. The simulated economy using the real U.S. tax system experiences the lowest GDP growth.
 
 ![Fiscal Q4 P4](../img/Fiscal%20Q4%20P4.png)
 
-​**Figure 4**​: As time progresses, all tax strategies significantly reduce the wealth gap. However, when the government uses the RL-Agent (green line), the long-term wealth disparity remains relatively higher.
+​**Figure 4**​: As time progresses, all tax strategies significantly reduce the wealth gap. However, when the government uses the RL-Agent , the long-term wealth disparity remains relatively higher.
 
 * Through the learning process of the RL-Agent, the simulated economy’s government is able to design a tax system that maximizes aggregate wealth accumulation, household income growth, and total social consumption.
 * All tax strategies effectively reduce long-term income inequality in the simulated economy, though the RL-Agent–led government tends to exhibit relatively higher long-run inequality.
 
-  
