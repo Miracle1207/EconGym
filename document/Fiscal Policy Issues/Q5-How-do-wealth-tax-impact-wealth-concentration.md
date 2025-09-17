@@ -35,52 +35,35 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfect Competition            | Wealth taxes affect capital accumulation and labor allocation indirectly through changes in prices and wages in competitive markets.                            |
 | Bank | No-Arbitrage Platform | Financial intermediaries adjust investment strategies and asset portfolios in response to long-term shifts in returns caused by wealth taxation.                |
 
-### Households → Ramsey Model
+---
 
-* Households face life-cycle income and wealth-accumulation trajectories and make labor, consumption, and saving choices based on utility-maximization principles. They are the direct responders and transmission channel for tax policy.
+### Rationale for Selected Roles
 
-### Government → Fiscal Authority 
+**Households → Ramsey Model**  
+Households face life-cycle income and wealth-accumulation trajectories and make labor, consumption, and saving choices based on utility-maximization principles. They are the direct responders and transmission channel for tax policy.
 
-* The government is responsible for designing the property-tax system, levying asset taxes, and adjusting tax-rate structures to achieve redistribution goals and fiscal balance.
+**Government → Fiscal Authority**   
+The government is responsible for designing the property-tax system, levying asset taxes, and adjusting tax-rate structures to achieve redistribution goals and fiscal balance.
 
-### Firm → Perfect Competition
+**Firm → Perfect Competition**  
+Wages and goods prices are determined by supply and demand. Tax policies indirectly influence firm and household behavior through these market mechanisms.
 
-* Wages and goods prices are determined by supply and demand. Tax policies indirectly influence firm and household behavior through these market mechanisms.
-
-### Bank → No-Arbitrage Platform
-
-* Asset prices and capital returns are affected by tax-burden changes over the long run. The financial system adjusts savings and investment allocations to restore intertemporal equilibrium.
+**Bank → No-Arbitrage Platform**  
+Asset prices and capital returns are affected by tax-burden changes over the long run. The financial system adjusts savings and investment allocations to restore intertemporal equilibrium.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type     | Role Description                                                                                                                                |
-| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             |  Behavior Cloning          | Household behavior is modeled by learning from empirical data, enabling the simulation to replicate realistic decision-making under varying tax regimes.              |
 | Government             | Rule‐Based Agent | Define multiple property‐tax brackets as experimental inputs and observe their effects on macroeconomic and distributional indicators.         |
 | Firm                 | Rule‐Based Agent | Adjust wages and prices according to labor‐market rules, transmitting the marginal effects of tax burdens on economic activity.                |
 | Bank | Rule‐Based Agent | Adjust interest rates and returns based on changes in savings and capital accumulation, reflecting taxation’s impact on financial equilibrium. |
 
-### **Individual → BC Agent**
-
-* When facing different property tax rates, households must dynamically balance labor, savings, and investment decisions. A Behavior Cloning (BC) Agent, trained on real-world data, can **replicate more realistic decision-making patterns**, thereby enhancing the fidelity of the simulation.
-
-### **Government → Rule‐Based Agent**
-
-* The government sets multiple property‐tax rules (e.g., 0%, 1%, 2%, 3%) and holds the regime constant during experiments. It observes social feedback to evaluate each tax schedule’s redistributive and fiscal effects.
-
-### **Firm → Rule‐Based Agent**
-
-* Wages, employment, and goods prices adjust via supply–demand rules, ensuring simulated market feedback to tax changes is both realistic and controllable.
-
-### **Bank → Rule‐Based Agent**
-
-* Interest‐rate and capital‐return mechanisms map post‐tax changes in saving and investment through simple rules, aiding simulation of asset‐price trends and market stability.
-
----
 
 ## 4.Illustrative Experiments
 
