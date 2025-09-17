@@ -44,7 +44,7 @@ The central bank designs and implements monetary policy, **directly controlling 
 **Firm → Perfect Competition**  
 A perfectly competitive market reflects **the basic mechanism of prices set by supply and demand**, helping to clearly observe how inflation‐control policies (e.g., rate increases) affect labor markets, goods prices, and investment returns. It avoids distortions from oligopoly or monopoly‐induced price rigidity, making it well suited to identify policy effects.
 
-**Bank → Commercial Banks**
+**Bank → Commercial Banks**  
 During inflation control, commercial banks typically raise lending and deposit rates, which in turn affect firms’ financing costs and households’ saving returns. Compared with a no-arbitrage framework, commercial banks also involve microbehavior such as risk assessment, credit rationing, and asset‐liability management, enabling a more realistic simulation of credit contraction or expansion under policy shifts.
 
 ---
