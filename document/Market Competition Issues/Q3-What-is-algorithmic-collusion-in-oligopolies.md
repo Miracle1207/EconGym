@@ -41,52 +41,35 @@ Select the following roles from the social role classification of the economic s
 | Firm                 | Oligopoly                       | Strategic interactions exist between firms, and algorithms may achieve price coordination without explicit communication, simulating a non-collaborative game environment.   |
 | Bank | No-Arbitrage Platform | Financial markets follow the no-arbitrage principle, with investment and risk assessment relying on market price fluctuations, indirectly influenced by algorithmic pricing. |
 
-### **Individual → Ramsey Model**
+---
 
-* As representative agents, households optimize**​ intertemporal utility** under dynamically changing prices set by oligopolistic firms. The Ramsey model assumes a forward-looking, infinitely-lived household, suitable for analyzing aggregate consumption responses to price dynamics without incorporating agent-level heterogeneity.
+### Rationale for Selected Roles
 
-### **Government → Fiscal Authority**
+**Individual → Ramsey Model**  
+As representative agents, households optimize**​ intertemporal utility** under dynamically changing prices set by oligopolistic firms. The Ramsey model assumes a forward-looking, infinitely-lived household, suitable for analyzing aggregate consumption responses to price dynamics without incorporating agent-level heterogeneity.
 
-* The Tax Policy Department focuses on market competition and consumer welfare. When price manipulation or collusion is detected in the market, the government intervenes through ​**antitrust laws**​, price controls, or regulatory measures.
+**Government → Fiscal Authority**  
+The Tax Policy Department focuses on market competition and consumer welfare. When price manipulation or collusion is detected in the market, the government intervenes through ​**antitrust laws**​, price controls, or regulatory measures.
 
-### **Firm → ​Oligopoly Market**
+**Firm → ​Oligopoly Market**  
+Firms engage in **tacit coordination** through algorithms, leading to price consistency behavior. The oligopoly market structure provides fertile ground for ​**algorithmic collusion**​, which serves as the core behavior in this study.
 
-* Firms engage in **tacit coordination** through algorithms, leading to price consistency behavior. The oligopoly market structure provides fertile ground for ​**algorithmic collusion**​, which serves as the core behavior in this study.
-
-### **Bank → No-Arbitrage Platform**
-
-* In markets where **firm profits** and **stock prices** are closely linked, financial institutions adjust their investment portfolios, influencing capital allocation. The study aims to evaluate whether **oligopoly**​**​ collusion** distorts investment signals and impacts market efficiency.
+**Bank → No-Arbitrage Platform**  
+In markets where **firm profits** and **stock prices** are closely linked, financial institutions adjust their investment portfolios, influencing capital allocation. The study aims to evaluate whether **oligopoly**​**​ collusion** distorts investment signals and impacts market efficiency.
 
 ---
 
 ## **3.Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                                                                            |
-| ------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Can learn consumer behavior patterns from historical data, including price sensitivity, consumption tendencies, and reactions to pricing by oligopolistic firms.                            |
 | Government             | Rule-Based Agent       | The government performs specific regulatory functions in the market, such as antitrust policies, tax adjustments, and price interventions, which can be implemented using predefined rules. |
 | Firm                 | RL Agent               | Oligopolistic firms have pricing authority and typically follow profit maximization principles, making RL Agent suitable for multi-agent game simulations.                                  |
 | Bank | Rule-Based Agent       | Financial markets follow the no-arbitrage principle, and investment and pricing rely on market rule adjustments. Rule-Based Agent ensures stability and liquidity in the market simulation. |
 
-### **Individual  → BC Agent**
-
-* Household consumption behavior can be learned from historical data. A BC Agent can simulate consumption decisions at different income levels, accurately reflecting response patterns to price changes.
-
-### **Government→ Rule-Based Agent**
-
-* The government should maintain a predetermined strategy, which allows for better observation of the social impacts brought by oligopoly markets.
-
-### **Firm → RL Agent**
-
-* Firms introduce **RL-based pricing algorithms** to maximize long-term profits. With competitors also using RL, the agent learns strategies through interaction, potentially evolving collusive behavior.
-
-### **Bank → Rule-Based Agent**
-
-* Financial institutions make non-arbitrage decisions based on market rules. A **Rule-Based Agent** ensures system stability and is used to monitor the impact of firm behavior on capital markets.
-
----
 
 ## **4.Illustrative Experiment**
 
