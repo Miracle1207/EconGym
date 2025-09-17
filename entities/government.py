@@ -232,7 +232,8 @@ class Government(BaseEntity):
 
         if gov_goal == "gdp":
             log_gdp_growth = np.log(self.GDP + 1e-8) - np.log(self.old_GDP + 1e-8)
-            return self.softsign(log_gdp_growth / SCALE["gdp_growth"])   # \in (-1,1)
+            reward = self.softsign(log_gdp_growth / SCALE["gdp_growth"])
+            return np.array([reward])  # \in (-1,1)
     
         elif gov_goal == "gini":
             # Wealth Gini improvement
@@ -245,17 +246,19 @@ class Government(BaseEntity):
             after_tax_income_gini = society.gini_coef(society.households.post_income)
             impr_i = before_tax_income_gini - after_tax_income_gini
             # return (delta_income_gini + delta_wealth_gini) * 100
-            r = self.softsign((impr_w + impr_i) / (2 * SCALE["gini_scale"]))   # \in (-1,1)
-            return r
+            reward = self.softsign((impr_w + impr_i) / (2 * SCALE["gini_scale"]))  # \in (-1,1)
+            return np.array([reward])
     
         elif gov_goal == "social_welfare":
             # Sum of household utilities (social welfare)
-            return np.sum(society.households_reward)
+            social_welfare = np.sum(society.households.get_reward())
+            return np.array([social_welfare])
     
         elif gov_goal == "mean_welfare":
             # When population changes (OLG), mean welfare ≠ social welfare.
             # Mean welfare better reflects policy effects without population-size confounds.
-            return np.mean(society.households_reward)
+            mean_welfare = np.mean(society.households.get_reward())
+            return np.array([mean_welfare])
     
         elif gov_goal == "gdp_gini":
             # mixed goal

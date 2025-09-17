@@ -301,14 +301,7 @@ class ppo_agent:
         mu, sigma = pi
         action_dist = torch.distributions.Normal(mu, sigma)
         action = action_dist.sample()
-        # if self.agent_name == "government" and self.envs.government.type == "tax" or self.agent_name == "tax_gov":
-        #     action[0][2] = 0
-        #     action[0][3] = 0
-        #
-        # if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-        #     return self.gov_action_wrapper(action.cpu().numpy().flatten())
-        # else:
-        #     return action.cpu().numpy()
+
         return action.cpu().numpy()
 
     def gov_action_wrapper(self, gov_action):
