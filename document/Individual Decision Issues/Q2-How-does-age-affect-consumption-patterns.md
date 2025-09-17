@@ -41,53 +41,37 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfect Competition | Adjusts product supply and prices in response to age‑specific demand shifts.                                                                 |
 | Bank | Commercial Banks             | Provide savings and loan services, influencing liquidity constraints and intertemporal consumption preferences across age groups.             |
 
-### **Individual →  Overlapping Generations (OLG) Model /  Ramsey Model**
+---
 
-* From the OLG perspective, differences in consumption propensities are fundamentally an intergenerational issue.The OLG framework explicitly **distinguishes consumption decisions, saving behaviors, and budget constraints across age cohorts.**
-* In contrast, while the infinite‐horizon Ramsey model assumes perpetual individual lifespans, it can still differentiate age‐related variations in consumption propensity.
+### Rationale for Selected Roles
 
-### **Government →  No Specific Role**
+**Individual →  Overlapping Generations (OLG) Model /  Ramsey Model**  
+From the OLG perspective, differences in consumption propensities are fundamentally an intergenerational issue.The OLG framework explicitly **distinguishes consumption decisions, saving behaviors, and budget constraints across age cohorts.**
+In contrast, while the infinite‐horizon Ramsey model assumes perpetual individual lifespans, it can still differentiate age‐related variations in consumption propensity.
 
-* This study focuses on the endogenous differences in consumption and saving behaviors across age cohorts, driven by life-cycle characteristics such as income, health status, and household composition. It **deliberately excludes any form of fiscal intervention (e.g., taxation, subsidies, or social transfers) in order to isolate and observe the pure behavioral dynamics of different age groups.** The absence of government policies ensures that observed consumption-propensity differences stem solely from individual decision-making under varying demographic and economic conditions.
+**Government →  No Specific Role**  
+This study focuses on the endogenous differences in consumption and saving behaviors across age cohorts, driven by life-cycle characteristics such as income, health status, and household composition. It **deliberately excludes any form of fiscal intervention (e.g., taxation, subsidies, or social transfers) in order to isolate and observe the pure behavioral dynamics of different age groups.** The absence of government policies ensures that observed consumption-propensity differences stem solely from individual decision-making under varying demographic and economic conditions.
 
-### **Firm →Perfect Competition**
+**Firm →Perfect Competition**  
+To study consumption‐propensity differences, we need to **examine how markets respond to varying demand across age cohorts**. A perfectly competitive market most directly reflects the impact of demand shifts on prices and supply, making it ideal for analyzing age‐specific consumption effects. In contrast, monopolistic or oligopolistic structures can distort price signals and mask true consumer behavior, rendering them unsuitable for this research.
 
-* To study consumption‐propensity differences, we need to **examine how markets respond to varying demand across age cohorts**. A perfectly competitive market most directly reflects the impact of demand shifts on prices and supply, making it ideal for analyzing age‐specific consumption effects. In contrast, monopolistic or oligopolistic structures can distort price signals and mask true consumer behavior, rendering them unsuitable for this research.
-
-### **Bank → Commercial Banks**
-
-* Commercial banks, by offering deposit and lending services, directly shape consumption–saving decisions across age groups. Younger cohorts may rely more on borrowing (e.g., student loans, mortgages), whereas seniors focus on savings yields and pension management. By comparison, arbitrage‐free financial intermediaries are more concerned with overall capital‐market efficiency and interact less directly with individual consumers, making them less suitable for this study.
+**Bank → Commercial Banks**  
+Commercial banks, by offering deposit and lending services, directly shape consumption–saving decisions across age groups. Younger cohorts may rely more on borrowing (e.g., student loans, mortgages), whereas seniors focus on savings yields and pension management. By comparison, arbitrage‐free financial intermediaries are more concerned with overall capital‐market efficiency and interact less directly with individual consumers, making them less suitable for this study.
 
 ---
 
 ## 3.Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type     | Role Description                                                                                                                          |
-| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | RL Agent          | Each household maximizes utility by using reinforcement learning to optimize age‑specific consumption‑saving decisions and preferences. |
 | Government             | Rule‑Based Agent | Executes taxation and transfer policies according to explicit fiscal rules.                                                               |
 | Firm                 | Rule‑Based Agent | Adjusts prices and supply under predefined rules to match demand shifts and keep the market in equilibrium.                               |
 | Bank | Rule‑Based Agent | Delivers standardized financial services—uniform risk assessment and product pricing—for all age cohorts.                               |
 
-### **​Individual →​RL Agent**
 
-* Differences in **consumption propensities** across age cohorts involve complex **utility‐maximization ​**problems. Households must continually adjust their consumption–saving strategies to accommodate changing life‐cycle stages. Reinforcement learning agents can dynamically explore and learn optimal consumption–saving policies, adapting to income shocks, risk preferences, and evolving needs at each age stage. Especially under uncertainty (e.g., health risks, income shocks), RL agents develop forward‐looking consumption strategies that more realistically simulate how families adjust spending based on experience.
-
-### **Government → Rule‐Based Agent**
-
-* Fiscal policy follows well‐defined rules and regulations—such as tax codes, welfare eligibility criteria, and budget‐balance requirements. Rule‐based agents accurately simulate these institutional decision processes, including progressive tax schedules, social‐security benefit formulas, and transfer‐payment mechanisms.
-
-### **Firm → Rule‐Based Agent**
-
-* In a perfectly competitive market, equilibrium emerges from supply–demand interactions. Rule‐based agents can isolate and clearly trace how changes in consumption patterns impact the market without being confounded by more complex market dynamics.
-
-### **Bank → Rule‐Based Agent**
-
-* When studying ​**consumption‐propensity differences**​, financial institutions primarily provide stable service infrastructure rather than optimize strategies. Rule‐based agents model standardized banking procedures—loan approval criteria, interest‐rate setting formulas, and account‐management rules—each grounded in explicit risk‐management frameworks and regulatory mandates. Using rule‐based agents ensures consistency and predictability of financial services, keeping the focus on consumer behavior rather than financial‐institution strategy optimization. In contrast, reinforcement learning could introduce unnecessary complexity in financial decisions, while purely **data‐driven methods** may lack the flexibility to accommodate varying financial needs across age cohorts.
-
----
 
 ## 4.Illustrative Experiment
 
