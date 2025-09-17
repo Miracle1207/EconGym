@@ -31,52 +31,34 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfect Competition | Capture firms’ dynamic price and output adjustments based on cost changes and demand shifts.                                                                                                              |
 | Bank | Commercial Banks             | Serve as key conduits for monetary policy transmission during inflation control efforts.                                                                                                                   |
 
-### Individual → Ramsey Model
+---
 
-* The Ramsey model effectively captures **how households adjust their behavior based on expected prices, wage changes, and interest rates,** making it a key theoretical tool for analyzing consumption and labor‐supply responses to inflation control.
+### Rationale for Selected Roles
 
-### Government → Central Bank
+**Individual → Ramsey Model**  
+The Ramsey model effectively captures **how households adjust their behavior based on expected prices, wage changes, and interest rates,** making it a key theoretical tool for analyzing consumption and labor‐supply responses to inflation control.
 
-* The central bank designs and implements monetary policy, **directly controlling key variables such as interest rates and money supply**. Tools for inflation control—like rate hikes and balance‐sheet reduction—are led by the central bank, so this role accurately simulates policy transmission and its macroeconomic effects.
+**Government → Central Bank**  
+The central bank designs and implements monetary policy, **directly controlling key variables such as interest rates and money supply**. Tools for inflation control—like rate hikes and balance‐sheet reduction—are led by the central bank, so this role accurately simulates policy transmission and its macroeconomic effects.
 
-### Firm → Perfect Competition
+**Firm → Perfect Competition**  
+A perfectly competitive market reflects **the basic mechanism of prices set by supply and demand**, helping to clearly observe how inflation‐control policies (e.g., rate increases) affect labor markets, goods prices, and investment returns. It avoids distortions from oligopoly or monopoly‐induced price rigidity, making it well suited to identify policy effects.
 
-* A perfectly competitive market reflects **the basic mechanism of prices set by supply and demand**, helping to clearly observe how inflation‐control policies (e.g., rate increases) affect labor markets, goods prices, and investment returns. It avoids distortions from oligopoly or monopoly‐induced price rigidity, making it well suited to identify policy effects.
-
-### Bank → Commercial Banks
-
-* During inflation control, commercial banks typically raise lending and deposit rates, which in turn affect firms’ financing costs and households’ saving returns. Compared with a no-arbitrage framework, commercial banks also involve microbehavior such as risk assessment, credit rationing, and asset‐liability management, enabling a more realistic simulation of credit contraction or expansion under policy shifts.
+**Bank → Commercial Banks**
+During inflation control, commercial banks typically raise lending and deposit rates, which in turn affect firms’ financing costs and households’ saving returns. Compared with a no-arbitrage framework, commercial banks also involve microbehavior such as risk assessment, credit rationing, and asset‐liability management, enabling a more realistic simulation of credit contraction or expansion under policy shifts.
 
 ---
 
 ## ​3.​ Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                                                                      |
-| ------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | The BC Agent can learn consumption patterns of households at different income levels from historical data (e.g., high-income households use investments to hedge against inflation).  |
 | Government             | RL Agent               | Inflation control requires dynamic policy adjustments (e.g., incremental rate hikes or quantitative tightening); the RL Agent learns optimal strategies through environment feedback. |
 | Firm                 | Rule-Based Agent       | A rule-based agent can directly simulate the “cost increase → price increase” transmission chain.                                                                                  |
 | Bank | Rule-Based Agent       | Commercial bank behavior can be modeled directly through rule-based logic.                                                                                                            |
-
-### Individual → BC Agent
-
-* BC Agent can model heterogeneous behaviors from real household consumption data (e.g., high-income groups favor investment as an inflation hedge, low-income groups are more sensitive to price fluctuations). Compared to the rigidity of rule-based logic and the overfitting risk of RL Agents, the BC Agent balances decision logic with behavioral realism, making it well suited to simulate heterogeneous responses under inflation.
-
-### Government → RL Agent
-
-* Inflation control requires flexible policy responses to economic changes. An RL Agent can continuously adjust policies (e.g., rate-hike pacing, balance-sheet reductions) based on environment feedback, learning the optimal “cost–output–distribution” trade-off. Compared with Rule-Based and Data-Based Agents, RL offers greater interactive adaptability.
-
-### Firm → Rule-Based Agent
-
-* Inflation transmission in markets follows clear patterns, such as cost-push inflation where “raw-material price rises → product price rises.” Rule-based modeling is transparent, computationally efficient, and ideal for direct causal analysis of market mechanisms.
-
-### Bank → Rule-Based Agent
-
-* Commercial-bank behaviors—like rate setting and lending decisions—can be expressed with explicit rules (e.g., “policy rate + risk premium”). Rule-Based Agents efficiently simulate how rate hikes transmit through loans and savings, making them robust for macro-policy evaluation.
-
----
 
 ## 4.​ Illustrative Experiment
 
