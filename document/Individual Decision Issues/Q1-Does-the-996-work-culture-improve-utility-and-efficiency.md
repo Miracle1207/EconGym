@@ -29,11 +29,11 @@ This study focuses on the following key questions:
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                                                                    |
-| ------------------------ | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model                             | Age is a key factor influencing work duration, consumption behavior, and health status.                                                                             |
-| Firm                 | Perfectly Competition          | Using the perfectly competitive market assumption, this examines the impact of the "996" model on business labor costs, output efficiency, and innovation capacity. |
-| Bank | No-Arbitrage Platform | Studies whether increased working hours affect the capital markets, such as personal savings rates, loan demand, and other financial variables.                     |
+| Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
 ---
 
@@ -48,7 +48,7 @@ This study focuses on the behavioral responses of households and firms to increa
 **Firm  → Perfect Competition**  
 Firms in the market primarily seek ​**profit maximization**​, and thus they may adopt the **"996" model** to boost short-term productivity. However, excessively long working hours may lead to a decline in ​**labor productivity**​, hinder **innovation** capabilities, and potentially cause an imbalance in the labor market's supply and demand. Companies need to strike a balance between work hours and production efficiency, while also considering **worker welfare** and ​**talent attraction**​.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 The primary role of **financial institutions** is to provide ​**loans**​, ​**investment opportunities**​, and ​**asset management**​. Long working hours may influence **workers' consumption** and ​**savings decisions**​. For example, excessive working hours may suppress consumption, leading to an increase in ​**household savings rates**​, which in turn can impact the ​**capital markets**​.
 
 ---

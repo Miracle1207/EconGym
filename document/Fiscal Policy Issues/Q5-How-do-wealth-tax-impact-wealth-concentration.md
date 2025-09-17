@@ -31,12 +31,13 @@ Using an economic-simulation platform, this study investigates the long-term imp
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                           | Role Description                                                                                                                                                |
-| ------------------------ | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | Ramsey Model                            | Households optimize consumption and savings over their life-cycle. Wealth tax directly influences their savings behavior and intergenerational wealth planning. |
-| Government             | Fiscal Authority                     | The government sets wealth tax rates and designs redistribution policies aimed at mitigating wealth inequality while maintaining fiscal sustainability.         |
-| Firm                 | Perfect Competition            | Wealth taxes affect capital accumulation and labor allocation indirectly through changes in prices and wages in competitive markets.                            |
-| Bank | No-Arbitrage Platform | Financial intermediaries adjust investment strategies and asset portfolios in response to long-term shifts in returns caused by wealth taxation.                |
+| Social Role | Selected Type       | Role Description                                                                                               | Observation                                                                                               | Action                                                                                 | Reward                                   |
+| ----------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Individual  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.        | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics             | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility) |
+| Government  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.             | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist. | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending          | GDP growth, equality, welfare            |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.           | /                                                                                                         | /                                                                                    | Zero (long-run)                          |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                         | No rate control                                                                      | No profit                                |
+
 
 ---
 
@@ -51,7 +52,7 @@ The government is responsible for designing the property-tax system, levying ass
 **Firm → Perfect Competition**  
 Wages and goods prices are determined by supply and demand. Tax policies indirectly influence firm and household behavior through these market mechanisms.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 Asset prices and capital returns are affected by tax-burden changes over the long run. The financial system adjusts savings and investment allocations to restore intertemporal equilibrium.
 
 ---

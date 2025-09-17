@@ -27,12 +27,12 @@ Using an economic-simulation platform, this study explores how governments can e
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                            | Role Description                                                                                                                                                |
-| ------------------------ | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | Ramsey Model                             | Simulate rational agents’ decisions on labor supply, consumption, and saving in response to changes in tax structures.                             |
-| Government             | Fiscal Authority                     | Formulate and implement tax policies, adjusting tax rates to achieve growth, equity, and fiscal‐sustainability objectives.                                     |
-| Firm                | Perfect Competition             | Model wages and prices determined by supply and demand, capturing how taxes transmit through labor and goods markets as the policy feedback channel.            |
-| Bank | No-Arbitrage Platform | Build savings‐investment return mechanisms, simulating interest‐rate changes and their effects on household asset allocation and capital‐market equilibrium. |
+| Social Role | Selected Type       | Role Description                                                                                               | Observation                                                                                               | Action                                                                                 | Reward                                   |
+| ----------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Individual  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.        | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics             | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility) |
+| Government  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.             | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist. | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending          | GDP growth, equality, welfare            |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.           | /                                                                                                         | /                                                                                    | Zero (long-run)                          |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                         | No rate control                                                                      | No profit                                |
 
 ---
 
@@ -47,7 +47,7 @@ The government, as the architect and executor of tax policy, adjusts tax‐rate 
 **Firm → Perfect Competition**   
 Wages and prices are determined by market mechanisms, reflecting the transmission channels of tax policy through labor and goods markets.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 Tax policies influence saving and investment behaviors; the financial system, via interest‐rate mechanisms, feeds back changes that restore economic equilibrium.
 
 ---
