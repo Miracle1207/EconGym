@@ -36,52 +36,35 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfectly Competitive Market             | Model how wages and employment dynamically adjust with labor‐force participation, affecting the pension contribution base. |
 | Bank | No-Arbitrage Platform | Simulate pension‐fund investment returns and fiscal debt costs to assess system sustainability.                            |
 
-### Individual → Overlapping Generations (OLG) Model 
+---
 
-* Use the Overlapping Generations framework to model life‐cycle differences in retirement, saving, and consumption decisions across countries.
+### Rationale for Selected Roles
 
-### Government → Pension Authority
+**Individual → Overlapping Generations (OLG) Model**  
+Use the Overlapping Generations framework to model life‐cycle differences in retirement, saving, and consumption decisions across countries.
 
-* Implement and manage various pension-system parameters, including contribution rates, replacement rates, and fiscal subsidies.
+**Government → Pension Authority**  
+Implement and manage various pension-system parameters, including contribution rates, replacement rates, and fiscal subsidies.
 
-### Firm → Perfectly Competitive Market
+**Firm → Perfectly Competitive Market**  
+Reflect how changes in labor‐force participation under different pension regimes dynamically adjust wages and the contribution base through market mechanisms.
 
-* Reflect how changes in labor‐force participation under different pension regimes dynamically adjust wages and the contribution base through market mechanisms.
-
-### Bank → No-Arbitrage Platform
-
-* Simulate investment‐return trajectories under funded pension schemes or capture interest‐rate fluctuations tied to government‐bond–based subsidy mechanisms.
+**Bank → No-Arbitrage Platform**  
+Simulate investment‐return trajectories under funded pension schemes or capture interest‐rate fluctuations tied to government‐bond–based subsidy mechanisms.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                      |
-| ------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Reproduce how residents of different countries react behaviorally to pension systems, capturing heterogeneity.        |
 | Government             | Rule-Based Agent       | Implement rule-based templates of each country’s pension policies, facilitating comparative experiments.             |
 | Firm                 | Rule-Based Agent       | Adjust wages via supply–demand rules, supporting market responses under varying demographic structures.              |
 | Bank | Rule-Based Agent       | Feedback pension-fund asset changes or fiscal pressure through macro-level rules governing interest and return rates. |
 
-### Individual → Behavior Cloning Agent
-
-* Simulate typical household consumption, saving, and retirement habits across countries, such as “Nordic residents save little and rely on public pensions” and “a high share of Americans delay retirement.”
-
-### Government → Rule-Based Agent
-
-* Implement each country’s pension policy as a set of rules (e.g., “China template,” “US template,” “Sweden template”) to facilitate cross‐system comparisons.
-
-### Firm → Rule-Based Agent
-
-* Model wages determined by labor supply and demand, with rules capturing market wage and employment adjustment processes.
-
-### Bank → Rule-Based Agent
-
-* Use rules to model investment returns or government‐bond yields based on demographic structure and fiscal expenditure changes.
-
----
 ## **4. Running the Experiment**
 
 ### **4.1 Quick Start**
