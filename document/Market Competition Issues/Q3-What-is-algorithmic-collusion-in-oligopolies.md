@@ -34,12 +34,13 @@ Studying algorithmic collusion in oligopoly markets has the following significan
 
 Select the following roles from the social role classification of the economic simulation platform:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                                                                             |
-| ------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Individual             | Ramsey Model                          | Price changes affect household consumption decisions without involving firm or algorithm behavior, reflecting the heterogeneous responses of the group.                      |
-| Government             | Fiscal Authority                 | The government may need to adopt dynamic policies to counter algorithmic collusion, such as introducing antitrust measures or algorithm auditing rules.                      |
-| Firm                 | Oligopoly                       | Strategic interactions exist between firms, and algorithms may achieve price coordination without explicit communication, simulating a non-collaborative game environment.   |
-| Bank | No-Arbitrage Platform | Financial markets follow the no-arbitrage principle, with investment and risk assessment relying on market price fluctuations, indirectly influenced by algorithmic pricing. |
+| Social Role | Selected Type        | Role Description                                                                                                                                            | Observation                                                                                                                                                                                   | Action                                                                                                  | Reward                                           |
+| ----------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Individual  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                                                   | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                                                                                                 | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment              | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)       |
+| Government  | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                                                        | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.                                                | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending                         | GDP growth, equality, welfare                   |
+| Firm       | Oligopoly             | Oligopoly Firms engage in strategic competition, anticipating household responses and rival actions.                                                       | $$o_t^{\text{olig}} = \{ K_t^j, L_t^j, Z_t^j, p_{t-1}^j, W_{t-1}^j \}$$<br>Firm-specific capital, labor, productivity, last price/wage. Here, $$j$$ denotes the firm index.                  | $$a_t^{\text{olig}} = \{ p_t^j, W_t^j \}$$<br>Price and wage decisions for firm $$j$$                 | $$r_t^{\text{olig}} = p_t^j y_t^j - W_t^j L_t^j - R_t K_t^j$$<br>Profits = Revenue – costs for firm $$j$$ |
+| Bank       | Non-Profit Platform   | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.                                        | /                                                                                                                                                                                             | No rate control                                                                                         | No profit                                         |
+
 
 ---
 
@@ -54,7 +55,7 @@ The Tax Policy Department focuses on market competition and consumer welfare. Wh
 **Firm → ​Oligopoly Market**  
 Firms engage in **tacit coordination** through algorithms, leading to price consistency behavior. The oligopoly market structure provides fertile ground for ​**algorithmic collusion**​, which serves as the core behavior in this study.
 
-**Bank → No-Arbitrage Platform**  
+**Bank →Non-Profit Platform **  
 In markets where **firm profits** and **stock prices** are closely linked, financial institutions adjust their investment portfolios, influencing capital allocation. The study aims to evaluate whether **oligopoly**​**​ collusion** distorts investment signals and impacts market efficiency.
 
 ---
