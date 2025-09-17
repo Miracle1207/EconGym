@@ -19,7 +19,9 @@ The main drivers of the pension gap include:
 Using an economic‐simulation platform, this study examines the effectiveness of various policy tools in addressing the pension gap, specifically:
 
 * **Government strategies:** How do different policy options (delayed retirement, higher contribution rates, optimized pension‐fund investment) affect fiscal sustainability?
+* **Household Actions:** How can individuals, through reinforcement learning behaviors that maximize long-term benefits, contribute to reducing the pension gap? Can individual actions work in synergy with policy measures to jointly narrow the gap?
 * **Policy‐mix design and evaluation:** How can the government combine policies optimally to reduce the pension gap, and what are the subsequent impacts on economic growth, labor markets, and income distribution?
+
 
 ### 1.4 Research Significance
 
@@ -85,31 +87,69 @@ As an example, we selected the following roles from the social role classificati
 * Interest-rate and return mechanisms in financial markets follow economic laws (e.g., diminishing marginal returns to capital). A Rule-Based Agent facilitates building investment-return models linked to demographic shifts and government-bond issuance.
 
 ---
+## **4. Running the Experiment**
 
-## 4. Illustrative Experiments
+### **4.1 Quick Start**
 
-### 4.1 Experiment: Optimal Pension Policy Solution
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## 5.Illustrative Experiments
+
+### Experiment: Optimal Pension Policy Solution
 
 * **Experiment Description:**
+  
   Train reinforcement learning models using the minimization of the pension gap as the reward function, and compare the outcomes across different RL algorithms as well as between RL-based policies and baseline scenarios.
-* **Involved Social Roles:**
-  * *Government:* Pension Department
-  * *Individual*​*s:* OLG Model
-* **AI**​**​ Agents:**
-  * *Government:* RL Agent/Rule-Based Agent
-  * *Individual*​*s:* RL Agent/Behavior Cloning Agent/Rule-Based Agent
 * **Experimental Variables:**
+  
   * Pension replacement rate
   * GDP impact
+* **Baselines:**
+  
+  We constructed the simulated economic environment using **Individuals modeled as Behavior Cloning (BC) Agents with the OLG framework** and the **​Government modeled as different strategies (​**​​**DDPG**​**, ​**​​**PPO**​​**)**​. The bar charts illustrate household pension distributions under alternative household–government policy combinations:
+  
+  * **Policy settings (groups of bars):**
+    * ​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the DDPG algorithm.
+    * ​**pension\_gap\_OLG\_1000\_bc\_pension\_ppo**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the PPO algorithm.
+    * ​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is implemented as a Rule-Based Agent.
+    * ​**pension\_gap\_OLG\_1000\_ppo\_pension\_ppo**​: Households are modeled as RL Agents (PPO) , using the OLG model with 1000 households, and the government is also trained using the PPO algorithm.
+  * **Color coding (within each group):**
+    * Left panel: Different bar colors represent **age cohorts** (<24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
+    * Right panel: Different bar colors represent **wealth classes** (rich, middle, poor, and mean).
 * **Visualized Experimental Results：**
 
 ![Pension Q4 P1](../img/PensionQ4P1.png)
 
-**Figure 1:** Pension outcomes under different training strategies, considering four combinations of household and government policies: BC\_DDPG, BC\_PPO, BC\_Rule-Based, and PPO\_PPO (with the first referring to the household strategy and the second to the government strategy).From the age-based breakdown (left panel), the BC\_PPO combination yields the highest total pension surplus. RL-based government strategies significantly reduce pension gaps among young and middle-aged groups, with the PPO\_PPO strategy achieving the smallest pension deficit for young individuals.From the wealth-based breakdown (right panel), the BC\_PPO strategy again results in the highest overall pension surplus. The PPO\_PPO combination substantially lowers the pension gap for wealthy households (blue bars).
+**Figure 1:** From the age-based breakdown, the BC\_PPO combination yields the highest total pension surplus. RL-based government strategies significantly reduce pension gaps among young and middle-aged groups, with the PPO\_PPO strategy achieving the smallest pension deficit for young individuals.From the wealth-based breakdown, the BC\_PPO strategy again results in the highest overall pension surplus. The PPO\_PPO combination substantially lowers the pension gap for wealthy households (blue bars).
+
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the DDPG algorithm.
+  * **pension\_gap\_OLG\_1000\_bc\_pension\_ppo***​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the PPO algorithm.
+  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is implemented as a Rule-Based Agent.
+  * ​**pension\_gap\_OLG\_1000\_ppo\_pension\_ppo**: Households are modeled as RL Agents (PPO) , using the OLG model with 1000 households, and the government is also trained using the PPO algorithm.
 
 ![Pension Q4 P2](../img/PensionQ4P2.png)
 
-**Figure 2:** GDP trajectories under different training strategies. The BC\_DDPG combination achieves both stronger long-term GDP growth and a longer simulation duration (blue line), while the PPO\_PPO strategy results in the lowest GDP level.
+**Figure 2:** GDP trajectories under different training strategies. The BC\_DDPG combination achieves both stronger long-term GDP growth and a longer simulation duration, while the PPO\_PPO strategy results in the lowest GDP level.
 
 * Although RL strategies are effective in reducing the pension gap, this optimization may come at the cost of **economic growth—particularly ​**when households also adopt RL-based decision-making. Overall, the combination where households follow Behavior Cloning and the government adopts an RL Agent strikes the best balance between sustained economic development and minimizing the pension gap.
+
+
 
