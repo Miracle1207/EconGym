@@ -146,10 +146,10 @@ Each simulation scene has its own parameter file that describes how it differs f
     * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue bars):** Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 0%.
     * **consumption\_tax\_7%\_bc\_saez\_100\_OLG (Green bars): ​**Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 7%.
     * **consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow bars): ​**Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 9%.
-  * **Left panel:**
-    Different part represent household wealth distribution by age cohorts (e.g., <24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
-  * **Right panel:**
-    Different part represent household wealth distribution by income classes (rich, middle, poor, and mean).
+  * **Panel Interpretation:**
+    * **Left panel:** Different bar colors represent household wealth by **age cohorts** (e.g., <24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
+    * **Right panel:** Different bar colors represent household wealth by **income/wealth classes** (rich, middle, poor, and mean).
+
 * **Visualized Experimental Results:**
 
 ![Fiscal Q3 P4](../img/Fiscal%20Q3%20P4.png)
