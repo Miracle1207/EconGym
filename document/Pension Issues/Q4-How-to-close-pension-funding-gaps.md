@@ -40,53 +40,35 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfect Competiton          | Model how wages and employment rates—driven by labor supply and demand—indirectly affect total pension contributions.                                                          |
 | Bank | No-Arbitrage Platform | Simulate pension‐fund investment behavior and how long-term interest‐rate movements impact fund returns and fiscal support capacity.                                           |
 
-### Individual → Overlapping Generations (OLG) Model
+---
 
-* This study focuses on intergenerational wealth transfers, contribution behaviors, and retirement decisions. The Overlapping Generations (OLG) framework captures how cohorts at different ages respond to the pension system, accurately reflecting household heterogeneity under aging.
+### Rationale for Selected Roles
 
-### Government → Pension Authority  
+**Individual → Overlapping Generations (OLG) Model**  
+This study focuses on intergenerational wealth transfers, contribution behaviors, and retirement decisions. The Overlapping Generations (OLG) framework captures how cohorts at different ages respond to the pension system, accurately reflecting household heterogeneity under aging.
 
-* Acting as both system designer and fiscal backer, the Pension Authority must address the pension gap through policy levers such as taxation, bond issuance, and structural reforms.
+**Government → Pension Authority**  
+Acting as both system designer and fiscal backer, the Pension Authority must address the pension gap through policy levers such as taxation, bond issuance, and structural reforms.
 
-### Firm → Perfect Competiton
+**Firm → Perfect Competiton**  
+Wages and employment are determined by supply and demand and directly affect households’ contribution capacity and retirement savings. Embedding this market mechanism in the experiment is essential.
 
-* Wages and employment are determined by supply and demand and directly affect households’ contribution capacity and retirement savings. Embedding this market mechanism in the experiment is essential.
-
-### Bank → No-Arbitrage Platform
-
-* Pension‐fund investment returns influence system sustainability. An arbitrage‐free model ensures proper long‐term rate dynamics and fiscal‐return mechanisms.
+**Bank → No-Arbitrage Platform**  
+Pension‐fund investment returns influence system sustainability. An arbitrage‐free model ensures proper long‐term rate dynamics and fiscal‐return mechanisms.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type               | Role Description                                                                                                                        |
-| ------------------------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent      | Reproduce real-world lifecycle-based decisions on contributions, savings, and retirement using behavior cloning.                        |
 | Government             | Rule-Based Agent / RL Agent | Define rule-based triggers (e.g., bond issuance, tax hikes) in response to pension shortfalls, or employ RL to optimize pension policy. |
 | Firm                 | Rule-Based Agent            | Map labor-market responses via supply–demand rules, reflecting wage and employment dynamics.                                           |
 | Bank | Rule-Based Agent            | Set investment-return adjustments based on long-term interest rates and demographic shifts using explicit rules.                        |
 
-### Individual → Behavior Cloning Agent
-
-* Household decisions exhibit bounded rationality and path dependence (e.g., long-tenured workers favor stable contributions and timely retirement). A Behavior Cloning Agent trained on historical data better captures these realistic strategies.
-
-### Government → Rule-Based Agent / RL Agent
-
-* Pension reforms typically follow fiscal thresholds (e.g., tax hikes when shortfall exceeds a limit). A Rule-Based Agent encodes clear reaction rules to efficiently simulate policy logic.
-* For multi-objective trade-offs (balancing pension sustainability, fiscal deficits, and household welfare),the RL Agent enables the government to learn optimal actions—such as adjusting retirement age, tax rates, or subsidy levels—through trial-and-error.
-
-### Firm → Rule-Based Agent
-
-* Wages and employment are driven by supply–demand dynamics. Rule-Based Agents quickly reflect price adjustments arising from shifts in labor-market structure.
-
-### Bank → Rule-Based Agent
-
-* Interest-rate and return mechanisms in financial markets follow economic laws (e.g., diminishing marginal returns to capital). A Rule-Based Agent facilitates building investment-return models linked to demographic shifts and government-bond issuance.
-
----
 ## **4. Running the Experiment**
 
 ### **4.1 Quick Start**
