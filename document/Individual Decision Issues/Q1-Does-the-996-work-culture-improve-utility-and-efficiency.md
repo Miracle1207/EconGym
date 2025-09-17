@@ -35,6 +35,10 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfectly Competition          | Using the perfectly competitive market assumption, this examines the impact of the "996" model on business labor costs, output efficiency, and innovation capacity. |
 | Bank | No-Arbitrage Platform | Studies whether increased working hours affect the capital markets, such as personal savings rates, loan demand, and other financial variables.                     |
 
+---
+
+### Rationale for Selected Roles
+
 **Individual  → Overlapping Generations (OLG) Model**  
 An individual's **age** is a key determinant of work duration, consumption behavior, and health status. Under the ​**Overlapping Generations (OLG) model**​, individuals at different age stages (young labor force, middle-aged labor force, retirees) have distinct preferences and constraints, allowing for a more precise analysis of the long-term effects of excessive work hours on personal welfare. For instance, younger individuals may be inclined to work overtime to accumulate wealth, while middle-aged individuals may focus more on the balance between work and family. Retirees, on the other hand, are influenced by previous savings and government pension policies.
 
