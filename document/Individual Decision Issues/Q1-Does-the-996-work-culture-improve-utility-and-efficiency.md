@@ -35,52 +35,31 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfectly Competition          | Using the perfectly competitive market assumption, this examines the impact of the "996" model on business labor costs, output efficiency, and innovation capacity. |
 | Bank | No-Arbitrage Platform | Studies whether increased working hours affect the capital markets, such as personal savings rates, loan demand, and other financial variables.                     |
 
-### **Individual  → Overlapping Generations (OLG) Model**
+**Individual  → Overlapping Generations (OLG) Model**  
+An individual's **age** is a key determinant of work duration, consumption behavior, and health status. Under the ​**Overlapping Generations (OLG) model**​, individuals at different age stages (young labor force, middle-aged labor force, retirees) have distinct preferences and constraints, allowing for a more precise analysis of the long-term effects of excessive work hours on personal welfare. For instance, younger individuals may be inclined to work overtime to accumulate wealth, while middle-aged individuals may focus more on the balance between work and family. Retirees, on the other hand, are influenced by previous savings and government pension policies.
 
-* An individual's **age** is a key determinant of work duration, consumption behavior, and health status. Under the ​**Overlapping Generations (OLG) model**​, individuals at different age stages (young labor force, middle-aged labor force, retirees) have distinct preferences and constraints, allowing for a more precise analysis of the long-term effects of excessive work hours on personal welfare. For instance, younger individuals may be inclined to work overtime to accumulate wealth, while middle-aged individuals may focus more on the balance between work and family. Retirees, on the other hand, are influenced by previous savings and government pension policies.
+**Government→ No Specific Role**  
+This study focuses on the behavioral responses of households and firms to increased working hours, without introducing government-driven policy adjustments. The aim is to isolate the effects of extended work schedules (such as the "996" model) on the economy and individual welfare. Government interventions like taxation, regulation, or welfare policies are intentionally excluded to ensure that the outcomes reflect endogenous behavioral and market responses alone.
 
-### **Government→ No Specific Role**
+**Firm  → Perfect Competition**  
+Firms in the market primarily seek ​**profit maximization**​, and thus they may adopt the **"996" model** to boost short-term productivity. However, excessively long working hours may lead to a decline in ​**labor productivity**​, hinder **innovation** capabilities, and potentially cause an imbalance in the labor market's supply and demand. Companies need to strike a balance between work hours and production efficiency, while also considering **worker welfare** and ​**talent attraction**​.
 
-* This study focuses on the behavioral responses of households and firms to increased working hours, without introducing government-driven policy adjustments. The aim is to isolate the effects of extended work schedules (such as the "996" model) on the economy and individual welfare. Government interventions like taxation, regulation, or welfare policies are intentionally excluded to ensure that the outcomes reflect endogenous behavioral and market responses alone.
-
-### **Firm  → Perfect Competition**
-
-* Firms in the market primarily seek ​**profit maximization**​, and thus they may adopt the **"996" model** to boost short-term productivity. However, excessively long working hours may lead to a decline in ​**labor productivity**​, hinder **innovation** capabilities, and potentially cause an imbalance in the labor market's supply and demand. Companies need to strike a balance between work hours and production efficiency, while also considering **worker welfare** and ​**talent attraction**​.
-
-### **Bank → No-Arbitrage Platform**
-
-* The primary role of **financial institutions** is to provide ​**loans**​, ​**investment opportunities**​, and ​**asset management**​. Long working hours may influence **workers' consumption** and ​**savings decisions**​. For example, excessive working hours may suppress consumption, leading to an increase in ​**household savings rates**​, which in turn can impact the ​**capital markets**​.
+**Bank → No-Arbitrage Platform**  
+The primary role of **financial institutions** is to provide ​**loans**​, ​**investment opportunities**​, and ​**asset management**​. Long working hours may influence **workers' consumption** and ​**savings decisions**​. For example, excessive working hours may suppress consumption, leading to an increase in ​**household savings rates**​, which in turn can impact the ​**capital markets**​.
 
 ---
 
 ## **3.Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                   |
-| ------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Simulate individual behavior characteristics as working hours increase, based on historical data.                                  |
 | Government             | RL Agent               | The government formulates optimal policies and flexibly adjusts labor regulations or interventions.                                |
 | Firm                 | Rule-Based Agent       | In a perfectly competitive market, firms do not have control over product pricing, and their strategies follow fixed market rules. |
 | Bank | Rule-Based Agent       | Rule-Based Agent ensures that the behavior of financial institutions remains relatively stable.                                    |
 
-### **Individual → BC Agent**
-
-* Households typically make decisions based on income, consumption patterns, and savings habits when faced with changes in the economic environment (e.g., an increase in working hours). Using Behavior Cloning allows the agent to **learn household decision-making patterns ​**from existing data.
-
-### **Government → RL Agent**
-
-* Using an RL agent can help the government make more accurate policy choices. For example, the government can decide whether to intervene in work hour regulations based on current labor market data, GDP growth rates, labor productivity, health statistics, and other factors.
-
-### **Firm → Rule-Based Agent**
-
-* Firms in the market typically follow established rules such as profit maximization, wage strategies, and productivity optimization. Therefore, a Rule-Based Agent is suitable for modeling. For example, firms may have a decision rule based on profits and productivity; if the "996" model improves short-term productivity, firms may be inclined to adopt it. However, if it leads to higher employee turnover and decreased innovation in the long run, firms may adjust their strategies to optimize long-term profits.
-
-### **Bank → Rule-Based Agent**
-
-* Financial institutions are usually constrained by market rules and regulatory systems, making their behavior relatively stable. Thus, a Rule-Based Agent is appropriate for modeling. For example, financial institutions may adjust credit policies based on factors such as market interest rates, investment returns, and household savings rates, without frequently altering their strategies like households or governments.
-
----
 
 ## **4.Illustrative Experiment**
 
