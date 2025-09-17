@@ -44,54 +44,35 @@ As an example, we selected the following roles from the social role classificati
 | Firm         | Perfect Competition         | Observe shifts in labor demand and supply under UBI, as well as changes in wages and employment.             |
 | Bank | No-Arbitrage Platform | Study capital-market reactions to UBI, particularly alterations in saving rates and investment behavior.     |
 
-### **Individual → Overlapping Generations (OLG) Model**
+---
 
-* The OLG framework captures age-specific income, consumption, and saving behaviors, making it well-suited to simulate UBI’s dynamic effects on intergenerational resource allocation. It is preferable to an infinitely heterogeneous agent model for this purpose.
+### Rationale for Selected Roles
 
-### **Government → Fiscal Authority**
+**Individual → Overlapping Generations (OLG) Model**  
+The OLG framework captures age-specific income, consumption, and saving behaviors, making it well-suited to simulate UBI’s dynamic effects on intergenerational resource allocation. It is preferable to an infinitely heterogeneous agent model for this purpose.
 
-* The Fiscal Authority is directly responsible for funding and administering UBI, making it the core institution for assessing fiscal impacts. It aligns more closely with UBI financing duties than a central bank.
+**Government → Fiscal Authority**  
+The Fiscal Authority is directly responsible for funding and administering UBI, making it the core institution for assessing fiscal impacts. It aligns more closely with UBI financing duties than a central bank.
 
-### **Firm → Perfect Competition**
+**Firm → Perfect Competition**  
+A perfectly competitive market eliminates distortions from market power, allowing a clear assessment of UBI’s influence on labor supply.
 
-* A perfectly competitive market eliminates distortions from market power, allowing a clear assessment of UBI’s influence on labor supply.
-
-### **Bank → No-Arbitrage Platform**
-
-* UBI may alter saving rates and investment patterns; a no-arbitrage framework is ideal for analyzing these financial dynamics.
+**Bank → No-Arbitrage Platform**  
+UBI may alter saving rates and investment patterns; a no-arbitrage framework is ideal for analyzing these financial dynamics.
 
 ---
 
 ## 3.​ Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type                             | Role Description                                                                                                             |
-| ------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Rule-Based Agent / Behavior Cloning Agent | Use a rule-based agent to model household decision processes; employ behavior cloning to learn patterns from empirical data. |
 | Government             | Data-Based Agent / RL Agent               | Forecast changes in public finances following UBI implementation using historical fiscal data.                               |
 | Firm                 | Rule-Based Agent                          | Encode supply–demand rules to simulate labor-market responses under UBI.                                                    |
 | Bank | Rule-Based Agent                          | Define financial-market operations based on macroeconomic variables.                                                         |
 
-### **Individual → Rule-Based Agent / Behavior Cloning Agent**
-
-* Rule-Based Agent embeds normative life-cycle rules, facilitating the integration of standard economic theory.
-* Behavior Cloning Agent learns complex empirical response patterns from actual household data, yielding more realistic behavior.
-
-### **Government → Data-Based Agent / RL Agent**
-
-* Data-Based Agent uses historical UBI pilot data configured in the simulator as reference policy patterns.
-* RL Agent explores and optimizes transfer rules to maximize welfare outcomes.
-
-### **Firm → Rule-Based Agent**
-
-* Firm labor-demand and production decisions follow textbook supply–demand relations, fitting a rule-based approach.
-
-### **Bank → Rule-Based Agent**
-
-* Stable functional relationships among interest rates, deposits, and loans are naturally handled by rule-based agents.
-
----
 
 ## 4.​ Illustrative Experiment
 
