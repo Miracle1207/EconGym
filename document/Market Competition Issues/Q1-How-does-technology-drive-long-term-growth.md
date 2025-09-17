@@ -36,52 +36,35 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfect Competition                   | Simulate how firms adjust labor demand and production decisions in response to technological change               |
 | Bank | No-Arbitrage Platform | Assess the impact of technological progress on financial markets, such as borrowing demand and investment returns |
 
-### **Individual → Overlapping Generations (OLG) Model**
+---
 
-* The OLG model is particularly suitable for **studying the direct impact of technological progress on the labor market**. It allows for the simulation of labor-related issues associated with demographic structure changes across different generations.
+### Rationale for Selected Roles
 
-### **Government → Fiscal Authority  ​**
+**Individual → Overlapping Generations (OLG) Model**  
+The OLG model is particularly suitable for **studying the direct impact of technological progress on the labor market**. It allows for the simulation of labor-related issues associated with demographic structure changes across different generations.
 
-* Technological progress may lead to **rising income inequality or increased unemployment**. The government, through the Treasury Department , is responsible for formulating policy responses—such as taxation or subsidies—to mitigate these effects.
+**Government → Fiscal Authority**  
+Technological progress may lead to **rising income inequality or increased unemployment**. The government, through the Treasury Department , is responsible for formulating policy responses—such as taxation or subsidies—to mitigate these effects.
 
-### **Firm → Perfect Competition**
+**Firm → Perfect Competition**  
+In a perfectly competitive market, wages are determined by supply and demand. This structure allows the model to **more directly reflect the impact of technological progress** on firm-level wage setting and labor demand.
 
-* In a perfectly competitive market, wages are determined by supply and demand. This structure allows the model to **more directly reflect the impact of technological progress** on firm-level wage setting and labor demand.
-
-### **Bank → No-Arbitrage Platform**
-
-* Technological progress can influence investment returns and capital market dynamics. Therefore, arbitrage-free financial institutions are selected to simulate impacts on variables such as interest rates. Commercial banks are not selected in this context, as their focus is primarily on deposit and lending activities, which have a more limited scope of influence in this setting.
+**Bank → No-Arbitrage Platform**  
+Technological progress can influence investment returns and capital market dynamics. Therefore, arbitrage-free financial institutions are selected to simulate impacts on variables such as interest rates. Commercial banks are not selected in this context, as their focus is primarily on deposit and lending activities, which have a more limited scope of influence in this setting.
 
 ---
 
 ## **3. Selected Agent Algorithms**
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type    | Role Description                                                                                             |
-| ------------------------ | ------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Rule-Based Agent | Determine household decisions on consumption, savings, and labor in response to technological progress.      |
 | Government             | RL Agent         | Regulate government behavior based on the principle of maximizing long-term social welfare.                  |
 | Firm                 | Rule-Based Agent | Define how firms adjust wages, production scale, and hiring decisions in response to technological change.   |
 | Bank  | Rule-Based Agent | Set interest rates and investment returns to assess the impact of technological progress on capital markets. |
 
-### **Individual → Rule-Based Agent**
-
-* Since this economic simulation does not involve optimal policy solving, household behavior can be modeled using rule-based agents. For example, a decision rule might state: "If wages increase, then consumption increases."
-
-### **Government → RL Agent**
-
-* Government behavior is modeled using a reinforcement learning (RL) agent, which learns how to **respond based on long-term reward optimization** through training and interaction with the environment.
-
-### **Firm → Rule-Based Agent**
-
-* In a perfectly competitive market, firms’ labor demand and production decisions can be defined by **economic supply** and ​**demand rules**​. Therefore, a rule-based agent is used to represent firm behavior under technological progress.
-
-### **Bank → Rule-Based Agent**
-
-* Interest rate adjustments in financial markets can be governed by economic principles. For example, "Technological progress increases the return on capital, which in turn affects the interest rate." Rule-based agents are used to simulate such mechanisms.
-
----
 
  ## **4. Illustrative Experiment**
 
