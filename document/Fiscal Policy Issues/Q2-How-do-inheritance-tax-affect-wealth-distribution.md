@@ -141,6 +141,7 @@ For each simulation step:
   * Household wealth
   * Household working hours
 * **Baselines:**
+  
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.The bar charts show household wealth distributions under different estate tax policies.
   
   * **Agent Settings:**
@@ -164,69 +165,7 @@ For each simulation step:
 * Estate taxes decrease household wealth.
 * Estate taxes exhibit clear labor incentives differences based on income: enhancing labor incentives among low-income groups while discouraging middle-income groups.
 
-## 4. Illustrative Experiment
 
-```Python
-# Estate tax logic (triggered upon individual death)
-For each simulation step:
-    For each individual in the household:
-        If the individual dies:
-            1. Compute total_wealth at death
-            2. If total_wealth > exemption threshold:
-                - Apply marginal tax_rate based on wealth tier
-                - Tax amount = (total_wealth - threshold) × tax_rate
-            3. Distribute post-tax wealth to heirs
-            4. Log effects:
-                - Government tax revenue increase
-                - Heirs' wealth updates
-                - Changes in social wealth distribution (for Gini tracking)
-```
-
-### Experiment 1: Macroeconomic Impact of Estate Tax
-
-* **Experiment Description: ​**
-  Compare macroeconomic indicators under different estate tax rates.
-* **Involved Social Roles:**
-  
-  * *Individual:* OLG Model
-  * *Government: ​*Fiscal Authority
-* **AI Agents:**
-  
-  * *Individual: ​*Behavior Cloning Agent
-  * *Government: ​*Data-Based Agent
-* **Experimental Variables:**
-  
-  * Estate tax rates (0%, 10%, 15%)
-  * Social output (GDP)
-* **Visualized Experimental Results：**
-
-  
-  **Figure 1:** The blue, yellow, and green lines represent social GDP under inheritance-tax rates of 15%, 10%, and 0%, respectively. Imposing an inheritance tax clearly raises aggregate output, but increasing the rate from 10% to 15% yields little additional benefit.
-* Compared to a zero–tax scenario, introducing an inheritance tax improves the efficiency of wealth circulation and thus boosts GDP. The inheritance-tax policy also carries a signaling effect, but further rate increases have diminishing returns for GDP growth.
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-### Experiment 2: Household Impact of Estate Tax
-
-* **Experiment Description: ​**
-  Compare household income, consumption, and labor behaviors under different estate tax rates.
-* **Involved Social Roles:**
-  
-  * *Individual: ​*OLG Model
-  * *Government:* Fiscal Authority
-* **AI Agents:**
-  
-  * *Individual:* Behavior Cloning Agent
-  * *Government: ​*Data-Based Agent
-* **Experimental Variables:**
-  
-  * Estate tax rates (0%, 10%, 15%)
-  * Simulated households stratified by age and income
-  * Household wealth
-  * Individual working hours
-* **Visualized Experimental Results：**
-
-  
-  **Figure 2: ​**Higher estate taxes (blue bars) consistently reduce household wealth across different age groups (left) and income levels (right).
   
 
   
