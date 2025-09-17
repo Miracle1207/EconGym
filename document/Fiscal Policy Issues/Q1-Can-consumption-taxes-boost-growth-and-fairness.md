@@ -40,24 +40,22 @@ As an example, we selected the following roles from the social role classificati
 | Firm            | Perfect Competition          | Observe how changes in consumer demand influence firms' production and pricing strategies.                                                                                                                    |
 | Bank  | No-Arbitrage Platform | Study how capital markets respond to consumption tax policies, particularly changes in saving rates and investment behaviors.                                                                                 |
 
-### Individual → Ramsey Model/OLG Model
+### Rationale for Selected Roles
 
-* **Ramsey Model and OLG Model are both suitable for this study.** The Ramsey Model analyzes aggregate macroeconomic responses from representative households’ optimal intertemporal decisions, ideal for studying long-term equilibrium trends. The OLG Model captures heterogeneity across age groups in income, consumption, and tax burdens, enabling analysis of the intergenerational fairness effects of consumption taxes.
+**Individual → Ramsey Model/OLG Model**  
+**Ramsey Model and OLG Model are both suitable for this study.** The Ramsey Model analyzes aggregate macroeconomic responses from representative households’ optimal intertemporal decisions, ideal for studying long-term equilibrium trends. The OLG Model captures heterogeneity across age groups in income, consumption, and tax burdens, enabling analysis of the intergenerational fairness effects of consumption taxes.
 
-### Government → Fiscal Authority
+**Government → Fiscal Authority**  
+The Tax Policy Department directly formulates and implements consumption tax policies, fully simulating tax collection, income redistribution, and fiscal expenditure responses. Compared with pension and central bank departments, the Treasury more accurately reflects the impact of consumption tax on tax structures, government budgets, and social equity.
+Pension and monetary policy are not core variables in this study and thus are not used.
 
-* The Tax Policy Department directly formulates and implements consumption tax policies, fully simulating tax collection, income redistribution, and fiscal expenditure responses. Compared with pension and central bank departments, the Treasury more accurately reflects the impact of consumption tax on tax structures, government budgets, and social equity.
-* Pension and monetary policy are not core variables in this study and thus are not used.
+**Firm → Perfect Competition**  
+Selecting perfectly competitive markets helps eliminate distortions, making the impact of consumption tax policies on supply-demand dynamics, pricing, and distribution clearer.
+Monopolistic markets have non-market-determined prices and complex corporate strategies, potentially obscuring the economic effects of consumption taxes and reducing experimental clarity.
 
-### Firm → Perfect Competition
-
-* Selecting perfectly competitive markets helps eliminate distortions, making the impact of consumption tax policies on supply-demand dynamics, pricing, and distribution clearer.
-* Monopolistic markets have non-market-determined prices and complex corporate strategies, potentially obscuring the economic effects of consumption taxes and reducing experimental clarity.
-
-### Bank→ No-Arbitrage Platform
-
-* No-Arbitrage Platform are more suitable for analyzing long-term wealth accumulation and asset allocation responses, without active participation in credit expansion. They clearly reflect savings and investment behavior under policy changes.
-* Commercial banks involve complex behaviors like lending, interest spreads, and financial risks, less suited for focused macroeconomic policy analysis.
+**Bank→ No-Arbitrage Platform**  
+No-Arbitrage Platform are more suitable for analyzing long-term wealth accumulation and asset allocation responses, without active participation in credit expansion. They clearly reflect savings and investment behavior under policy changes.
+Commercial banks involve complex behaviors like lending, interest spreads, and financial risks, less suited for focused macroeconomic policy analysis.
 
 ---
 
