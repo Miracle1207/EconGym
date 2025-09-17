@@ -36,56 +36,39 @@ As an example, we selected the following roles from the social role classificati
 | Firm                 | Perfect Competition | Firms decide investment and production based on borrowing costs, reflecting how margin changes transmit through price and output mechanisms in the real economy.                  |
 | Bank | Commercial Banks             | Make credit‐intermediation decisions by setting net interest margins, influencing credit supply, bank profitability, and the efficiency of financial transmission.               |
 
-### Individual → Ramsey Model
+---
 
-* The Ramsey model simulates households’ optimal consumption and saving decisions under different net interest margins.
-* When loan rates are high, low-income groups face greater borrowing constraints, affecting their welfare and intertemporal resource allocation—making this model ideal for capturing the micro-level distributional effects of margin changes.
+### Rationale for Selected Roles
 
-### Government → Central Bank
+**Individual → Ramsey Model**  
+The Ramsey model simulates households’ optimal consumption and saving decisions under different net interest margins.
+When loan rates are high, low-income groups face greater borrowing constraints, affecting their welfare and intertemporal resource allocation—making this model ideal for capturing the micro-level distributional effects of margin changes.
 
-* Represented by the central bank, the government sets policy rates (e.g., refinancing rate, reserve requirement rate) that form the basis for commercial-bank rate-setting.
-* Although the central bank does not directly control net interest margins, it indirectly guides them through its monetary-policy framework, serving as the starting point and benchmark for margin regulation.
+**Government → Central Bank**  
+Represented by the central bank, the government sets policy rates (e.g., refinancing rate, reserve requirement rate) that form the basis for commercial-bank rate-setting.
+Although the central bank does not directly control net interest margins, it indirectly guides them through its monetary-policy framework, serving as the starting point and benchmark for margin regulation.
 
-### Firm → Perfect Competition 
+**Firm → Perfect Competition**  
+In a perfectly competitive market, firms make production and hiring decisions based on price signals and financing costs.
+Changes in net interest margins affect loan rates, which directly influence firms’ marginal cost of capital, thereby determining output, employment, and price dynamics.
 
-* In a perfectly competitive market, firms make production and hiring decisions based on price signals and financing costs.
-* Changes in net interest margins affect loan rates, which directly influence firms’ marginal cost of capital, thereby determining output, employment, and price dynamics.
-
-### Bank → Commercial Banks
-
-* Commercial banks must balance profit maximization with risk control.
-* Their behavior shapes the pace of credit supply, households’ financing costs, and firms’ investment efficiency, making them the core of the margin transmission mechanism.
+**Bank → Commercial Banks**  
+Commercial banks must balance profit maximization with risk control.
+Their behavior shapes the pace of credit supply, households’ financing costs, and firms’ investment efficiency, making them the core of the margin transmission mechanism.
 
 ---
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                                                             |
-| ------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic Role | Agent Algorithm        | Description                                                  |
+| ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent | Replicate sensitivity differences of various income groups to interest-rate changes, reflecting realistic saving and consumption behaviors.  |
 | Government             | Rule-Based Agent       | Set benchmark rates and policy rules to control the permissible range of interest-margin fluctuations.                                       |
 | Firm                 | Rule-Based Agent       | Simulate firms’ direct responses to changes in financing costs, consistent with the perfect-competition assumption.                         |
 | Bank  | Rule-Based Agent       | Commercial banks set margins according to preset strategies, facilitating the assessment of systemic effects under different margin regimes. |
 
-### Individual → BC Agent
-
-* BC Agent can **replicate actual heterogeneity​​**​ in household responses to interest-rate changes​, especially the savings rigidity of low-income groups. Compared with rule-based or RL methods, the BC Agent better captures authentic behavioral traits and avoids deviations caused by pure strategy optimization.
-
-### Government → Rule-Based Agent
-
-* As the central bank setting the interest-rate path, a Rule-Based Agent can explicitly codify policy constraints such as the benchmark rate and margin floors, ensuring monetary-policy stability and interpretability. While RL offers adaptability, it is ill-suited for the stability demands of policy formulation.
-
-### Firm → Rule-Based Agent
-
-* In a perfectly competitive market, firms determine investment’s marginal returns based on financing costs. A Rule-Based Agent can specify fixed production functions and cost curves to accurately simulate how margin changes transmit to output, prices, and capital formation, maintaining the clarity of market-response structure.
-
-### Bank → Rule-Based Agent
-
-* Commercial banks, as core financial intermediaries, adjust lending and deposit rates and credit volumes via preset rules, forming margin-strategy behaviors. This design offers flexibility and transparency, aiding clear assessment of how margin settings affect credit supply, profitability, and macroeconomic feedback.
-
----
 
 ## 4. Illustrative Experiment
 
