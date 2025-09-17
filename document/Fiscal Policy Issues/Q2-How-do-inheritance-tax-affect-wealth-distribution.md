@@ -56,7 +56,7 @@ No-Arbitrage Platform reliably reflect household asset allocation and returns ac
 
 ## ​3.​ Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
