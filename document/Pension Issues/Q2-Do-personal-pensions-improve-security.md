@@ -32,12 +32,13 @@ This study uses an economic simulation platform to investigate the ​**economic
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                |
-| ------------------------ | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model                             | Simulate individual and household consumption, saving, and investment decisions                                 |
-| Government             | Pension Authority            | Formulate and adjust individual pension policies, affecting saving and consumption behavior                     |
-| Firm                 | Perfect Competiton          | Assess how firms react to changes in individual pension policies, such as wage setting and investment decisions |
-| Bank | No-Arbitrage Platform | Model how capital markets absorb and allocate individual pension savings                                        |
+| Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
+| Government  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | — (same as above)                                                                                                                                    | $$a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                          |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
+
 
 ---
 
@@ -52,7 +53,7 @@ Designs and adjusts individual pension regulations, directly influencing persona
 **Firm → Perfect Competiton**  
 Firms’ production, investment, and wage decisions respond to changes in personal pension incentives. Perfectly Competitive Market ensures that increased households' savings are fully reflected in capital-market prices.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 Channel pension contributions into various financial investments and determine capital allocation. Arbitrage-Free Financial Institutions simulate the impact of different investment strategies, evaluating how pension reforms shock capital markets.
 
 ---

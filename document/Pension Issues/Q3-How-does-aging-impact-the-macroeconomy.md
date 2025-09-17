@@ -31,12 +31,13 @@ Using an economic-simulation platform, this study examines the effects of popula
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                                          |
-| ------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model                             | Simulate demographic aging and its impact on labor supply and consumption.                                                                |
-| Government             | Pension Authority                    | Formulate pension policies, adjusting retirement ages and benefit expenditures.                                                           |
-| Firm                | Perfectly Competition          | Firms hire labor and produce goods in a perfectly competitive environment, responding to labor-supply changes driven by population aging. |
-| Bank | No-Arbitrage Platform | Serve as intermediaries offering saving and lending services, measuring how declines in the savings rate affect financial markets.        |
+| Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
+| Government  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | — (same as above)                                                                                                                                    | $$a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                          |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
+
 
 ---
 
@@ -51,7 +52,7 @@ Facing rising pension expenditures and a shrinking tax base, the government’s 
 **Firm → Perfectly Competition**  
 Wages in a perfectly competitive market are set by supply and demand, accurately reflecting price-mechanism adjustments in labor supply driven by demographic aging.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 We simulate long-run capital-market structures—investment and return mechanisms—under demographic change. Since this experiment focuses on structural shifts rather than short-term credit behavior, we use a no-arbitrage intermediary rather than a commercial-bank role.
 
 ---

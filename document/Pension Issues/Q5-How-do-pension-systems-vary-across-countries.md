@@ -29,12 +29,12 @@ Using an economic simulation platform, this study investigates the comparative i
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                            | Role Description                                                                                                            |
-| ------------------------ | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model      | Simulate life‐cycle behaviors, capturing sensitivity in retirement, saving, and consumption decisions.                     |
-| Government             | Pension Authority                       | Design and implement pension policies, including contribution rates, replacement rates, and subsidy mechanisms.             |
-| Firm                 | Perfectly Competitive Market             | Model how wages and employment dynamically adjust with labor‐force participation, affecting the pension contribution base. |
-| Bank | No-Arbitrage Platform | Simulate pension‐fund investment returns and fiscal debt costs to assess system sustainability.                            |
+| Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
+| Government  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | — (same as above)                                                                                                                                    | $$a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                          |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
 ---
 
@@ -46,10 +46,10 @@ Use the Overlapping Generations framework to model life‐cycle differences in r
 **Government → Pension Authority**  
 Implement and manage various pension-system parameters, including contribution rates, replacement rates, and fiscal subsidies.
 
-**Firm → Perfectly Competitive Market**  
+**Firm → Perfect Competition**  
 Reflect how changes in labor‐force participation under different pension regimes dynamically adjust wages and the contribution base through market mechanisms.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 Simulate investment‐return trajectories under funded pension schemes or capture interest‐rate fluctuations tied to government‐bond–based subsidy mechanisms.
 
 ---
