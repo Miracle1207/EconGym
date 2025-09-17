@@ -34,12 +34,12 @@ This study uses an economic simulation platform to examine how monopolistic mark
 
 Select the following roles from the social role classification of the economic simulation platform:
 
-| Social Role            | Selected Type                         | Role Description                                                                                                                |
-| ------------------------ | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | Ramsey Model                          | Household consumption decisions respond to price change.                                                                        |
-| Government             | Fiscal Authority                  | The government may implement specific fiscal policies, such as price regulation.                                                |
-| Firm                 | Monopoly                        | Monopolistic pricing follows fixed market rules, e.g., profit maximization, cost-plus pricing, or government-regulated pricing. |
-| Bank  | No-Arbitrage Platform | Financial markets follow the no-arbitrage principle; investment and pricing adjust based on market rules.                       |
+| Social Role | Selected Type        | Role Description                                                                                                    | Observation                                                                                                  | Action                                                                                 | Reward                                              |
+| ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Individual  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)          |
+| Government  | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                 | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist. | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending          | GDP growth, equality, welfare                       |
+| Firm       | Monopoly             | Monopoly Firms set prices and wages to maximize profits under aggregate demand constraints.                        | $$o_t^{\text{mono}} = \{ K_t, L_{t}, Z_t, p_{t-1}, W_{t-1} \}$$<br>Capital, labor, productivity, last price/wage | $$a_t^{\text{mono}} = \{ p_t, W_t \}$$<br>Price and wage decisions                     | $$r_t^{\text{mono}} = p_t Y_t - W_t L_t - R_t K_t$$<br>Profits = Revenue – costs |
+| Bank       | Non-Profit Platform  | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                            | No rate control                                                                         | No profit                                           |
 
 ---
 
@@ -55,7 +55,7 @@ The Treasury Department may implement price control policies to ensure market fa
 **Firm → Monopoly**  
 The model studies how monopolistic pricing behavior influences market competition and broader socioeconomic outcomes.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 These sets ensure the efficiency of capital markets and help analyze the indirect effects of monopoly structures on the financial system.
 
 ---
