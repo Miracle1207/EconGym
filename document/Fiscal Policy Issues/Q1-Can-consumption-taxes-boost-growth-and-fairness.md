@@ -61,32 +61,16 @@ Commercial banks involve complex behaviors like lending, interest spreads, and f
 
 ## 3. Selected Agent Algorithms
 
-*(This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.)*
+This section provides a recommended agent configuration. Users are encouraged to adjust agent types based on the specific needs of their experiments.
 
-| Social Role            | AI Agent Type          | Role Description                                                                                  |
+| Economic Role | Agent Algorithm        | Description                                                                                  
 | ------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------- |
 | Individual            | Behavior Cloning Agent | Learn behavioral patterns from empirical data via behavior cloning.                               |
 | Government             | Data-Based Agent       | Predict changes in public finance after implementing a consumption tax using historical tax data. |
 | Firm                 | Rule-Based Agent       | Encode supply–demand rules to simulate consumer behavior under a consumption tax.                |
 | Bank | Rule-Based Agent       | Define financial-market operations based on macroeconomic variables.                              |
 
-### Individual → Behavior Cloning Agent
 
-* Behavior Cloning Agents learn consumption and saving behaviors from real household data, ensuring clarity of decision logic and enhancing model authenticity.
-
-### Government → Data-Based Agent
-
-* The government uses historical data to predict consumption tax effects, aiding dynamic adjustments of fiscal policies and improving model accuracy and reliability.
-
-### Firm → Rule-Based Agent
-
-* Market behaviors can be explicitly modeled through price-supply-demand rules, clearly showing the direct transmission paths of consumption tax effects.
-
-### Bank → Rule-Based Agent
-
-* Financial institutions primarily handle asset allocation and interest rate transmission. Rule-based settings clearly express their stable behavior, suitable for macro-policy transmission analysis.
-
----
 
 ## 4. Illustrative Experiment
 
