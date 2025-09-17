@@ -24,12 +24,12 @@ This study leverages an economic simulation platform to examine “How do asset�
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                         | Role Description                                                                                 |
-| ------------------------ | --------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Individual             | Ramsey Model                          | Simulates individual saving–investment decisions and long‑term wealth trajectories.            |
-| Bank | Commercial Banks                      | Offer a savings channel and set the benchmark interest rate.                                     |
-| Bank | No-Arbitrage Platform  | Model the returns and volatility of risky investments.                                           |
-| Firm                 | Perfect Competition          | Provides the macro backdrop of economic growth and capital returns, shaping investment behavior. |
+| Social Role | Selected Type       | Role Description                                                                                                    | Observation                                                                                                  | Action                                                                                 | Reward                                              |
+| ----------- | ------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Individual  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)          |
+| Bank       | Commercial Banks    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions               | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
+| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                            | No rate control                                                                         | No profit                                           |
+| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.               | /                                                                                                            | /                                                                                      | Zero (long-run)                                     |
 
 ---
 
@@ -44,7 +44,7 @@ In this experiment, we focus on the interaction between households and financial
 **Firm → Perfect Competition**  
 A perfectly competitive market provides a baseline backdrop for both economic growth and investment returns. Firm profits influence market yields, and this setting realistically simulates overall growth rates and capital returns, underpinning the valuation of high-risk investments.
 
-**Bank → Commercial Banks / No-Arbitrage Platform**  
+**Bank → Commercial Banks / Non-Profit Platform**  
 **Commercial Banks:** Act as the core conduit for savings, offering stable returns and liquidity guarantees. Changes in bank deposit rates directly influence asset-allocation decisions.
 **No-Arbitrage Platform:** Represent high-risk investment channels in the market, modeling the uncertain returns of volatile assets. They determine the potential returns and volatility faced by investors in the risk-taking segment.
 
