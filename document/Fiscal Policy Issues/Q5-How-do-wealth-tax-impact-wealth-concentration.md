@@ -12,10 +12,13 @@ Economic theory suggests a moderate property tax can slow the “Matthew effect�
 
 ### 1.3 Research Questions
 
-Using an economic-simulation platform, this study examines the long-term impacts of property tax on household behavior and wealth distribution, specifically:
+Using an economic-simulation platform, this study investigates the long-term impacts of property tax on household behavior and macroeconomic outcomes, specifically:
 
-* Can a property tax effectively reduce wealth concentration?
-* Do households systematically change their saving, labor, and investment behaviors under different property-tax structures?
+* **Household Consumption:** How does a property tax affect household consumption patterns across different wealth groups?
+* **Household Income:** What are the impacts of property tax on labor income and overall household earnings?
+* **Individual Utility:** Does the introduction of property tax improve or reduce individual welfare (utility) under different tax rates?
+* **Social Equity:** To what extent does property tax mitigate wealth inequality and promote social fairness?
+* **Economic Growth:** How does property taxation influence aggregate savings, investment, and long-term GDP growth?
 
 ### 1.4 Research Significance
 
@@ -64,24 +67,60 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule‐Based Agent | Adjust wages and prices according to labor‐market rules, transmitting the marginal effects of tax burdens on economic activity.                |
 | Bank | Rule‐Based Agent | Adjust interest rates and returns based on changes in savings and capital accumulation, reflecting taxation’s impact on financial equilibrium. |
 
+## **4. Running the Experiment**
 
-## 4.Illustrative Experiments
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## 5.Illustrative Experiments
 
 ### Experiment 1: Household Economic Behavior under Different Property Tax Rates
 
-* **Experiment Description: ​**Simulate several property tax regimes (0%, 3%, 5%) and compare their impacts on individual economic indicators including utility, consumption level, wealth accumulation, savings rate, and labor supply.
-* **Involved Social Roles:**
-  * Individual: Ramsey Model
-  * Government: Fiscal Authority
-* **AI**​**​ Agents:**
-  * Individual: BC Agent
-  * Government: Rule-Based Agent
+* **Experiment Description:**
+
+ **​ ​**Simulate several property tax regimes (0%, 3%, 5%) and compare their impacts on individual economic indicators including utility, consumption level, wealth accumulation, savings rate, and labor supply.
+
 * **Experimental Variables:**
+  
   * Property tax rate (0%, 3%, 5%)
   * Household utility
   * Savings rate
   * Labor supply
   * Consumption expenditure
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each bar group in the visualization to help readers better understand the results.
+  
+  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Left group):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. No wealth tax is imposed, serving as the baseline scenario.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
+  * **5%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Middle group):** Households are modeled using the Ramsey Model with BC Agents, while the government applies a ​**Saez rule-based tax system**​. A **5% wealth tax** is imposed on household assets.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
+  * **3%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Right group):** Households follow the Ramsey Model with BC Agents, and the government adopts the ​**Saez rule-based tax policy**​. A **3% wealth tax** is applied to household assets.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
 * **Visualized Experimental Results:**
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P6.jpeg)
@@ -90,7 +129,7 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P1.jpeg)
 
-**Figure 2:** Property tax reduces short-term wealth accumulation across all income levels. Households accumulate the most wealth in the absence of property tax (left).
+**Figure 2:** Property tax reduces long-run wealth accumulation across all income levels. Households accumulate the most wealth in the absence of property tax (left).
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P3.jpeg)
 
@@ -108,17 +147,21 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 ### **Experiment 2: Macro-Social Impacts of Property Tax Policy**
 
-* **Experiment Description:**  Evaluate the long-term impact of different property tax rates (0%, 3%, 5%) on macroeconomic performance (e.g., GDP) and social indicators (e.g., wealth inequality) using a multi-agent economic simulation.
-* **Involved Social Roles:**
-  * Individual: Ramsey Model
-  * Government: Fiscal Authority
-* **AI**​**​ Agents:**
-  * Individual: Behavior Cloning (BC) Agent
-  * Government: Rule-Based Agent
+* **Experiment Description:**
+
+  Evaluate the long-term impact of different property tax rates (0%, 3%, 5%) on macroeconomic performance (e.g., GDP) and social indicators (e.g., wealth inequality) using a multi-agent economic simulation.
 * **Experimental Variables:**
+  
   * Property tax rate (0%, 3%, 5%)
   * Wealth Gini coefficient
   * Simulated economy’s GDP
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings in this visualization to help readers better understand the results.
+  
+  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (blue line):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. No wealth tax is imposed, serving as the baseline scenario.
+  * **5%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (green line):** Households are modeled using the Ramsey Model with BC Agents, while the government applies a ​**Saez rule-based tax system**​. A **5% wealth tax** is imposed on household assets.
+  * **3%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (yellow line):** Households follow the Ramsey Model with BC Agents, and the government adopts the ​**Saez rule-based tax policy**​. A **3% wealth tax** is applied to household assets.
 * **Visualized Experimental Results:**
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P8.jpeg)
@@ -127,6 +170,7 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P7.jpeg)
 
+
 **Figure 7:** GDP grows fastest under the 0% property tax scenario (blue). The economy with the highest tax rate (green) exhibits the lowest long-run GDP level.
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P5.jpeg)
@@ -134,5 +178,6 @@ This section provides a recommended agent configuration. Users are encouraged to
 **Figure 8:** Social welfare is maximized in the absence of property tax (blue).
 
 * Although property tax can reduce inequality in the short term, it significantly suppresses GDP growth and eventually results in even greater wealth disparity over time.
+
 
 
