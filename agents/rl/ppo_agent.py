@@ -132,7 +132,13 @@ class ppo_agent:
         next_obs_tensor = torch.tensor(np.array(agent_data['next_obs_dict']), dtype=torch.float32).to(self.device)
         action_tensor = torch.tensor(np.array(agent_data['action_dict']), dtype=torch.float32).to(self.device)
         reward_tensor = torch.tensor(np.array(agent_data['reward_dict']), dtype=torch.float32).to(self.device)
-        inverse_dones = torch.tensor([x - 1 for x in agent_data['done']], dtype=torch.float32).to(self.device).unsqueeze(-1)
+        inverse_dones = torch.tensor([x - 1 for x in agent_data['done']], dtype=torch.float32).unsqueeze(-1)
+        # Ensure both tensors have the same shape before expanding
+        if inverse_dones.shape != reward_tensor.shape:
+            inverse_dones = inverse_dones.unsqueeze(-1).expand_as(reward_tensor)
+
+        inverse_dones = inverse_dones.to(self.device)
+
         # # Extract data from new nested dictionary structure
         # obs_dict = transition_dict['obs_dict']
         # next_obs_dict = transition_dict['next_obs_dict']

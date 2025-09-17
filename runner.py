@@ -56,15 +56,18 @@ class Runner:
         self.wandb = self.args.wandb
         
         if self.wandb:
+            from omegaconf import OmegaConf
+            config_dict = OmegaConf.to_container(self.args, resolve=True)
+    
             wandb.init(
-                config=self.args,
+                config=config_dict,
                 project="EconGym",
                 # entity="your_account",  # TODO: Replace with your W&B account or team name
                 entity="ai_tax",
                 name=self.file_name + "_seed=" + str(self.args.seed),
                 dir=str(self.model_path),
                 job_type="training",
-                reinit=True
+                mode="offline"
             )
 
     def _get_tensor_inputs(self, obs_dict):
