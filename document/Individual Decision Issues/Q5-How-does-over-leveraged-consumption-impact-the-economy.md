@@ -69,28 +69,53 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent | Specify how firms adjust wages, production scale, and hiring decisions in response to technological progress.      |
 | Bank | Rule-Based Agent | Set interest-rate and investment-return rules to measure technological impacts on capital markets.                 |
 
+---
 
+## **4. Running the Experiment**
 
-## 4.Illustrative Experiments
+### **4.1 Quick Start**
 
-### Experiment 1: Macroeconomic Impact of Front-Loading Consumption Spread
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## 5.Illustrative Experiments
+
+### Experiment : Macroeconomic Impact of Front-Loading Consumption Spread
 
 * **Experiment Description:**
+  
   Create two simulated economies: one permits households to engage in front-loading consumption via credit overdrafts, the other restricts consumption to current income. Compare macro-indicators (GDP, aggregate wealth, saving rate, financial-system stability) to assess how borrowing-enabled consumption trades off short-term stimulus against long-term sustainability.
-* **Involved Social Roles:**
-  * *Market:* Perfectly Competitive Market
-  * *Individual: ​*Overlapping Generations (OLG) Model
-* **AI**​**​ Agents:**
-  * *Market: ​*Rule-Based Agent
-  * *Individual:* Rule-Based Agent
 * **Experimental Variables:**
+  
   * Degree of front-loading propensity in the population
   * Wealth levels, consumption, and working hours of households across different age and wealth groups under the influence of front-loading consumption
   * GDP level
-* **Visualized Experimental Results:**
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results. The figure shows GDP dynamics under different leverage conditions in the OLG model.
+  
+  * **​over\_leverage\_rule\_based\_rule\_based\_100\_OLG :​**Households are modeled as ​**Rule-based Agents**​, and the government is also a **Rule-based Agent** applying fixed fiscal rules.Households operate within the **OLG Model** with **100** total households, under an **over-leverage condition.**
+  * **​baseline\_rule\_based\_rule\_based\_100\_OLG :​**Households are modeled as ​**Rule-based Agents**​, and the government is also a **Rule-based Agent** applying fixed fiscal rules.Households operate within the **OLG Model** with **100** total households, following a **standard ​**​**leverage**​**​ baselin.**
+  * **Panel Description:**
+    * **Left panel:** Bars represent the distribution of **average annual work hours across age cohorts** (e.g., <24, 25–34, 35–44, …, 85+, and total).
+    * **Right panel:** Bars represent the distribution of **average annual work hours across income classes** (rich, middle-class, poor, and mean).
+
 ![Individual Q5 P1](../img/Individual%20Q5%20P1.png)
 
-​**Figure 1**​: Comparison of household consumption distribution between front-loading (overdraft-enabled) and normal consumption groups. From the age perspective (left chart), young households in the front-loading group show significantly higher consumption (green bar); from the income perspective (right chart), front-loading consumption notably increases the average consumption of poor households (yellow bar).
+​**Figure 1**​: Comparison of household consumption distribution between front-loading (overdraft-enabled) and normal consumption groups. From the age perspective, young households in the front-loading group show significantly higher consumption; from the income perspective, front-loading consumption notably increases the average consumption of poor households (yellow bar).
 
 ![Individual Q5 P2](../img/Individual%20Q5%20P2.png)
 
@@ -102,8 +127,9 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 ![Individual Q5 P4](../img/Individual%20Q5%20P4.png)
 
-​**Figure 4**​: Comparison of GDP trends between the two simulated economies. Overall, front-loading consumption promotes higher long-term GDP growth (blue line).
+​**Figure 4**​: Comparison of GDP trends between the two simulated economies. Overall, front-loading consumption (blue line) promotes higher long-term GDP growth.
 
 * In the simulated economy under the front-loading consumption assumption, household consumption, individual utility, and aggregate output differ from those in the normal economy. While front-loading significantly increases consumption among younger households, the corresponding improvement in their utility is less pronounced. Under moderate front-loading behavior, the overall economy exhibits relatively higher GDP growth.
+
 
 
