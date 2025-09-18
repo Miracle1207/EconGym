@@ -5,7 +5,7 @@
 
 ### **1.1  Introduction to the "996" Phenomenon and Societal Concerns**
 
-The term **"996"** is a humorous expression in Chinese internet culture, referring to an overloaded work system: working from ​**9 a.m. to 9 p.m.**​, six days a week, which results in ​**72 working hours per week**​, far exceeding international labor standards (according to the ​**International Labour Organization (ILO)**​, working more than **48 hours per week** is considered "long working hours"). Excessive working hours can lead to various issues, such as:
+The term **"996"** is a humorous expression in Chinese internet culture, referring to an overloaded work system: working from ​**9 a.m. to 9 p.m.**​, six days a week, which results in ​**much longer working hours per week**​, far exceeding international labor standards (according to the ​International Labour Organization (ILO)​, working more than **48 hours per week** is considered "long working hours"). Excessive working hours can lead to various issues, such as:
 
 * **Health**​​**​ Issues for Workers**: Long-term high-intensity work can cause chronic fatigue, anxiety, depression, and other health problems.
 * **Deterioration of Work-Life Balance**: The time available for personal social activities and family life is greatly reduced, potentially decreasing overall life satisfaction.
@@ -15,9 +15,10 @@ The term **"996"** is a humorous expression in Chinese internet culture, referri
 
 This study focuses on the following key questions:
 
-* **The Impact of Excessive Working Hours on Society**: How do excessive working hours affect macroeconomic variables such as societal output, income inequality, and social consumption?
-* **How "996" Affects Long-Term Personal Utility**: Does the "996" system lead to a decline in personal long-term utility and changes in lifestyle?
-
+* **GDP**​​**​ Impact**​: How do excessive working hours under the “996” system influence macroeconomic output and long-term economic growth?
+* ​**Individual Utility**​: Does the “996” culture reduce long-term personal utility, health, and overall life satisfaction?
+* ​**Social Welfare**​: To what extent does the “996” system affect overall social welfare, including income inequality and collective well-being?
+  
 ### **1.3 Research Significance**
 
 * **Evaluation of the Family and Social Utility of Overtime Work:**  This research investigates whether **excessive working hours** can genuinely enhance ​**long-term personal utility**​, or if it only brings ​**short-term economic benefits**​. Additionally, the study considers whether individuals' long working hours can truly contribute to the increase of ​**societal output**​.
@@ -64,25 +65,46 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent       | In a perfectly competitive market, firms do not have control over product pricing, and their strategies follow fixed market rules. |
 | Bank | Rule-Based Agent       | Rule-Based Agent ensures that the behavior of financial institutions remains relatively stable.                                    |
 
+---
 
-## **4.Illustrative Experiment**
+## **4. Running the Experiment**
 
-### **Experiment 1: The Impact of Excessive Working Hours on Society**
+### **4.1 Quick Start**
 
-* **Experiment Description**:
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiment**
+
+### **Experiment : The Impact of Excessive Working Hours on Society**
+
+* ​**Experiment Description**​:
+  
   Analyze how the "996" labor model impacts macro-level society.
-* **Involved Social Roles:**
-  * *Individual: ​*OLG Model
-  * *Firm:* Perfectly Competitive Market
-  * *Bank:* No-Arbitrage Platform
-* **AI Agents**:
-  * *Individual: ​*BC Agent
-  * *Firm: ​*Rule-Based Agent
-  * *Bank: ​*Rule-Based Agent
-* **Experimental Variables**:
+* ​**Experimental Variables**​:
+  
   * Weekly Working Hours (comparison of 40 hours per week and 60 hours per week).
   * Societal GDP Level and Growth Trend.
   * Societal Income Inequality (e.g., changes in the Gini coefficient).
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **bc\_ppo\_100\_OLG (Blue line):** Households are modeled under the **OLG** framework as ​**Behavior Cloning Agents**​, while the **government is a PPO-based RL Agent** that optimizes policy decisions. The economy contains **100 households** and operates under ​**standard working-hour conditions**​.
+  * **996\_bc\_ppo\_100\_OLG (Green line):** Households are modeled under the **OLG** framework as ​**Behavior Cloning Agents**​, and the ​**government is a PPO-based RL Agent**​. The economy contains **100 households** but is subject to a **“996” extended work regime** , which increases effective labor supply relative to the standard condition.
 
 ```Python
 #The maximum weekly working hours are extended to 60 or 72 hours per week.
@@ -95,15 +117,16 @@ Working_hours_max= 4160
 
 ![Individual Q1 P1](../img/Individual%20Q1%20P1.png)
 
-
-**Figure 1**: The "996" work model (green line) leads to a long-term increase in societal output.
+​**Figure 1**​: The "996" work model leads to a long-term increase in societal output.
 
 ![Individual Q1 P2](../img/Individual%20Q1%20P2.png)
 
 ![Individual Q1 P3](../img/Individual%20Q1%20P3.png)
 
-**Figure 2, Figure 3**: The "996" work model (green line) slightly reduces the wealth Gini coefficient, indicating a slight decrease in the wealth gap in society, but it has little to no effect on income inequality.
+​**Figure 2, Figure 3**​: The "996" work model slightly reduces the wealth Gini coefficient, indicating a slight decrease in the wealth gap in society, but it has little to no effect on income inequality.
 
 * The "996" work model can effectively increase societal GDP output starting from the first period and continue this growth in the long term.
 * The impact of "996" on societal income inequality is relatively small, with the long working hours model slightly reducing the wealth gap.
+
+
 
