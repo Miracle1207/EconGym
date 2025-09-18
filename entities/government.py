@@ -270,8 +270,8 @@ class Government(BaseEntity):
             return (gdp_rew + gini_rew)/2  # \in (0,1)
     
         elif gov_goal == "pension_gap":
-            pension_surplus = sum(-self.calculate_pension(society.households))
-            return self.get_pension_reward(pension_surplus)
+            # pension_surplus = sum(-self.calculate_pension(society.households))
+            return self.get_pension_reward(self.pension_fund)
     
         else:
             raise ValueError("Invalid government goal specified.")
@@ -294,7 +294,7 @@ class Government(BaseEntity):
         scale : float, optional, default=10
             The scaling factor for normalizing the final reward.
 
-        beta : float, optional, default=8
+        beta : float, optional, default=10
             A factor that adjusts the sensitivity to surpluses.
 
         Returns:
@@ -304,12 +304,13 @@ class Government(BaseEntity):
         """
     
         # Log transformation for diminishing returns and penalty for extreme surpluses
+        pension_surplus = max(0, pension_surplus)
         pension_growth = np.log(1 + pension_surplus) - beta
     
         # Normalize the reward using tanh
         normalized_reward = self.sigmoid(pension_growth / scale)
     
-        return normalized_reward
+        return np.array([normalized_reward])
 
     def is_terminal(self):
         '''

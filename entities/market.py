@@ -77,7 +77,7 @@ class Market(BaseEntity):
         self.Zt = self.Z * (1 + np.random.rand(self.firm_n, 1))
         self.Lt = (real_total_hours / real_population) * households_n
         # self.Kt = real_capital_rate * GDP / self.firm_n * np.ones((self.firm_n, 1))
-        self.Kt = np.sum(households_asset) - GDP * real_debt_rate
+        self.Kt = (np.sum(households_asset) - GDP * real_debt_rate )/ self.firm_n * np.ones((self.firm_n, 1))
         self.Kt_next = copy.copy(self.Kt)
         self.price = np.ones((self.firm_n, 1))
         self.WageRate = self.price * self.Zt * (1 - self.alpha) * np.power(self.Kt / self.Lt, self.alpha)
@@ -118,10 +118,13 @@ class Market(BaseEntity):
     def get_reward(self, society):
         """Calculate the firm's profit."""
         if self.type == "perfect":
-            return 0.
+            return np.array([0.])
         else:
             profit = self.price * society.real_deals - self.WageRate * self.firm_labor_j - society.bank.lending_rate * self.Kt
-            return profit
+            if isinstance(profit, np.ndarray):
+                return profit
+            else:
+                return np.array([profit])
     
     def is_terminal(self):
         if np.sum(self.Kt_next) < 0:

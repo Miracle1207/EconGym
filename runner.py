@@ -4,12 +4,10 @@ import random
 import numpy as np
 import torch
 import os, sys
-import wandb
+# import wandb
+import swanlab as wandb
 import json
 
-from omegaconf import OmegaConf
-
-from env import EconomicSociety
 
 sys.path.append(os.path.abspath('../..'))
 from agents.log_path import make_logpath, save_args
@@ -67,7 +65,7 @@ class Runner:
                 name=self.file_name + "_seed=" + str(self.args.seed),
                 dir=str(self.model_path),
                 job_type="training",
-                mode="offline"
+                # mode="offline"
             )
 
     def _get_tensor_inputs(self, obs_dict):

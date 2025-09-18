@@ -65,7 +65,7 @@ class Bank(BaseEntity):
         
         current_deposit = np.sum(society.households.at_next)  #  Deposits at this step in the bank
         
-        total_deposit = self.current_account + previous_settlement + current_deposit   # 当前账户有多少存款
+        total_deposit = self.current_account + previous_settlement + current_deposit
         
         society.market.Kt_next = self.compute_next_kt(society, total_deposit)
         
@@ -94,9 +94,9 @@ class Bank(BaseEntity):
     def get_reward(self):
         """Profit is based on the interest spread between loans and deposits."""
         if self.type == "non_profit":
-            return 0.
+            return np.array([0.])
         elif self.type == "commercial":
-            return self.profit
+            return np.array([self.profit])
         else:
             raise ValueError(f"Invalid bank type: '{self.type}'. Expected 'non_profit' or 'commercial'.")
     
