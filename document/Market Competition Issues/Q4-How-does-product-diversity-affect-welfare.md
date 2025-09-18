@@ -9,10 +9,11 @@
 
 ### 1.3 Research Questions
 
-Using an economic-simulation platform, this study examines the mechanisms by which changes in product variety affect social welfare, focusing on:
+This study uses an economic simulation platform to investigate the ​**economic impacts of product variety in the market**​, specifically examining:
 
-* Whether RL-driven firms naturally evolve toward “excessive variety.”
-* How pursuit of variety impacts resource-allocation efficiency at different levels of market concentration.
+* ​**Household Consumption**​: How does greater product diversity influence household spending patterns and brand-switching behavior?
+* ​**Household Utility**​: How does increased choice affect individual and aggregate consumer satisfaction?
+* **GDP**​​**​ Effects**​: What is the impact of product variety on aggregate output, considering trade-offs between market expansion and production inefficiency?
 
 ### 1.4 Research Significance
 
@@ -62,22 +63,37 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | RL Agent               | Firms dynamically adjust product strategies via reinforcement learning to optimize profits and market share.                             |
 | Bank | Rule-Based Agent       | Reflect resource-allocation efficiency in the financial system and simulate how interest-rate changes affect firms’ expansion capacity. |
 
+---
 
-## 4. Illustrative Experiments
+## **4. Running the Experiment**
+
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## 5.Illustrative Experiments
 
 ### Experiment 1: Impact of Product Variety on Consumer Welfare
 
 * **Experiment Description:**
+  
   Construct a monopolistic competition market in which firms use reinforcement learning to adjust product prices and variety in order to maximize profits. Compare different combinations of price levels and product diversity, and measure their effects on consumer utility.
-* **Involved Social Roles:**
-  * *Households: ​*Ramsey Model
-  * *Market: ​*Monopolistic Competition Market
-* **AI**​**​ Agents:**
-  * *Households: ​*Behavior Cloning Agent
-  * *Government:* Rule-Based Agent
-  * *Market:* RL Agent
-  * *Financial Institutions:* Rule-Based Agent
 * **Experimental Variables:**
+  
   * A consumer utility function consistent with economic theory, where **epsilon** represents the elasticity of substitution between goods.
   * Number and identity of firms in the monopolistic competition market
   * Product prices and range of product varieties
@@ -101,11 +117,37 @@ function calculate_CES_utility(consumption_list, epsilon):
     return utility
 ```
 
+* **Baselines:**
+
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  * **Groups description:**
+    * ​**mp\_f2\_e4 (Light blue line)**​: A monopolistic competition market with ​**2 firms**​, households modeled as ​**Ramsey Model and Behavior Cloning Agent**​, government modeled as a ​**rule-based agent**​, elasticity of substitution parameter ​**ε=4**​.
+    * ​**mp\_f4\_e4 (Red line)**​: A monopolistic competition market with ​**4 firm**​,the other settings are the same.
+    * ​**mp\_f6\_e4 (Dark blue line)**​: A monopolistic competition market with ​**6 firms**​, the other settings are the same.
+    * ​**mp\_f8\_e4 (Yellow line)**​: A monopolistic competition market with ​**8 firms**​, the other settings are the same.
+    * ​**mp\_f10\_e4 (Green line)**​: A monopolistic competition market with ​**10 firms**​, the other settings are the same.
+  * **Bar description:**
+    * **Blue bar:** Rich households
+    * **Green bar:** Middle-class households
+    * **Yellow bar:** Poor households
+    * **Red bar:** Overall average
+
+
 ![Market Q4 P1](../img/Market%20Q4%20P1.png)
 
 ![Market Q4 P2](../img/Market%20Q4%20P2.png)
 
-​**Figure 1 and Figure 2**​: Comparison of consumer wealth levels across different numbers of firms in the market (with different colors representing households from various wealth tiers). As the number of firms increases from two (rightmost bar) to eight (middle bar), there is a noticeable increase in consumer wealth. However, as the number of firms continues to rise, such as when there are ten firms (second bar from the left), the average household wealth actually declines.
+​**Figure 1 and Figure 2**​: Comparison of consumer wealth levels across different numbers of firms in the market. As the number of firms increases from two to eight, there is a noticeable increase in consumer wealth. However, as the number of firms continues to rise, such as when there are ten firms, the average household wealth actually declines.
+
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * ​**mp\_f2\_e4 **​: A monopolistic competition market with ​**2 firms**​, households modeled as ​**Ramsey Model and Behavior Cloning Agent**​, government modeled as a ​**rule-based agent**​, elasticity of substitution parameter ​**ε=4**​.
+  * ​**mp\_f4\_e4 **​: A monopolistic competition market with ​**4 firm**​,the other settings are the same.
+  * ​**mp\_f6\_e4 **​: A monopolistic competition market with ​**6 firms**​, the other settings are the same.
+  * ​**mp\_f8\_e4 **​: A monopolistic competition market with ​**8 firms**​, the other settings are the same.
+  * ​**mp\_f10\_e4 **​: A monopolistic competition market with ​**10 firms**​, the other settings are the same.
 
 ![Market Q4 P3](../img/Market%20Q4%20P3.png)
 
@@ -120,16 +162,21 @@ function calculate_CES_utility(consumption_list, epsilon):
 
 ### **Experiment 2: The Impact of Product Substitutability on Consumer Behavior**
 
-* **Experiment Description:**  Based on the CES function characterizing consumer utility, different product substitution elasticities (epsilon) are introduced to examine their impact on consumer behavior patterns. The experiment fixes the number of firms in the market for a specific epsilon value and discusses consumer behavior characteristics under different product substitution elasticities.
+* **Experiment Description:**
+
+   Based on the CES function characterizing consumer utility, different product substitution elasticities (epsilon) are introduced to examine their impact on consumer behavior patterns. The experiment fixes the number of firms in the market for a specific epsilon value and discusses consumer behavior characteristics under different product substitution elasticities.
 * **Involved Social Roles:**
+  
   * Households: Ramsey Model
   * Market: Monopolistic Competition Market
 * **AI**​**​ Agents:**
+  
   * Households: Behavior Cloning Agent
   * Government: Rule-Based Agent
   * Market: RL Agent
   * Financial Institutions: Rule-Based Agent
 * **Experimental Variables:**
+  
   * Different product substitution elasticities (epsilon)
   * Product prices and range of product varieties
   * Household reward and consumption in the simulated economy
@@ -163,4 +210,6 @@ effects = [
 
 * As the product substitution elasticity decreases, consumers become less sensitive to price changes, resulting in more active consumption behavior in the simulated economy, which leads to a slight increase in individual utility.
 * Lower product substitution elasticity can effectively enhance overall social welfare.
+
+
 
