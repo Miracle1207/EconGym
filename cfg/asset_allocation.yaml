@@ -6,12 +6,12 @@ Environment:
     - entity_name: 'government'
       entity_args:
         params:
-          type: "pension" # central_bank gov
+          type: "tax" # central_bank gov
 
     - entity_name: 'households'
       entity_args:
         params:
-          type: 'ramsey'
+          type: 'ramsey_risk_invest'
 
     - entity_name: 'market'
       entity_args:
@@ -26,11 +26,11 @@ Environment:
 
 
 Trainer:
-  house_alg: "bc"
-  gov_alg: "data_based"
+  house_alg: "ppo"
+  gov_alg: "rule_based"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1
   epoch_length: 300
   cuda: False
-  n_epochs: 300
+#  n_epochs: 300

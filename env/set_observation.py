@@ -71,7 +71,7 @@ class EconObservations:
         n_households = self.households.households_n
 
         # Private observations
-        if 'OLG' in self.households.type or self.households.type == 'personal_pension':  # todo: 'personal_pension' 处理
+        if 'OLG' in self.households.type:
             age = getattr(self.households, 'age', np.zeros(n_households))
             # Each household's private obs: [education, wealth, age]
             private_obs_per_household = np.column_stack([education, wealth, age])

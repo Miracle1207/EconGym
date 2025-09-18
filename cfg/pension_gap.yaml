@@ -17,7 +17,6 @@ Environment:
       entity_args:
         params:
           type: 'OLG'
-
           households_n: 1000
         OLG:
           birth_rate: 0.011
@@ -49,6 +48,6 @@ Trainer:
   p_lr: 1e-4
   epoch_length: 300
   cuda: False
-  n_epochs: 1000
+#  n_epochs: 1000
   test: False
   wandb: True

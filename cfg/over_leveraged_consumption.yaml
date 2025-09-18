@@ -11,7 +11,7 @@ Environment:
     - entity_name: 'households'
       entity_args:
         params:
-          type: 'OLG'
+          type: 'OLG_adv_consume'
 
     - entity_name: 'market'
       entity_args:
@@ -26,11 +26,11 @@ Environment:
 
 
 Trainer:
-  house_alg: "bc"
-  gov_alg: "data_based"
+  house_alg: "rule_based"  # over_leveraged_consumption as rules
+  gov_alg: "rule_based"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1
   epoch_length: 300
   cuda: False
-  n_epochs: 300
+#  n_epochs: 300

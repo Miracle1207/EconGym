@@ -31,6 +31,6 @@ Trainer:
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1
-  epoch_length: 300
+#  epoch_length: 300
   cuda: False
 

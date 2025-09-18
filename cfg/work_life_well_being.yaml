@@ -11,7 +11,7 @@ Environment:
     - entity_name: 'households'
       entity_args:
         params:
-          type: 'OLG'
+          type: 'ramsey'
           h_max: 2512
 
     - entity_name: 'market'
@@ -27,11 +27,11 @@ Environment:
 
 
 Trainer:
-  house_alg: "bc"
-  gov_alg: "data_based"
+  house_alg: "ppo"
+  gov_alg: "rule_based"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1
   epoch_length: 300
   cuda: False
-  n_epochs: 300
+#  n_epochs: 300

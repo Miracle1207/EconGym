@@ -1,9 +1,10 @@
 import numpy as np
 import torch
+
 class HouseholdRules:
     """
     Rule set for household behavior based on demographic and country-specific patterns.
-    This includes saving and risky investment behavior by age group and country.
+    Includes saving, risky investment, and 'advance consumption' (adv_consume) behavior.
     """
 
     # -------------------------------
@@ -86,6 +87,35 @@ class HouseholdRules:
         else:
             return 0.25, 0.08
 
+    # ----------------------------------------------------------
+    # Advance Consumption: eats into planned savings
+    # ----------------------------------------------------------
+    @staticmethod
+    def _china_consumption_params(age):
+        """
+        Return (mu, sd) of 'advance consumption' ratio for Chinese households.
+        This is α_adv: the fraction of planned savings eaten by advance consumption.
+        """
+        if age < 35:
+            return 0.50, 0.15
+        elif age < 55:
+            return 0.40, 0.12
+        else:
+            return 0.20, 0.08
+
+    @staticmethod
+    def _us_consumption_params(age):
+        """
+        Return (mu, sd) of 'advance consumption' ratio for US households.
+        This is α_adv: the fraction of planned savings eaten by advance consumption.
+        """
+        if age < 35:
+            return 0.60, 0.15
+        elif age < 55:
+            return 0.50, 0.12
+        else:
+            return 0.30, 0.10
+
     # -------------------------------------------
     # Routing function to select param functions
     # -------------------------------------------
@@ -95,7 +125,7 @@ class HouseholdRules:
         Select the appropriate age-to-(mu, sd) mapping function based on country and kind.
         Args:
             country (str): "China" or "US"
-            kind (str): "saving" or "risky"
+            kind (str): "saving" | "risky" | "adv_consume"
         """
         if kind == "saving":
             if country == "US":
@@ -107,36 +137,49 @@ class HouseholdRules:
                 return HouseholdRules._us_risky_invest_params
             elif country == "China":
                 return HouseholdRules._china_risky_invest_params
+        elif kind == "adv_consume":
+            if country == "US":
+                return HouseholdRules._us_consumption_params
+            elif country == "China":
+                return HouseholdRules._china_consumption_params
         raise ValueError(f"Unknown country={country} or kind={kind}.")
 
     # -------------------------------------------------
-    # Sampling saving or risky investment proportions
+    # Sampling saving / risky / advance consumption
     # -------------------------------------------------
     @staticmethod
     def get_proportion(age, n, country, action_kind):
         """
-        Generate saving or risky investment proportion.
+        Generate proportion vector for 'saving' | 'risky' | 'adv_consume'.
+        - 'saving'       -> baseline saving rate s in [0,1]
+        - 'risky'        -> risky investment share in [0,1]
+        - 'adv_consume'  -> α_adv in [0,1], i.e., fraction of planned savings eaten by advance consumption
         Args:
             age (array or None): age array for each agent, or None for global average
             n (int): number of agents
             country (str): "China" or "US"
-            action_kind (str): "saving" or "risky"
+            action_kind (str): "saving" | "risky" | "adv_consume"
         Returns:
             np.ndarray: clipped values in [0, 1]
         """
-        param_fn = HouseholdRules._get_param_fn(country, kind=action_kind)
         if age is not None:
             age = np.asarray(age).reshape(-1)
+            param_fn = HouseholdRules._get_param_fn(country, kind=action_kind)
             mus_sds = np.array([param_fn(a) for a in age], dtype=float)  # shape (N, 2)
             mus, sds = mus_sds[:, 0], mus_sds[:, 1]
             sp = np.random.normal(loc=mus, scale=sds)
         else:
-            # Fall back to global priors if age is not given (e.g., Ramsey-type agent)
+            # Global priors if age is not given (e.g., Ramsey-type agent)
             if action_kind == "saving":
                 mu, sd = (0.40, 0.08) if country == "US" else (0.50, 0.10)
             elif action_kind == "risky":
                 mu, sd = (0.50, 0.10) if country == "US" else (0.30, 0.10)
+            elif action_kind == "adv_consume":
+                mu, sd = (0.50, 0.12) if country == "US" else (0.5, 0.15)
+            else:
+                raise ValueError(f"Unknown action_kind={action_kind}")
             sp = np.random.normal(mu, sd, size=n)
+
         return np.clip(sp, 0.0, 1.0)
 
     # ------------------------------------------
@@ -147,19 +190,17 @@ class HouseholdRules:
         """
         Generate rule-based household action vector based on type and observation.
         Action layout:
-            - Column 0: saving proportion in [0, 1]
-            - Column 1: (optional custom action, clipped to [0, 1])
-            - Column 2: risky investment proportion in [0, 1] (if applicable)
+            - Column 0: saving proportion in [0, 1] (after adv_consume adjustment if enabled)
+            - Column 1: labor supply proportion in [0, 1]
+            - Column 2: risky investment proportion in [0, 1] (if "risk_invest" in type and action_dim>=3)
+            - Column -firm_n-1: normalized selected firm index in (0,1) when firm_n>1
+            - Last firm_n columns: consumption shares across firms (sum to 1) when firm_n>1
 
-        Args:
-            type (str): agent type ("OLG", "Ramsey", etc.)
-            obs (np.ndarray): observation matrix, must include age if "OLG"
-            action_dim (int): dimension of the action vector
-        Returns:
-            np.ndarray: (N, action_dim) action matrix
+        Enable 'advance consumption' by including the token "adv_consume" in `type`.
+        Example: type="OLG_risk_invest_adv_consume"
         """
         N = len(obs)
-        country = "China"  # Default setting; can be replaced or inferred from obs
+        country = "China"  # Default; replace or infer from obs if needed
         action = np.random.randn(N, action_dim)
 
         if "OLG" in type:
@@ -167,50 +208,54 @@ class HouseholdRules:
         else:
             ages = None
 
-        # Generate saving proportion
+        # --- Baseline saving ---
         saving = HouseholdRules.get_proportion(ages, N, country, action_kind='saving')
+
+        # --- Advance consumption adjustment (s' = s * (1 - alpha_adv)) ---
+        if "adv_consume" in type:
+            alpha_adv = HouseholdRules.get_proportion(ages, N, country, action_kind='adv_consume')
+            saving = np.clip(saving * (1.0 - alpha_adv), 0.0, 1.0)
+
         action[:, 0] = saving.reshape(-1)
 
+        # --- Labor supply (truncated normal) ---
         mean, std_dev, lower_bound, upper_bound = 0.5, 0.2, 0.0, 1.0
-        # Generate labor supply proportion using truncated normal distribution
         action[:, 1] = np.clip(np.random.normal(loc=mean, scale=std_dev, size=N), lower_bound, upper_bound)
 
-        # Optionally generate risky investment proportion
-        if "risk_invest" in type:
+        # --- Risky investment (optional) ---
+        if "risk_invest" in type and action_dim >= 3:
             risk = HouseholdRules.get_proportion(ages, N, country, action_kind='risky')
             action[:, 2] = risk.reshape(-1)
 
-        # If there are more than 1 firm
+        # --- Firm choice & consumption shares across firms ---
         if firm_n > 1:
             # Extract wage rates and prices from observations
-            wagerate = obs[:, 4:4 + firm_n] # Assuming wage rates are located in this range
-            price = obs[:, 4 + firm_n: 4 + firm_n * 2]  # Prices of the firms
-    
-            wagerate_probs = wagerate / torch.sum(wagerate, dim=1, keepdim=True)
+            wagerate = obs[:, 4:4 + firm_n]  # shape (N, firm_n)
+            price = obs[:, 4 + firm_n: 4 + firm_n * 2]  # shape (N, firm_n)
 
-            if torch.isnan(wagerate_probs).any() or torch.isinf(wagerate_probs).any():
+            # Convert to torch for stable operations
+            wage_t = torch.tensor(wagerate, dtype=torch.float32)
+            wage_sum = wage_t.sum(dim=1, keepdim=True).clamp_min(1e-8)
+            wage_probs = wage_t / wage_sum
+
+            if torch.isnan(wage_probs).any() or torch.isinf(wage_probs).any():
                 print("Warning: NaN or Inf in wagerate_probs")
-                
-            firm_index = torch.multinomial(wagerate_probs, 1)
-            action[:, -firm_n - 1] = firm_index.squeeze()/firm_n  # Store the selected firm index in the action array
-    
-            # Now, calculate the probabilities of choosing each firm's goods based on price
-            # Apply softmax to prices to get a probability distribution
-            price_exp = torch.exp(-price)
-            price_probs = price_exp / torch.sum(price_exp, dim=1, keepdim=True)
+
+            firm_index = torch.multinomial(wage_probs, 1)  # (N,1)
+            action[:, -firm_n - 1] = firm_index.squeeze(1).numpy() / firm_n  # normalized index in (0,1)
+
+            # Price-based choice probabilities (softmax on -price)
+            price_t = torch.tensor(price, dtype=torch.float32)
+            price_exp = torch.exp(-price_t)
+            price_sum = price_exp.sum(dim=1, keepdim=True).clamp_min(1e-8)
+            price_probs = price_exp / price_sum
+
             if torch.isnan(price_probs).any() or torch.isinf(price_probs).any():
                 print("Warning: NaN or Inf in price_probs")
 
-            # Assign the probabilities to the last firm_n columns of the action
-            action[:, -firm_n:] = price_probs
-            # Ensure the probabilities sum to 1 across each row (household)
-            action[:, -firm_n:] = action[:, -firm_n:] / np.sum(action[:, -firm_n:], axis=1, keepdims=True)
-
-        # Now, 'action' should contain:
-        # - action[:, 0] for saving proportion
-        # - action[:, 1] for working hours proportion
-        # - action[:, 2] for risky investment proportion (if applicable)
-        # - action[:, -firm_n-1] for selected firm_index/firm_n (\in (0,1)) based on wage rates
-        # - action[:, -firm_n:] for the proportions of consumption from each firm (sum to 1)
+            action[:, -firm_n:] = price_probs.numpy()
+            # Ensure exact row-wise normalization (numerical safety)
+            row_sum = action[:, -firm_n:].sum(axis=1, keepdims=True)
+            action[:, -firm_n:] = action[:, -firm_n:] / np.clip(row_sum, 1e-8, None)
 
         return action

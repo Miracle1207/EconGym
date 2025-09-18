@@ -40,10 +40,11 @@ Environment:
 
 Trainer:
   house_alg: "bc"
-  gov_alg: "ddpg"
+  gov_alg: "ppo"
   firm_alg: "rule_based"
-  bank_alg: "rule_based"
+  bank_alg: "ppo"
   seed: 1
   epoch_length: 300
   cuda: False
-  n_epochs: 300
+  n_epochs: 1000
+  wandb: True

@@ -201,7 +201,7 @@ Trainer:
   buffer_size: 1e6
   env_name: 'wealth_distribution'
   init_exploration_policy: 'gaussian'
-  n_epochs: 10
+  n_epochs: 1000
   update_cycles: 100
   epoch_length: 300
   target_update_interval: 1
