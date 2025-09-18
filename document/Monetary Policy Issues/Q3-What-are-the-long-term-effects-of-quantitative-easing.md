@@ -125,7 +125,7 @@ Track both short-term and long-term effects of QE policy
   
   * **bc\_rule\_based\_100\_ramsey\_int\_margin\_0.03 (blue line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a ​**Rule-Based Agent**​,with reduces the lending–deposit interest-rate margin to 0.03.
   * **bc\_rule\_based\_100\_ramsey (yellow line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a ​**Rule-Based Agent**​.
-  * **bc\_rule\_based\_100\_ramsey\_gt\_0.15 (red line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a **​Rule-Based Agent,​**with the extra purchase volume set to 15% of GDP.
+  * **bc\_rule\_based\_100\_ramsey\_gt\_0.15 (red line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a **​Rule-Based Agent,​**with the extra goverment purchase volume set to 15% of GDP.
 * **Visualized Experimental Results：**
 
 ![Monetary Q3 P1](../img/Monetary%20Q3%20P1.png)
