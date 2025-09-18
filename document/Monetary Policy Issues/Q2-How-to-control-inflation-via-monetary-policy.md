@@ -8,10 +8,12 @@ Inflation refers to a sustained and significant rise in the overall price level 
 
 ### 1.2 Research Questions
 
-Using an economic-simulation platform, this study investigates the control of inflation via reinforcement-learning methods and evaluates the macroeconomic consequences of such control, focusing on:
+This study uses an economic simulation platform to investigate the economic impacts of **monetary policy in controlling inflation,** specifically examining:
 
-* **GDP level** (how inflation control affects GDP)
-* **Income inequality** (whether inflation control widens or narrows the wealth gap)
+* **Inflation**​**​ Control Effectiveness:** How effective are interest rate hikes in reducing inflation dynamics?
+* **Household Consumption: ​**How does monetary tightening affect aggregate and age-differentiated household consumption?
+* **GDP**​**​ Effects:** What is the impact of inflation-control policies on real economic output and growth?
+
 
 ### 1.3 Research Significance
 
@@ -61,20 +63,37 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent       | A rule-based agent can directly simulate the “cost increase → price increase” transmission chain.                                                                                  |
 | Bank | Rule-Based Agent       | Commercial bank behavior can be modeled directly through rule-based logic.                                                                                                            |
 
-## 4.​ Illustrative Experiment
+---
+
+## **4. Running the Experiment**
+
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiment**
 
 ### Experiment 1: Evaluating Optimal Monetary Policy via Reinforcement Learning
 
-* **Experiment Description: ​** The central bank dynamically adjusts interest rates through a Reinforcement-Learning Agent aiming to minimize CPI inflation while maintaining stable GDP growth. Monitor macroeconomic indicators to assess policy effectiveness.
-* **Involved Social Roles:**
-  * *Government:* Central Bank
-  * *Firm:* Perfectly Competitive Market
-  * *Banks: ​*Commercial Banks
-* **AI**​**​ Agents:**
-  * *Government: ​*RL Agent
-  * *Firm:* Rule-Based Agent
-  * *Banks:* ​Rule-Based Agent
+* **Experiment Description: ​**
+
+  The central bank dynamically adjusts interest rates through a Reinforcement-Learning Agent aiming to minimize CPI inflation while maintaining stable GDP growth. Monitor macroeconomic indicators to assess policy effectiveness.
 * **Experimental Variables:**
+  
   * Comparison of RL Agent vs. Rule-Based Agent in exploring optimal monetary policy
   * Aggregate GDP level
   * Gini coefficient
@@ -100,6 +119,12 @@ for each time step t:
     The central bank collects feedback and uses it to update the RL policy model
 ```
 
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **bc\_ppo\_100\_ramsey (blue line):** Households are **Behavior Cloning Agents** under the**​ Ramsey model ​**with ​**100 households**​, and the government use **Reinforcement Learning**​**​ ​**​**PPO**​​**​ Agent**​.
+  * **bc\_rule\_based\_100\_ramsey (green line):** Households are **Behavior Cloning Agents** under the **Ramsey model** with ​**100 households**​, and the government use ​**Rule-Based Agent**​.
 * **Visualized Experimental Results：**
 
 ![Monetary Q2 P1](../img/Monetary%20Q2%20P1.png)
@@ -111,5 +136,6 @@ for each time step t:
 **Figure 2:** The inflation‐control policy (blue line) increases income inequality.
 
 * During an overheating episode, the central bank employs an RL approach to learn an inflation-targeted policy. While this policy reduces growth relative to the overheated scenario, it also aggravates income inequality. The RL-derived tightening disproportionately lowers incomes of low-income households due to falling employment rates, whereas high-income households are less impacted, thus widening the wealth gap.
-* **Summary:** The simulation platform enables quantification of different policy mixes’ effectiveness in suppressing inflation, offering decision support to balance economic growth against price stability.
+* The simulation platform enables quantification of different policy mixes’ effectiveness in suppressing inflation, offering decision support to balance economic growth against price stability.
+
 
