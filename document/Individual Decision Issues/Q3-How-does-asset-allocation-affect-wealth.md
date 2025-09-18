@@ -8,10 +8,12 @@ This study examines how individuals allocate their**​ ​**​**disposable inc
 
 ### **1.2 Research Questions**
 
-This study leverages an economic simulation platform to examine “How do asset‐allocation behaviors (saving vs. investing) affect individual wealth and utility?” It focuses on the following questions:
+This study uses an economic simulation platform to investigate the **economic impacts of asset‐allocation behaviors,** specifically examining:
 
-* How do different asset‐allocation strategies influence the trajectory of individual wealth accumulation?
-* What constitutes the optimal asset‐allocation strategy?
+* **GDP**​**​ Effects:** How do different savings–investment mixes influence aggregate economic growth?
+* **Household Wealth:** How do asset‐allocation strategies affect long‐term household wealth accumulation and distribution?
+* **Household Consumption:** How does asset allocation shape household consumption patterns across different risk preferences and life‐cycle stages?
+
 
 ### **1.3 Research Significance**
 
