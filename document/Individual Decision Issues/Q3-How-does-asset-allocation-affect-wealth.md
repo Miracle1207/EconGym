@@ -29,9 +29,8 @@ As an example, we selected the following roles from the social role classificati
 | Social Role | Selected Type       | Role Description                                                                                                    | Observation                                                                                                  | Action                                                                                 | Reward                                              |
 | ----------- | ------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | **Individual**  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)          |
-| **Bank**       | Commercial Banks    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions               | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
-| **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                            | No rate control                                                                         | No profit                                           |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.               | /                                                                                                            | /                                                                                      | Zero (long-run)                                     |
+| **Bank**       | Commercial Banks/Non-Profit Platform    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.While Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts. | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)/No rate control(Non-Profit Platform)              | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks) / Zero (Non-Profit Platform)  |
 
 ---
 
@@ -40,7 +39,7 @@ As an example, we selected the following roles from the social role classificati
 **Individual →Ramsey Model**  
 The Ramsey Model analyzes **individuals’ continuous saving and investment decisions over their life spans**, emphasizing intertemporal optimization and utility maximization. It thus captures personal financial behavior and its impact on long-term wealth accumulation.
 
-**Government → Not Applicable**  
+**Government → Any type**  
 In this experiment, we focus on the interaction between households and financial institutions (providing liquidity/lending or modeling high-risk investments) to assess how different financial behaviors affect individual utility, wealth trajectories, and, by extension, broader economic outcomes. **We do not assign a dedicated government department.**
 
 **Firm → Perfect Competition**  
@@ -48,6 +47,7 @@ A perfectly competitive market provides a baseline backdrop for both economic gr
 
 **Bank → Commercial Banks / Non-Profit Platform**  
 **Commercial Banks:** Act as the core conduit for savings, offering stable returns and liquidity guarantees. Changes in bank deposit rates directly influence asset-allocation decisions.
+
 **No-Arbitrage Platform:** Represent high-risk investment channels in the market, modeling the uncertain returns of volatile assets. They determine the potential returns and volatility faced by investors in the risk-taking segment.
 
 ---
