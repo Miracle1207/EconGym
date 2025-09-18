@@ -23,7 +23,7 @@ This study uses an economic simulation platform to investigate the ​**economic
 
 * **Household Consumption:** How do different age cohorts affect aggregate household consumption levels and structures?
 * **Household Utility:** How does age influence individual utility derived from consumption and saving decisions?
-* ​**Social Welfare**​**:** What are the overall welfare implications of heterogeneous consumption behaviors across age groups?
+* ​**Social Welfare:** What are the overall welfare implications of heterogeneous consumption behaviors across age groups?
 
 
 ### 1.3 **Research Significance**
