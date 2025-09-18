@@ -10,10 +10,11 @@ For example, in January 2016 the Bank of Japan introduced a negative rate on par
 
 ### 1.2 Research Questions
 
-Using an economic-simulation platform, this study examines the macroeconomic effects of a negative interest rate policy, focusing on:
+This study uses an economic simulation platform to investigate the economic impacts of negative interest rate policies, specifically examining:
 
-* **GDP Growth:** Can NIRP effectively boost aggregate output?
-* **Wealth and Income Distribution:** Under sustained negative rates, does the distribution of wealth and income change significantly (e.g., does inequality widen or shrink)?
+* **Wealth Distribution: ​**How do prolonged negative rates influence the distribution of household wealth and income inequality?
+* **GDP**​**​ Effects:** Does implementing negative interest rates stimulate aggregate output and economic growth?
+* **Household Consumption:** How do negative interest rates affect household saving and consumption behavior across different income groups?
 
 ### 1.3 Research Significance
 
@@ -63,21 +64,33 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent       | The market responds according to supply–demand rules (e.g., lower rates boost investment); the simple rule-based approach ensures control. |
 | Bank | Rule-Based Agent       | Commercial banks respond to base-rate changes by expanding loans or cutting deposit rates.                                                  |
 
+## **4. Running the Experiment**
 
-## 4. Illustrative Experiment
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiment**
 
 ### Experiment 1: Evaluation of the Economic Effects of a Negative-Rate Policy
 
-* **Experiment Description: ​**  Compare a baseline economy with one that falls into a crisis in year 10 but implements a negative-interest-rate policy to assess how such a policy aids recovery.
-* **Involved Social Roles:**
-  * *Government: ​*Central Bank
-  * *Firm: ​*Perfectly Competitive Market
-  * *Bank: ​*Commercial Banks
-* **AI Agents:**
-  * *Individual: ​*BC Agent
-  * *Government: ​*Rule-Based Agent
-  * *Firm:* Rule-Based Agent
-  * *Bank: ​*Rule-Based Agent
+* **Experiment Description: ​**
+
+  Compare a baseline economy with one that falls into a crisis in year 10 but implements a negative-interest-rate policy to assess how such a policy aids recovery.
 * **Experimental Variables:**
   * Crisis onset in year 10 vs. a normally operating economy
   * Negative-rate policy (r = –1%)
@@ -109,15 +122,22 @@ Update system-wide variables:
     - Employment
 ```
 
-* **​ Visualized Experimental Results：**
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **pension\_bc\_rule\_based\_100\_ramsey (red line):** Households are modeled as **Behavior Cloning Agents ​**under the **Ramsey model ​**with ​**100 households**​, while the government is represented as a **Rule-Based Agent.**
+  * **bc\_rule\_based\_100\_ramsey\_int\_-0.01 (orange line):** Households follow the Ramsey model as **Behavior Cloning Agents ​**with ​**100 households**​, and the government is a ​**Rule-Based Agent**​, with an additional setting introducing a **negative interest rate**​​**​ of –0.01**​.
+* **Visualized Experimental Results：**
 
 ![Monetary Q1 P1](../img/Monetary%20Q1%20P1.png)
 
-**Figure 1:** At Year 10, the orange line represents an economy that has entered a crisis (slowed GDP growth). After the government implements a negative‐rate policy, the crisis economy narrows its GDP gap with the normally growing economy (red line) over the medium and long term, demonstrating the policy’s supportive role in recovery.
+**Figure 1:** At Year 10, the orange line represents an economy that has entered a crisis (slowed GDP growth). After the government implements a negative‐rate policy, the crisis economy narrows its GDP gap with the normally growing economy over the medium and long term, demonstrating the policy’s supportive role in recovery.
 
 ![Monetary Q1 P2](../img/Monetary%20Q1%20P2.png)
 
-**Figure 2:** Before the crisis, income inequality in both simulated economies is roughly the same. However, after implementing negative rates, the crisis economy (orange) experiences a steadily rising Gini coefficient, increasingly diverging from the normal economy (red).
+**Figure 2:** Before the crisis, income inequality in both simulated economies is roughly the same. However, after implementing negative rates, the crisis economy experiences a steadily rising Gini coefficient, increasingly diverging from the normal economy.
 
-* A negative‐rate policy can help restore economic vitality and stabilize GDP growth during a crisis. However, it also widens income inequality, indicating that complementary, more equitable fiscal measures are necessary to prevent the policy from exacerbating the wealth gap.
+* A **negative‐rate policy** can help restore economic vitality and stabilize GDP growth during a crisis. However, it also widens income inequality, indicating that complementary, more equitable fiscal measures are necessary to prevent the policy from exacerbating the wealth gap.
+
 
