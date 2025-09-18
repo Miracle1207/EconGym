@@ -101,104 +101,53 @@ class ddpg_agent:
 
     def train(self, transitions, other_agent=None):
         device = 'cuda' if self.args.cuda else 'cpu'
-        # transitions is a batch from ReplayBuffer.sample with keys: obs_dict, next_obs_dict, action_dict, reward_dict, done
-        obs_dict_batch = transitions['obs_dict']
-        next_obs_dict_batch = transitions['next_obs_dict']
-        action_dict_batch = transitions['action_dict']
-        reward_dict_batch = transitions['reward_dict']
-        done_batch = transitions['done']
-
-        states = []
-        actions = []
-        rewards = []
-        next_states = []
-        dones = []
-
-        batch_size = len(obs_dict_batch)
-
-        if self.agent_name == "government":
-            key = self.agent_type
-            for i in range(batch_size):
-                s = obs_dict_batch[i]['government'][key]
-                a = action_dict_batch[i]['government'][key]
-                r = reward_dict_batch[i]['government'][key]
-                ns = next_obs_dict_batch[i]['government'][key]
-                d = done_batch[i]
-                states.append(s);
-                actions.append(a);
-                rewards.append(r);
-                next_states.append(ns);
-                dones.append(d)
-
-        elif self.agent_name == "households":
-            for i in range(batch_size):
-                hh_obs = obs_dict_batch[i]['households']
-                hh_act = action_dict_batch[i]['households']
-                hh_rwd = reward_dict_batch[i]['households']
-                hh_nobs = next_obs_dict_batch[i]['households']
-                for j in range(len(hh_obs)):
-                    states.append(hh_obs[j])
-                    actions.append(hh_act[j])
-                    rewards.append(hh_rwd[j][0])
-                    next_states.append(hh_nobs[j])
-                    dones.append(done_batch[i])
-
-        elif self.agent_name == "market":
-            if self.agent_type == "perfect":
-                return 0.0, 0.0
-            for i in range(batch_size):
-                mk_obs = obs_dict_batch[i].get('market', [])
-                mk_act = action_dict_batch[i].get('market', [])
-                mk_rwd = reward_dict_batch[i].get('market', [])
-                mk_nobs = next_obs_dict_batch[i].get('market', [])
-                for j in range(len(mk_obs)):
-                    states.append(mk_obs[j])
-                    actions.append(mk_act[j])
-                    rewards.append(mk_rwd[j][0])
-                    next_states.append(mk_nobs[j])
-                    dones.append(done_batch[i])
-
-        elif self.agent_name == "bank":
-            if self.agent_type == 'non_profit':
-                return 0.0, 0.0
-            for i in range(batch_size):
-                s = obs_dict_batch[i].get('bank', [])
-                a = action_dict_batch[i].get('bank', [])
-                r = reward_dict_batch[i].get('bank', 0.0)
-                ns = next_obs_dict_batch[i].get('bank', [])
-                states.append(s);
-                actions.append(a);
-                rewards.append(r);
-                next_states.append(ns);
-                dones.append(done_batch[i])
-
-        else:
+        # Align with PPO/SAC: early exits for fixed-action setups
+        if self.agent_name == "bank" and self.agent_type == "non_profit":
+            return 0.0, 0.0
+        if self.agent_name == "market" and self.agent_type == "perfect":
             return 0.0, 0.0
 
-        if len(states) == 0:
-            return 0.0, 0.0
+        # transitions is a batch from ReplayBuffer.sample with keys:
+        # obs_dict, next_obs_dict, action_dict, reward_dict, done
+        agent_data = transitions
 
-        obs_tensor = torch.tensor(np.array(states), dtype=torch.float32, device=device)
-        action_tensor = torch.tensor(np.array(actions), dtype=torch.float32, device=device)
-        reward_tensor = torch.tensor(np.array(rewards), dtype=torch.float32, device=device).unsqueeze(-1)
-        next_obs_tensor = torch.tensor(np.array(next_states), dtype=torch.float32, device=device)
-        inverse_dones = torch.tensor(1 - np.array(dones), dtype=torch.float32, device=device).unsqueeze(-1)
+        # To tensors (support 2D and 3D shapes like SAC/PPO)
+        obs_tensor = torch.tensor(np.array(agent_data['obs_dict']), dtype=torch.float32, device=device)
+        next_obs_tensor = torch.tensor(np.array(agent_data['next_obs_dict']), dtype=torch.float32, device=device)
+        action_tensor = torch.tensor(np.array(agent_data['action_dict']), dtype=torch.float32, device=device)
+        reward_tensor = torch.tensor(np.array(agent_data['reward_dict']), dtype=torch.float32, device=device)
+        inverse_dones = torch.tensor([x - 1 for x in agent_data['done']], dtype=torch.float32).unsqueeze(-1)
+        if inverse_dones.shape != reward_tensor.shape:
+            inverse_dones = inverse_dones.unsqueeze(-1).expand_as(reward_tensor)
+        inverse_dones = inverse_dones.to(device)
 
-        next_q_values = self.target_critic(next_obs_tensor, self.target_actor(next_obs_tensor))
-        q_targets = reward_tensor + self.args.gamma * next_q_values * inverse_dones
-        critic_loss = torch.mean(F.mse_loss(self.critic(obs_tensor, action_tensor), q_targets))
+        # Critic target
+        with torch.no_grad():
+            next_actions = self.target_actor(next_obs_tensor)
+            next_q_values = self.target_critic(next_obs_tensor, next_actions)
+            if reward_tensor.dim() == next_q_values.dim() - 1:
+                reward_tensor = reward_tensor.unsqueeze(-1)
+            if inverse_dones.dim() == next_q_values.dim() - 1:
+                inverse_dones = inverse_dones.unsqueeze(-1)
+            q_targets = reward_tensor + self.args.gamma * next_q_values * inverse_dones
+
+        # Critic update
+        q_values = self.critic(obs_tensor, action_tensor)
+        critic_loss = F.mse_loss(q_values, q_targets)
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
         self.critic_optimizer.step()
 
-        actor_loss = -torch.mean(self.critic(obs_tensor, self.actor(obs_tensor)))
+        # Actor update
+        actor_actions = self.actor(obs_tensor)
+        actor_loss = -self.critic(obs_tensor, actor_actions).mean()
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
         self.actor_optimizer.step()
 
+        # Soft update targets and schedulers
         self._soft_update_target_network(self.target_actor, self.actor)
         self._soft_update_target_network(self.target_critic, self.critic)
-
         self.actor_scheduler.step()
         self.critic_scheduler.step()
 

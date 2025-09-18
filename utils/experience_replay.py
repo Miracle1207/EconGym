@@ -39,11 +39,16 @@ class ReplayBuffer:
             sample = self.storage[i]
             for item_name, item_data in sample.items():
                 if item_name == "done":
-                    data = item_data[i]
+                    data = item_data
                 else:
-                    data = item_data[i][agent_name]
-                    if agent_name != agent_type:
-                        data = data[agent_type]
+                    # item_data is a dictionary with agent names as keys
+                    if agent_name in item_data:
+                        data = item_data[agent_name]
+                        if agent_name != agent_type and isinstance(data, dict) and agent_type in data:
+                            data = data[agent_type]
+                    else:
+                        # If agent_name not found, skip this item
+                        continue
                 new_data[item_name].append(data)
         return new_data
 

@@ -95,7 +95,7 @@ class ppo_agent:
                     self.net = mlp_net(state_dim=self.obs_dim, num_actions=3).to(self.device)  # Action dim = 3
                     self.net.load_state_dict(
                         torch.load("agents/models/trained_policy/ppo_Ramsey/ppo_net.pt", weights_only=True))
-    
+
             elif agent_name == "government":
                 # Load policy for government agent if type is 'tax'
                 if self.envs.government.type == "tax":
@@ -125,138 +125,36 @@ class ppo_agent:
         return norm_advantage
 
     def train(self, transition_dict):
+        if self.agent_name == "bank" and self.agent_type == "non_profit":
+            return 0, 0
+        if self.agent_name == "market" and self.agent_type == "perfect":
+            return 0, 0
         sum_loss = torch.tensor([0., 0.], dtype=torch.float32).to(self.device)
 
-        # Extract data from new nested dictionary structure
-        obs_dict = transition_dict['obs_dict']
-        next_obs_dict = transition_dict['next_obs_dict']
-        action_dict = transition_dict['action_dict']
-        reward_dict = transition_dict['reward_dict']
-        done_list = transition_dict['done']
+        agent_data = transition_dict
+        obs_tensor = torch.tensor(np.array(agent_data['obs_dict']), dtype=torch.float32).to(self.device)
+        next_obs_tensor = torch.tensor(np.array(agent_data['next_obs_dict']), dtype=torch.float32).to(self.device)
+        action_tensor = torch.tensor(np.array(agent_data['action_dict']), dtype=torch.float32).to(self.device)
+        reward_tensor = torch.tensor(np.array(agent_data['reward_dict']), dtype=torch.float32).to(self.device)
+        # bank reward_tensor shape (300,),other (300,1)
+        inverse_dones = torch.tensor([x - 1 for x in agent_data['done']], dtype=torch.float32).unsqueeze(-1)
+        # Ensure both tensors have the same shape before expanding
+        if inverse_dones.shape != reward_tensor.shape:
+            inverse_dones = inverse_dones.unsqueeze(-1).expand_as(reward_tensor)
 
-        inverse_dones = torch.tensor([x - 1 for x in np.array(done_list)], dtype=torch.float32).to(
-            self.device).unsqueeze(-1)
-
-        # Extract government data based on agent type
-        if self.agent_name == "government":
-            # Get government observations and actions based on government type
-            if self.agent_type == "pension":
-                gov_obs_list = [obs['government']['pension'] for obs in obs_dict]
-                next_gov_obs_list = [obs['government']['pension'] for obs in next_obs_dict]
-                gov_action_list = [action['government']['pension'] for action in action_dict]
-                gov_reward_list = [reward['government']['pension'] for reward in reward_dict]
-            elif self.agent_type == "tax":
-                gov_obs_list = [obs['government']['tax'] for obs in obs_dict]
-                next_gov_obs_list = [obs['government']['tax'] for obs in next_obs_dict]
-                gov_action_list = [action['government']['tax'] for action in action_dict]
-                gov_reward_list = [reward['government']['tax'] for reward in reward_dict]
-            elif self.agent_type == "central_bank":
-                gov_obs_list = [obs['government']['central_bank'] for obs in obs_dict]
-                next_gov_obs_list = [obs['government']['central_bank'] for obs in next_obs_dict]
-                gov_action_list = [action['government']['central_bank'] for action in action_dict]
-                gov_reward_list = [reward['government']['central_bank'] for reward in reward_dict]
-
-            gov_obses = torch.tensor(np.array(gov_obs_list), dtype=torch.float32).to(self.device)
-            next_gov_obses = torch.tensor(np.array(next_gov_obs_list), dtype=torch.float32).to(self.device)
-            gov_actions = torch.tensor(np.array(gov_action_list), dtype=torch.float32).to(self.device)
-            gov_rewards = torch.tensor(np.array(gov_reward_list), dtype=torch.float32).to(self.device)
-
-            obs_tensor = gov_obses
-            # action_tensor = self.inverse_action_wrapper(gov_actions)
-            action_tensor = gov_actions
-            reward_tensor = gov_rewards
-            next_obs_tensor = next_gov_obses
-
-        elif self.agent_name == "households":
-            # Extract household data from new structure
-            house_obs_list = [obs['households'] for obs in obs_dict]
-            next_house_obs_list = [obs['households'] for obs in next_obs_dict]
-            house_action_list = [action['households'] for action in action_dict]
-            house_reward_list = [reward['households'] for reward in reward_dict]
-
-            # Convert household inputs to padded tensors
-            house_obses = [torch.tensor(obs, dtype=torch.float32) for obs in house_obs_list]
-            house_actions = [torch.tensor(act, dtype=torch.float32) for act in house_action_list]
-            house_rewards = [torch.tensor(rwd, dtype=torch.float32) for rwd in house_reward_list]
-            next_house_obses = [torch.tensor(obs, dtype=torch.float32) for obs in next_house_obs_list]
-
-            obs_tensor = rnn_utils.pad_sequence(house_obses, batch_first=True).to(self.device)
-            action_tensor = rnn_utils.pad_sequence(house_actions, batch_first=True).to(self.device)
-            reward_tensor = rnn_utils.pad_sequence(house_rewards, batch_first=True).to(self.device)
-            next_obs_tensor = rnn_utils.pad_sequence(next_house_obses, batch_first=True).to(self.device)
-
-            # Adjust inverse_dones to shape (batch, n_households, 1)
-            households_n = obs_tensor.size(1)
-            inverse_dones = inverse_dones.unsqueeze(-1).repeat(1, households_n, 1)
-
-        elif self.agent_name == "market":
-            # Prepare market tensors (shape typically: [T, firm_n, feat])
-            if self.agent_type == "perfect":
-                return None, None
-
-            market_obs_list = [obs.get('market', []) for obs in obs_dict]
-
-            next_market_obs_list = [obs.get('market', []) for obs in next_obs_dict]
-            market_action_list = [action.get('market', []) for action in action_dict]
-            market_reward_list = [reward.get('market', []) for reward in reward_dict]
-
-            obs_tensor = torch.tensor(np.array(market_obs_list), dtype=torch.float32).to(self.device)
-            next_obs_tensor = torch.tensor(np.array(next_market_obs_list), dtype=torch.float32).to(self.device)
-            action_tensor = torch.tensor(np.array(market_action_list), dtype=torch.float32).to(self.device)
-            reward_tensor = torch.tensor(np.array(market_reward_list), dtype=torch.float32).to(self.device)
-            # Ensure reward has a trailing singleton dim for value loss broadcasting
-            if reward_tensor.dim() == 2:
-                reward_tensor = reward_tensor.unsqueeze(-1)
-
-            # Match inverse_dones across firm dimension if present
-            if obs_tensor.dim() >= 3:
-                firms_n = obs_tensor.size(1)
-                inverse_dones = inverse_dones.unsqueeze(-1).repeat(1, firms_n, 1)
-        elif self.agent_name == "bank":
-            # Non-profit bank has no trainable actions/rewards
-            if self.agent_type == 'non_profit':
-                return None, None
-            # Commercial bank branch
-            bank_obs_list = [obs.get('bank', []) for obs in obs_dict]
-            # If no observations are provided for bank, skip training gracefully
-            if len(bank_obs_list) == 0 or (isinstance(bank_obs_list[0], list) and len(bank_obs_list[0]) == 0):
-                return None, None
-
-            next_bank_obs_list = [obs.get('bank', []) for obs in next_obs_dict]
-            bank_action_list = [action.get('bank', []) for action in action_dict]
-            bank_reward_list = [reward.get('bank', 0.0) for reward in reward_dict]
-
-            obs_tensor = torch.tensor(np.array(bank_obs_list), dtype=torch.float32).to(self.device)
-            next_obs_tensor = torch.tensor(np.array(next_bank_obs_list), dtype=torch.float32).to(self.device)
-            action_tensor = torch.tensor(np.array(bank_action_list), dtype=torch.float32).to(self.device)
-            reward_tensor = torch.tensor(np.array(bank_reward_list), dtype=torch.float32).to(self.device)
-            if reward_tensor.dim() == 1:
-                reward_tensor = reward_tensor.unsqueeze(-1)
-
-        else:
-            return None, None  # Skip training for unsupported agents
+        inverse_dones = inverse_dones.to(self.device)
 
         # Forward pass
         next_value, next_pi = self.net(next_obs_tensor)
         td_target = reward_tensor + self.args.gamma * next_value * inverse_dones
         value, pi = self.net(obs_tensor)
         td_delta = td_target - value
-        # If td_delta has an action or agent dimension (>1), reduce to a scalar per timestep
-        if td_delta.dim() >= 2 and td_delta.size(-1) > 1:
-            td_delta = td_delta.mean(dim=-1, keepdim=True)
 
         advantage = self.compute_advantage(self.args.gamma, self.args.tau, td_delta.cpu()).to(self.device)
-        # Ensure advantage is broadcastable to action log-prob shape later
-        if advantage.dim() < 1:
-            advantage = advantage.unsqueeze(-1)
 
         mu, std = pi
         action_dists = torch.distributions.Normal(mu.detach(), std.detach())
         old_log_probs = action_dists.log_prob(action_tensor)
-        # Make advantage broadcastable to log-prob shape
-        advantage_b = advantage
-        for _ in range(old_log_probs.dim() - advantage.dim()):
-            advantage_b = advantage_b.unsqueeze(-1)
 
         for i in range(self.args.update_each_epoch):
             value, pi = self.net(obs_tensor)
@@ -264,12 +162,8 @@ class ppo_agent:
             action_dists = torch.distributions.Normal(mu, std)
             log_probs = action_dists.log_prob(action_tensor)
             ratio = torch.exp(log_probs - old_log_probs)
-            # Recompute broadcastable advantage in case shapes changed
-            advantage_loop = advantage
-            for _ in range(log_probs.dim() - advantage.dim()):
-                advantage_loop = advantage_loop.unsqueeze(-1)
-            surr1 = ratio * advantage_loop
-            surr2 = torch.clamp(ratio, 1 - self.args.clip, 1 + self.args.clip) * advantage_loop
+            surr1 = ratio * advantage
+            surr2 = torch.clamp(ratio, 1 - self.args.clip, 1 + self.args.clip) * advantage
             actor_loss = torch.mean(-torch.min(surr1, surr2))
             critic_loss = torch.mean(F.mse_loss(value, td_target.detach()))
             total_loss = actor_loss + self.args.vloss_coef * critic_loss

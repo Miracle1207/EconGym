@@ -7,6 +7,7 @@ import numpy as np
 
 class RunningMeanStd:
     """Running mean and standard deviation for state normalization"""
+
     def __init__(self, epsilon=1e-4, shape=()):
         self.mean = np.zeros(shape, 'float64')
         self.var = np.ones(shape, 'float64')
@@ -41,6 +42,7 @@ class RunningMeanStd:
 
 class ReplayBuffer:
     """Experience replay buffer for SAC"""
+
     def __init__(self, capacity):
         self.capacity = capacity
         self.buffer = []
@@ -63,16 +65,17 @@ class ReplayBuffer:
 
 class SACPolicy(nn.Module):
     """SAC Actor network"""
+
     def __init__(self, state_dim, action_dim, hidden_dim=256):
         super(SACPolicy, self).__init__()
         self.use_norm = False
-        
+
         self.fc1 = nn.Linear(state_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        
+
         self.mean_linear = nn.Linear(hidden_dim, action_dim)
         self.log_std_linear = nn.Linear(hidden_dim, action_dim)
-        
+
         # Initialize weights
         nn.init.orthogonal_(self.fc1.weight, gain=1.0)
         nn.init.orthogonal_(self.fc2.weight, gain=1.0)
@@ -94,15 +97,15 @@ class SACPolicy(nn.Module):
     def forward(self, state):
         if self.use_norm:
             state = (state - self.mean) / (self.std + 1e-8)
-        
+
         x = F.relu(self.fc1(state))
         x = F.relu(self.fc2(x))
-        
+
         mean = torch.sigmoid(self.mean_linear(x))  # [0, 1]
         log_std = self.log_std_linear(x)
         log_std = torch.clamp(log_std, min=-20, max=2)
         std = torch.exp(log_std)
-        
+
         return mean, std
 
     def sample(self, state):
@@ -121,13 +124,14 @@ class SACPolicy(nn.Module):
 
 class SACQNetwork(nn.Module):
     """SAC Critic network (Q-function)"""
+
     def __init__(self, state_dim, action_dim, hidden_dim=256):
         super(SACQNetwork, self).__init__()
-        
+
         self.fc1 = nn.Linear(state_dim + action_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
         self.fc3 = nn.Linear(hidden_dim, 1)
-        
+
         # Initialize weights
         nn.init.orthogonal_(self.fc1.weight, gain=1.0)
         nn.init.orthogonal_(self.fc2.weight, gain=1.0)
@@ -146,13 +150,14 @@ class SACQNetwork(nn.Module):
 
 class sac_agent:
     """Soft Actor-Critic (SAC) agent"""
+
     def __init__(self, envs, args, type=None, agent_name="households"):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
         self.agent_type = type
-        
+
         env_agent_name = "households" if agent_name == "households" else agent_name
 
         if env_agent_name == "government":
@@ -190,7 +195,7 @@ class sac_agent:
         self.tau = getattr(self.args, 'tau', 0.005)
         self.alpha = getattr(self.args, 'alpha', 0.2)
         self.automatic_entropy_tuning = getattr(self.args, 'automatic_entropy_tuning', True)
-        
+
         if self.automatic_entropy_tuning:
             self.target_entropy = -torch.prod(torch.Tensor([self.action_dim]).to(self.device)).item()
             self.log_alpha = torch.zeros(1, requires_grad=True, device=self.device)
@@ -199,131 +204,78 @@ class sac_agent:
         # Replay buffer
         self.replay_buffer = ReplayBuffer(capacity=100000)
         self.batch_size = getattr(self.args, 'batch_size', 256)
-        
+
         # State normalization
         self.state_rms = RunningMeanStd(shape=(self.obs_dim,))
         self.step_counter = 0
         self.max_warmup_steps = 1000
         self.normalizer_applied = False
-        
+
         self.on_policy = False  # SAC is off-policy
 
     def train(self, transition_dict):
         """Train the SAC agent"""
-        # Extract data from new nested dictionary structure
-        obs_dict = transition_dict['obs_dict']
-        next_obs_dict = transition_dict['next_obs_dict']
-        action_dict = transition_dict['action_dict']
-        reward_dict = transition_dict['reward_dict']
-        done_list = transition_dict['done']
+        # Use the same approach as PPO - directly use transition_dict as agent_data
+        if self.agent_name == "bank" and self.agent_type == "non_profit":
+            return 0, 0
+        if self.agent_name == "market" and self.agent_type == "perfect":
+            return 0, 0
+        agent_data = transition_dict
 
-        # Extract data based on agent type
-        if self.agent_name == "government":
-            # Get government observations and actions based on government type
-            if self.agent_type == "pension":
-                gov_obs_list = [obs['government']['pension'] for obs in obs_dict]
-                next_gov_obs_list = [obs['government']['pension'] for obs in next_obs_dict]
-                gov_action_list = [action['government']['pension'] for action in action_dict]
-                gov_reward_list = [reward['government']['pension'] for reward in reward_dict]
-            elif self.agent_type == "tax":
-                gov_obs_list = [obs['government']['tax'] for obs in obs_dict]
-                next_gov_obs_list = [obs['government']['tax'] for obs in next_obs_dict]
-                gov_action_list = [action['government']['tax'] for action in action_dict]
-                gov_reward_list = [reward['government']['tax'] for reward in reward_dict]
-            elif self.agent_type == "central_bank":
-                gov_obs_list = [obs['government']['central_bank'] for obs in obs_dict]
-                next_gov_obs_list = [obs['government']['central_bank'] for obs in next_obs_dict]
-                gov_action_list = [action['government']['central_bank'] for action in action_dict]
-                gov_reward_list = [reward['government']['central_bank'] for reward in reward_dict]
+        # Convert to tensors like PPO does
+        obs_tensor = torch.tensor(np.array(agent_data['obs_dict']), dtype=torch.float32).to(self.device)
+        next_obs_tensor = torch.tensor(np.array(agent_data['next_obs_dict']), dtype=torch.float32).to(self.device)
+        action_tensor = torch.tensor(np.array(agent_data['action_dict']), dtype=torch.float32).to(self.device)
+        reward_tensor = torch.tensor(np.array(agent_data['reward_dict']), dtype=torch.float32).to(self.device)
+        inverse_dones = torch.tensor([x - 1 for x in agent_data['done']], dtype=torch.float32).unsqueeze(-1)
+        # Ensure both tensors have the same shape before expanding
+        if inverse_dones.shape != reward_tensor.shape:
+            inverse_dones = inverse_dones.unsqueeze(-1).expand_as(reward_tensor)
+        inverse_dones = inverse_dones.to(self.device)
 
-            # Store transitions in replay buffer
-            for i in range(len(gov_obs_list)):
-                self.store_transition(
-                    gov_obs_list[i], 
-                    gov_action_list[i], 
-                    gov_reward_list[i], 
-                    next_gov_obs_list[i], 
-                    done_list[i]
-                )
-
-        elif self.agent_name == "households":
-            # Extract household data from new structure
-            house_obs_list = [obs['households'] for obs in obs_dict]
-            next_house_obs_list = [obs['households'] for obs in next_obs_dict]
-            house_action_list = [action['households'] for action in action_dict]
-            house_reward_list = [reward['households'] for reward in reward_dict]
-
-            # Store transitions for each household
-            for i in range(len(house_obs_list)):
-                for j in range(len(house_obs_list[i])):
-                    self.store_transition(
-                        house_obs_list[i][j], 
-                        house_action_list[i][j], 
-                        house_reward_list[i][j][0], 
-                        next_house_obs_list[i][j], 
-                        done_list[i]
-                    )
-
-        elif self.agent_name == "market":
-            if self.agent_type == "perfect":
-                return 0.0, 0.0
-
-            market_obs_list = [obs.get('market', []) for obs in obs_dict]
-            if len(market_obs_list) == 0 or (isinstance(market_obs_list[0], list) and len(market_obs_list[0]) == 0):
-                return 0.0, 0.0
-
-            next_market_obs_list = [obs.get('market', []) for obs in next_obs_dict]
-            market_action_list = [action.get('market', []) for action in action_dict]
-            market_reward_list = [reward.get('market', []) for reward in reward_dict]
-
-            # Store transitions for each firm
-            for i in range(len(market_obs_list)):
-                for j in range(len(market_obs_list[i])):
-                    self.store_transition(
-                        market_obs_list[i][j], 
-                        market_action_list[i][j], 
-                        market_reward_list[i][j][0], 
-                        next_market_obs_list[i][j], 
-                        done_list[i]
-                    )
-
-        elif self.agent_name == "bank":
-            if self.agent_type == 'non_profit':
-                return 0.0, 0.0
-
-            bank_obs_list = [obs.get('bank', []) for obs in obs_dict]
-            if len(bank_obs_list) == 0 or (isinstance(bank_obs_list[0], list) and len(bank_obs_list[0]) == 0):
-                return 0.0, 0.0
-
-            next_bank_obs_list = [obs.get('bank', []) for obs in next_obs_dict]
-            bank_action_list = [action.get('bank', []) for action in action_dict]
-            bank_reward_list = [reward.get('bank', 0.0) for reward in reward_dict]
-
-            # Store transitions
-            for i in range(len(bank_obs_list)):
-                self.store_transition(
-                    bank_obs_list[i], 
-                    bank_action_list[i], 
-                    bank_reward_list[i], 
-                    next_bank_obs_list[i], 
-                    done_list[i]
-                )
-
-        else:
-            return 0.0, 0.0
+        # Store transitions in replay buffer
+        for i in range(len(obs_tensor)):
+            self.store_transition(
+                obs_tensor[i].cpu().numpy(),
+                action_tensor[i].cpu().numpy(),
+                reward_tensor[i].cpu().numpy(),
+                next_obs_tensor[i].cpu().numpy(),
+                agent_data['done'][i]
+            )
 
         # Train if we have enough samples
         if len(self.replay_buffer) < self.batch_size:
             return 0.0, 0.0
 
         # Sample batch from replay buffer
-        state_batch, action_batch, reward_batch, next_state_batch, done_batch = self.replay_buffer.sample(self.batch_size)
-        
+        state_batch, action_batch, reward_batch, next_state_batch, done_batch = self.replay_buffer.sample(
+            self.batch_size)
+
         state_batch = torch.FloatTensor(state_batch).to(self.device)
         action_batch = torch.FloatTensor(action_batch).to(self.device)
-        reward_batch = torch.FloatTensor(reward_batch).to(self.device).unsqueeze(1)
+        reward_batch = torch.FloatTensor(reward_batch).to(self.device)
         next_state_batch = torch.FloatTensor(next_state_batch).to(self.device)
-        done_batch = torch.FloatTensor(done_batch).to(self.device).unsqueeze(1)
+        done_batch = torch.FloatTensor(done_batch).to(self.device)
+
+        # Normalize reward/done shapes depending on whether states are 2D or 3D
+        if state_batch.dim() == 3:
+            B, N = state_batch.shape[0], state_batch.shape[1]
+            # Reward -> (B, N, 1)
+            if reward_batch.dim() == 1:
+                reward_batch = reward_batch.view(B, 1, 1).expand(B, N, 1)
+            elif reward_batch.dim() == 2 and reward_batch.shape[1] == 1:
+                reward_batch = reward_batch.unsqueeze(1).expand(B, N, 1)
+            # Done -> (B, N, 1)
+            if done_batch.dim() == 1:
+                done_batch = done_batch.view(B, 1, 1).expand(B, N, 1)
+            elif done_batch.dim() == 2 and done_batch.shape[1] == 1:
+                done_batch = done_batch.unsqueeze(1).expand(B, N, 1)
+        else:
+            # States are 2D -> ensure (B, 1)
+            if reward_batch.dim() == 1:
+                reward_batch = reward_batch.unsqueeze(1)
+            if done_batch.dim() == 1:
+                done_batch = done_batch.unsqueeze(1)
 
         # Compute Q-values
         qf1_a_values = self.qf1(state_batch, action_batch)
@@ -334,7 +286,9 @@ class sac_agent:
             next_state_actions, next_state_log_pi, _ = self.policy.sample(next_state_batch)
             qf1_next_target = self.target_qf1(next_state_batch, next_state_actions)
             qf2_next_target = self.target_qf2(next_state_batch, next_state_actions)
+
             min_qf_next_target = torch.min(qf1_next_target, qf2_next_target) - self.alpha * next_state_log_pi
+
             next_q_value = reward_batch + (1 - done_batch) * self.gamma * min_qf_next_target
 
         # Compute Q-function losses
@@ -355,6 +309,7 @@ class sac_agent:
         pi, log_pi, _ = self.policy.sample(state_batch)
         qf1_pi = self.qf1(state_batch, pi)
         qf2_pi = self.qf2(state_batch, pi)
+
         min_qf_pi = torch.min(qf1_pi, qf2_pi)
         policy_loss = ((self.alpha * log_pi) - min_qf_pi).mean()
 
@@ -411,7 +366,6 @@ class sac_agent:
     def store_transition(self, state, action, reward, next_state, done):
         """Store transition in replay buffer"""
         self.replay_buffer.push(state, action, reward, next_state, done)
-
 
     def save(self, dir_path):
         """Save the model"""
