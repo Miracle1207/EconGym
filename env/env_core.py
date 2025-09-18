@@ -1,20 +1,14 @@
-import math
-import pygame
-import sys
-import os
 import copy
 import numpy as np
 from gym.spaces import Box
-
 from pathlib import Path
-
 ROOT_PATH = str(Path(__file__).resolve().parent.parent)
 from entities.households import Household
 from entities.government import Government
 from entities.market import Market
 from entities.bank import Bank
 from .set_observation import EconObservations
-import time
+
 
 
 class EconomicSociety:
@@ -319,8 +313,9 @@ class EconomicSociety:
         """Fast Gini coefficient computation for 1D or column vector values."""
         if values.ndim == 2 and values.shape[1] == 1:
             values = values.flatten()
-
+        
         values = np.sort(values + 1e-7)  # Avoid division by zero
+        values = values / np.max(values)
         n = values.size
         cum_weights = np.arange(1, n + 1)
 
@@ -328,6 +323,7 @@ class EconomicSociety:
         denominator = np.sum(values)
 
         return (2 * numerator - (n + 1) * denominator) / (n * denominator)
+
 
     def render(self):
         pass

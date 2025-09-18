@@ -37,6 +37,9 @@ Environment:
           reserve_ratio: 0.08
           gov_task: "gdp"
           tax_type: "ai_agent"
+          real_gdp: 254746e8  # in USD
+          real_debt_rate: 1.2129
+          real_population: 333428e3
         central_bank:
           type: "central_bank"
           action_dim: 2
@@ -67,6 +70,9 @@ Environment:
           reserve_ratio: 0.0
           gov_task: "gdp"
           tax_type: "ai_agent"
+          real_gdp: 254746e8  # in USD
+          real_debt_rate: 1.2129
+          real_population: 333428e3
         tax:
           type: "tax"
           action_dim: 5
@@ -100,6 +106,9 @@ Environment:
           reserve_ratio: 0.08
           gov_task: "gdp"
           tax_type: "ai_agent"
+          real_gdp: 254746e8  # in USD
+          real_debt_rate: 1.2129
+          real_population: 333428e3
         pension:
           type: "pension"
           action_dim: 2

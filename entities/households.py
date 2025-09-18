@@ -25,7 +25,7 @@ class Household(BaseEntity):
         self.policy_action_len = copy.copy(self.action_dim)
         self.households_init()
 
-        if 'OLG' in self.type or 'personal_pension' in self.type:
+        if 'OLG' in self.type:
             self.__dict__.update(entity_args.OLG)
 
         self.best_loss = 100
@@ -151,7 +151,7 @@ class Household(BaseEntity):
             self.real_action_min = np.concatenate([self.real_action_min, np.zeros(self.action_dim - real_action_size)])
             self.initial_action = np.concatenate((self.initial_action, self.investment_init), axis=1)
 
-        if 'OLG' in self.type or 'personal_pension' in self.type:
+        if 'OLG' in self.type:
             self.working_years = np.zeros((self.households_n, 1))
             self.accumulated_pension_account = np.zeros((self.households_n, 1))
 
@@ -221,7 +221,7 @@ class Household(BaseEntity):
 
     def step(self, society, t):
         # Step forward in time based on household type
-        if "OLG" in self.type or 'personal_pension' in self.type:
+        if "OLG" in self.type:
             self.OLG_step(society, t)
         elif "ramsey" in self.type:
             self.ramsey_step(society)
@@ -388,8 +388,8 @@ class Household(BaseEntity):
         self.post_asset = self.at - self.asset_tax
 
         self.pension = government_agent.calculate_pension(self)
-        self.accumulated_pension_account[~self.is_old] -= self.pension[
-            ~self.is_old]  # young individuals 上交的养老金保险 被存入 国家养老金池中
+        self.accumulated_pension_account[~self.is_old] -= self.pension[~self.is_old]  # Young individuals' pension contributions are deposited into the national pension pool.
+
         total_wealth = self.post_income + self.post_asset + self.pension
 
         self.working_years[~self.is_old] += 1
@@ -410,8 +410,7 @@ class Household(BaseEntity):
         goods_supply = society.market.Yt_j
         success_households_deals = np.minimum(households_demand, goods_supply)
 
-        self.final_consumption = consumption_ij / np.sum(consumption_ij,
-                                                         axis=0) * success_households_deals.T  # Proportionally distribute the sold goods among all households.
+        self.final_consumption = consumption_ij / (np.sum(consumption_ij, axis=0) + 1e-8) * success_households_deals.T  # Proportionally distribute the sold goods among all households.
         self.consumption = self.compute_ces_consumption(consumption_ij=self.final_consumption,
                                                         epsilon=society.market.epsilon)
         money_for_consumption = np.sum(self.final_consumption * society.market.price.T, axis=1).reshape(-1, 1)

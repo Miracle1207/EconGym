@@ -81,8 +81,8 @@ class GovernmentRules:
     @staticmethod
     def pension_rule_fixed(
             obs, *,  # obs kept for a unified interface (unused)
-            retire_age: int | float = 60,
-            contribution_rate: float = 0.12
+            retire_age: int | float = 67,
+            contribution_rate: float = 0.08
     ) -> np.ndarray:
         """Fixed rule: constant retirement age and contribution rate."""
         return np.array([int(retire_age), float(contribution_rate)], dtype=float)
@@ -104,7 +104,7 @@ class GovernmentRules:
             raise ValueError(f"Unknown pension rule: {rule!r}")
 
     @staticmethod
-    def tax_rule_config(obs, tau=0.23, xi=0.01, tau_a=0.5, xi_a=0.01, Gt_prob=0.189):
+    def tax_rule_config(obs, tau=0.263, xi=0.049, tau_a=0., xi_a=0., Gt_prob=0.189):
         """Config policy: set parameters explicitly; optional subsidy vector appended."""
         base = np.array([tau, xi, tau_a, xi_a, Gt_prob], dtype=float)
         return np.concatenate([base])
@@ -123,7 +123,7 @@ class GovernmentRules:
             output_actions: The calculated actions according to the selected tax rule.
         """
         # Define the tax rule (can be modified to allow dynamic rule selection)
-        rule = "free_market"  # You can change this to a dynamic rule selection based on conditions
+        rule = "config"  # You can change this to a dynamic rule selection based on conditions
     
         # Define the available tax rules
         rules = {

@@ -81,8 +81,7 @@ class Government(BaseEntity):
 
     def step(self, society):
         self.tax_step(society)
-        if self.type == "pension" and (
-                "OLG" in society.households.type or society.households.type == "personal_pension"):
+        if self.type == "pension" and ("OLG" in society.households.type):
             self.pension_step(society)
 
 
@@ -151,7 +150,7 @@ class Government(BaseEntity):
         """Compute taxes based on government policies."""
 
         def tax_formula(x, tau, xi):
-            x = np.maximum(x, 1e-8)  # 避免 x=0
+            x = np.maximum(x, 1e-8)
             if np.isclose(xi, 1.0):
                 return x - (1 - tau) * np.log(x)
             else:
@@ -230,7 +229,8 @@ class Government(BaseEntity):
         gov_goal = gov_goal or self.gov_task
         # Central bank uses its own reward
         if self.type == "central_bank":
-            return self.get_reward_central(society.inflation_rate, self.growth_rate) # \in (0,1)
+            reward = self.get_reward_central(society.inflation_rate, self.growth_rate) # \in (0,1)
+            return np.array([reward])
 
         if gov_goal == "gdp":
             log_gdp_growth = np.log(self.GDP + 1e-8) - np.log(self.old_GDP + 1e-8)
