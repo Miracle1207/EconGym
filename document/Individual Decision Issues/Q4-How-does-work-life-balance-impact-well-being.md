@@ -12,12 +12,14 @@ Real-world examples include:
 * Several European countries are piloting four-day workweeks to enhance well-being and sustain productivity over the long run.
 * Companies are increasingly embedding employee well-being metrics into formal HR policies.
 
-### **1.2  Research Questions**
 
-In economics, utility is the key variable for measuring individual well‐being and satisfaction. Although excessive labor may boost short‐term income, it can reduce total utility in the long run due to health deterioration, mental fatigue, or strained family relationships. Based on an economic simulation platform, this study investigates “How does work–life balance affect aggregate output and individual utility over the life cycle?” Specifically, we address:
+### **1.2 Research Questions**
 
-* How does a more balanced work pattern impact aggregate social output?
-* Can a “work–life balance” strategy ​**yield lifetime utility gains**​?
+This study uses an economic simulation platform to investigate the ​**economic impacts of work–life balance**​, specifically examining:
+
+* **GDP**​**​ Effects:** How do different work–life balance regimes influence aggregate economic output?
+* **Labor Supply:** How does work–life balance affect labor participation and productivity across cohorts?
+* **Household Consumption:** How do shifts in work intensity and leisure time impact household consumption patterns?
 
 ### **1.3  Research Significance**
 
@@ -44,14 +46,14 @@ As an example, we selected the following roles from the social role classificati
 **Individual → Overlapping Generations (OLG) Model**  
 The Overlapping Generations framework simulates ​**age‑specific labor and consumption choices**​. Preferences for work–life balance vary across the life cycle—young workers may ​**strive for career growth**​, whereas middle‑aged and older cohorts prioritize ​**health and family time**​.
 
-**Government → Not Applicable**  
+**Government → Any Type**  
 In the work–life balance experiments, the government must coordinate across multiple departments, for example: the Ministry of Labor enforces maximum working‐hour limits; the pension authority calibrates relevant pension regulations; and the tax authority adapts fiscal rules to the evolving social environment.
 
 **Firm → Perfect Competition**  
 Firms compete for talent through ​**wages and flexible work policies**​. Workers choose environments that best match their balance preferences, forcing companies to adapt HR strategies.
 
-**Bank →Non-Profit Platform **  
-Provide ​**life‑cycle financial products**​—retirement accounts, health insurance, liquidity support. As work–life patterns shift, so do saving needs and demand for these services.
+**Bank →Non-Profit Platform   
+Provide ​life‑cycle financial products**​—retirement accounts, health insurance, liquidity support. As work–life patterns shift, so do saving needs and demand for these services.
 
 ---
 
@@ -65,31 +67,55 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule‑Based Agent | Firms adapt hiring strategies and workplace arrangements (e.g., offering flexible hours) according to labor-market supply–demand dynamics and worker preferences, exhibiting predictable behavior.                              |
 | Bank | Rule‑Based Agent | Financial institutions deliver standardized life-cycle services—such as savings advice or insurance products—based on individuals’ life-cycle stage and income volatility, making them well-suited for rule-based simulation. |
 
-## **​4. Illustrative Experiment**
+---
 
-### Experiment 1:Impact of Work–Life Balance on Society
+## **4. Running the Experiment**
+
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiment**
+
+### Experiment :  Impact of Work–Life Balance on Society
 
 * **Experiment Description:**
+  
   Simulate individuals’ strategies for allocating work and leisure across different life‐cycle stages, and measure the long‐term impact on aggregate social production.
-* **Involved Social Roles:**
-  * *Individual: ​*OLG model
-  * *Firm:* Perfectly Competitive Market
-* **AI Agents:**
-  * *Individual: ​*BC Agent/RL Agent
-  * *Firm: ​*Rule‐Based Agent
 * **Experimental Variables:**
+  
   * Whether households adopt a work–life balance strategy (Behavior Cloning vs. RL Agent)
   * Level of socio‐economic growth
   * Level of social welfare
-* **Visualized Experimental Results:**
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **​base\_bc\_ppo\_100\_OLG (Blue line):​**Households are modeled as ​**Behavior Cloning Agents**​, while the government is a **PPO-based RL Agent** optimizing fiscal policy dynamically.The economy operates under the **OLG Model** with ​**100 households**​, serving as the baseline setting.
+  * **​balance\_ppo\_ppo\_100\_OLG (Green line):​**Both households and the government are modeled as **​PPO-based RL Agents.​**The economy operates under the **OLG Model** with **100 households.**
+* **Visualization of Results:**
 
 ![Individual Q4 P1](../img/Individual%20Q4%20P1.png)
 
-**Figure 1**: When households adopt a “work–life balance” strategy (green line), aggregate GDP is lower than under the standard work regime (blue line), but after year 60 the gap narrows and the two GDP paths converge.
+​**Figure 1**​: When households adopt a “work–life balance” strategy, aggregate GDP is lower than under the standard work regime, but after year 60 the gap narrows and the two GDP paths converge.
 
 ![Individual Q4 P2](../img/Individual%20Q4%20P2.png)
 
-**Figure 2**: When households adopt a “work–life balance” strategy (green line), social welfare increases and remains elevated over time.
+​**Figure 2**​: When households adopt a “work–life balance” strategy, social welfare increases and remains elevated over time.
 
 * By maximizing individual utility and choosing a work–life balance lifestyle, households experience slower economic growth in the short term compared to the baseline scenario, but social welfare rises markedly. In the long run, the GDP gap between the two scenarios narrows, while the welfare gains from the work–life balance approach persist.
 
