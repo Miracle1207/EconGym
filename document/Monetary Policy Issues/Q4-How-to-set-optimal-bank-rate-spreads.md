@@ -15,8 +15,8 @@ NIM influences both banks’ willingness to lend and firms’ and households’ 
 This study uses a multi-agent economic simulation platform where commercial banks act as financial intermediaries adjusting lending behavior according to specified NIM settings. We focus on:
 
 * **Government tax revenue:** How does NIM affect lending activity, corporate profits, consumption, and the size of the tax base?
-* **GDP​ level:** Do high margins constrain investment and consumption, reducing aggregate demand and output, while low margins impair banks’ capacity to extend credit?
-* **Income inequality:** How does NIM influence financing accessibility, with high margins potentially creating barriers for low- and middle-income households and exacerbating income disparities?
+* **GDP**​**​ ​**​​**Effect:** Do high margins constrain investment and consumption, reducing aggregate demand and output, while low margins impair banks’ capacity to extend credit?
+* **Income ​**​​**Gap:** How does NIM influence financing accessibility, with high margins potentially creating barriers for low- and middle-income households and exacerbating income disparities?
 
 ### 1.4 Research Significance
 
@@ -70,43 +70,56 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent       | Simulate firms’ direct responses to changes in financing costs, consistent with the perfect-competition assumption.                         |
 | Bank  | Rule-Based Agent       | Commercial banks set margins according to preset strategies, facilitating the assessment of systemic effects under different margin regimes. |
 
+---
+## **4. Running the Experiment**
 
-## 4. Illustrative Experiment
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiment**
 
 ### Experiment 1: Impact of Net Interest Margin on the Real Economy
 
-* **Experiment Description:**  Simulate commercial banks autonomously adjusting their net interest margin according to preset rules (e.g., a 1.5% reduction) and compare against a baseline scenario to observe how changes in market interest rates affect core economic indicators.
-* **Involved Social Roles:**
-  * *Individual: ​*Ramsey Model
-  * *Government:* Central Bank
-  * *Bank: ​*Commercial Banks
-* **AI**​**​ Agents:**
-  * *Individual:* Behavior Cloning Agent
-  * *Government: ​*Rule-Based Agent
-  * *Bank: ​*Rule-Based Agent
+* **Experiment Description:**
+
+  Simulate commercial banks autonomously adjusting their net interest margin according to preset rules (e.g., a 1.5% reduction) and compare against a baseline scenario to observe how changes in market interest rates affect core economic indicators.
 * **Experimental Variables:**
+  
   * Commercial banks’ net interest margin (baseline margin vs. margin reduced by 1.5%)
   * Government tax revenue
   * Aggregate GDP level
   * Income and wealth inequality
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **bc\_rule\_based\_100\_ramsey (green line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a ​**Rule-Based Agent**​.
+  * **bc\_rule\_based\_100\_ramsey\_int\_margin\_0.015 (yellow line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a ​**Rule-Based Agent**​,with reduces the ​**lending–deposit interest-rate margin to 0.015**​.
 * **Visualized Experimental Results：**
 
 ![Monetary Q4 P1](../img/Monetary%20Q4%20P1.png)
 
 ![Monetary Q4 P2](../img/Monetary%20Q4%20P2.png)
 
-**Figure 1 & Figure 2:** When commercial banks proactively lower their net interest margin (yellow line), GDP growth is stimulated in both the short run and the medium-to-long run.
-
-![Monetary Q4 P3](../img/Monetary%20Q4%20P3.png)
-
-![Monetary Q4 P4](../img/Monetary%20Q4%20P4.png)
-**Figure 3 & Figure 4:** A reduction in the net interest margin (yellow line) contributes to a narrowing of both income inequality (income Gini coefficient, Figure 3) and wealth inequality (wealth Gini coefficient, Figure 4), although the degree of reduction is limited.
-
-![Monetary Q4 P5](../img/Monetary%20Q4%20P5.png)
-
-**Figure 5:** Lowering the net interest margin (yellow line) leads to a marked decrease in total government tax revenue.
+**Figure 1 & Figure 2:** When commercial banks proactively lower their net interest margin, GDP growth is stimulated in both the short run and the medium-to-long run.
 
 * Proactive NIM reductions by banks help boost aggregate economic output and modestly reduce income and wealth disparities.
-* However, lower margins significantly erode government tax receipts.
-* Therefore, when calibrating the net interest margin, policymakers must balance the goals of preserving fiscal revenue and enhancing social equity.
+
+
+
 
