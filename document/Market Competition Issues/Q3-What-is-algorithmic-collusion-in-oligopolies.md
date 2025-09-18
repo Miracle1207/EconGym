@@ -19,7 +19,8 @@ In an oligopoly market, firms make strategic pricing decisions, anticipating and
 This study uses an economic simulation platform to explore the issue of **algorithmic collusion** in oligopoly markets and its potential social and individual impacts, specifically focusing on:
 
 * ​**Macroeconomic Impacts**​: Algorithmic collusion may cause market prices to deviate persistently from competitive equilibrium, reducing allocative efficiency. This distortion can suppress aggregate output and dampen investment incentives, while also exacerbating entry barriers and hindering structural adjustments within industries.
-* ​**Welfare Impacts on Households**​: Higher prices and weakened competition may lead to a decline in consumer surplus, particularly affecting price-sensitive groups such as low-income households. This, in turn, could intensify income and consumption inequality, thereby undermining overall social welfare.
+* ​**Household Welfare**​: Higher prices and weakened competition may lead to a decline in consumer surplus, particularly affecting price-sensitive groups such as low-income households. This, in turn, could intensify income and consumption inequality, thereby undermining overall social welfare.
+
 
 ### **1.4 Research Significance**
 
@@ -71,8 +72,29 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | RL Agent               | Oligopolistic firms have pricing authority and typically follow profit maximization principles, making RL Agent suitable for multi-agent game simulations.                                  |
 | Bank | Rule-Based Agent       | Financial markets follow the no-arbitrage principle, and investment and pricing rely on market rule adjustments. Rule-Based Agent ensures stability and liquidity in the market simulation. |
 
+---
 
-## **4.Illustrative Experiment**
+## **4. Running the Experiment**
+
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiment**
 
 ```python
 # Simulating the impact of algorithmic collusion on price, output, and profit
@@ -96,22 +118,25 @@ At each time step t:
 ```
 
 ### **Experiment 1: Pricing Behavior of Firms in an ​**​**Oligopoly**​**​ Market**
+
 * **Experiment Description:**
   In an oligopoly market consisting of multiple firms, introduce RL-based pricing algorithms and observe the pricing strategies that emerge under reinforcement learning as well as their impact on consumers.
-* **Involved Social Roles:**
-  * ​*Market*​**:** Oligopoly Firms
-  * ​*Households*​**:** Immortal Heterogeneous Model
-* **AI**​**​ Agents:**
-  * *Market: ​*RL Agent
-  * *Households: ​*BC Agent
 * **Experimental Variables:**
   * Market Type (Oligopoly Firms&Perfect competition)
   * Market Price (P)
-* **​ Visualized Experimental Results：**
+* **Baselines:** Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  * **Groups from left to right:**
+    * **perfect\_rule\_based\_rule\_based\_100\_ramsey :**​**Perfectly competitive market ​**as the benchmark.Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and **Ramsey Model households.**
+    * **algorithmic\_collusion\_rule\_based\_rule\_based\_100\_ramsey:**​​**Algorithmic collusion market**​.Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and **Ramsey Model households.**
+  * **Bar description:**
+    * **Blue bar:** Rich households
+    * **Green bar:** Middle-class households
+    * **Yellow bar:** Poor households
+    * **Red bar:** Overall average
 
 ![Market Q3 P1](../img/Market%20Q3%20P1.png)
 
-​**Figure 1**​: Comparison of household income under perfect competition and oligopoly collusion algorithms. Under oligopolistic collusion, the average income of households increases significantly (right chart), particularly evident among the lower-income groups (yellow bar). The income level of the impoverished population under oligopoly is about three times that in the perfect competition market.
+​**Figure 1**​: Comparison of household income under perfect competition and oligopoly collusion algorithms. Under oligopolistic collusion, the average income of households increases significantly (right chart), particularly evident among the lower-income groups. The income level of the impoverished population under oligopoly is about three times that in the perfect competition market.
 
 ![Market Q3 P2](../img/Market%20Q3%20P2.png)
 
