@@ -16,12 +16,14 @@ Both involve intertemporal decision‐making, but differ in motivation, scale, a
 * With the rise of modern financial systems and consumer‐credit products, front‐loading and overdraft consumption have become pervasive economic phenomena.
 * Digital finance and internet lending platforms have drastically lowered access barriers to consumer credit, making borrowing easier than ever. Meanwhile, younger generations embrace **“buy now, pay later.”** Post‐pandemic recovery has accentuated the complex interplay between consumption and debt, and widening inequality has driven some groups to rely heavily on credit, creating class‐based consumption patterns.
 
-### 1.3 Research Questions
+### **1.3 Research Questions**
 
-Using an economic‐simulation platform, this study explores the societal impacts of front‐loading and overdraft consumption, focusing on:
+Using an economic simulation platform, this study explores the societal impacts of front-loading and overdraft consumption, specifically examining:
 
-* **Macroeconomic stability:** How do these consumption modes affect GDP volatility and social welfare?
-* **Income distribution:** How do consumption‐borrowing patterns differ across income groups, and what is their effect on inequality?
+* **Income Distribution:** How do consumption–borrowing patterns differ across income groups, and what is their effect on inequality?
+* **Household Wealth:** How does over-leveraged consumption influence long-term household wealth accumulation and debt sustainability?
+* **Market Price:** What are the implications of widespread consumer borrowing for asset and credit market prices?
+* **Household Utility:** How do different borrowing strategies affect lifetime utility across demographic cohorts?
 
 ### 1.4 Research Significance
 
