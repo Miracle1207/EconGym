@@ -127,9 +127,9 @@ Each simulation scene has its own parameter file that describes how it differs f
 * **Baselines:**
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
-  * **optimal\_tax\_ramsey\_100\_bc\_tax\_saez (Blue line):** Households are modeled under the Ramsey Model with Behavior Cloning Agents, while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.
-  * **optimal\_tax\_ramsey\_100\_bc\_tax\_ddpg (Green line):** Households follow the Ramsey Model with Behavior Cloning Agents, and the government employs a **DDPG-based RL algorithm** to dynamically adjust tax rates over time.
-  * **optimal\_tax\_ramsey\_100\_bc\_tax\_us\_federal (Yellow line):** Households are modeled with the Ramsey Model and Behavior Cloning Agents, while the government applies the **U.S. federal tax system** as the benchmark baseline.
+  * **optimal\_tax\_ramsey\_100\_bc\_tax\_saez (Blue line):** Households are modeled under the **Ramsey Model** with **Behavior Cloning Agents**, while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.
+  * **optimal\_tax\_ramsey\_100\_bc\_tax\_ddpg (Green line):** Households are modeled under the **Ramsey Model** with **Behavior Cloning Agents**, and the government employs a **DDPG-based RL algorithm** to dynamically adjust tax rates over time.
+  * **optimal\_tax\_ramsey\_100\_bc\_tax\_us\_federal (Yellow line):** Households are modeled under the **Ramsey Model** and **Behavior Cloning Agents**, while the government applies the **U.S. federal tax system** as the benchmark baseline.
 
 ![Fiscal Q4 P3](../img/Fiscal%20Q4%20P3.png)
 
