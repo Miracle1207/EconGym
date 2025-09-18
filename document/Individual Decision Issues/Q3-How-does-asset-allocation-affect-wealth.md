@@ -61,21 +61,35 @@ This section provides a recommended agent configuration. Users are encouraged to
 | No-Arbitrage Platform | Rule‑Based Agent | Generates uncertain investment returns, creating a realistic market‑risk environment.                     |
 | Market                                | Rule‑Based Agent | Delivers background capital‑return rates and macroeconomic conditions that influence investment behavior. |
 
+## **4. Running the Experiment**
 
-## **​4. Illustrative Experiments**
+### **4.1 Quick Start**
 
-### Experiment 1: Impact of Asset Allocation on Individual Wealth
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiments**
+
+### Experiment  1: Impact of Asset Allocation on Individual Wealth
 
 * **Experiment Description:**
+  
   Compare households that allocate funds to **risky assets** (stocks, crypto) versus **risk‑free assets** (deposits, government bonds) and track long‑run wealth paths.
-* **Involved Social Roles: ​**
-  * *Individual: ​*Ramsey Model
-  * *Financial Institutions: ​*Commercial banks & No-Arbitrage Platform
-* **AI Agents**
-  * *Households (Option 1):* RL Agent
-  * *Households (Option 2):* Rule-Based Agent with fixed savings–investment ratio
-  * *Financial Institutions: ​*Rule-Based Agent
 * **Experimental Variables:**
+  
   * Risky vs. risk‑free allocation
   * Return‑distribution parameters
   * Final net wealth, consumption level, utility trajectory
@@ -99,17 +113,23 @@ For each time period:
     - Compare final wealth, total utility, and inequality across households
 ```
 
-* **​ Visualized Experimental Results：**
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **​bc\_saez\_100\_OLG\_risk\_invest (Blue bar/line):​**Households are modeled as ​**Behavior Cloning Agents**​, and the government remains a **Rule-based Agent** applying the ​**Saez tax formula**​.Households operate within the **OLG Model** with **100 total households** but are allowed to engage in **risky investment behavior.**
+  * **​bc\_saez\_100\_OLG (Green bar/line):​**Households are modeled as ​**Behavior Cloning Agents**​, while the government is a **Rule-based Agent** applying the **Saez tax formula** from optimal taxation theory.Households operate within the **OLG Model** with**​ 100 total households** and follow **standard investment behavior.**
+* **Visualized Experimental Results：**
 
-![Individual Q5 P1](../img/Individual%20Q5%20P1.png)
+![Individual Q3P1 asset allocation](../img/Individual%20Q3P1%20asset%20allocation.png)
 
-**Figure 1. ​**Long-run individual wealth accumulation under risky-asset allocations (blue bars) versus risk-free allocations (green bars). On average, households that avoid risky investments accumulate greater wealth over time, consistent with empirical findings that many investors underperform when exposed to high-volatility assets.
+**Figure 1: ​**Long-run individual wealth accumulation under risky-asset allocations versus risk-free allocations.  The left panel reports wealth by age cohorts, while the right panel reports wealth by income classes.On average, households that avoid risky investments accumulate greater wealth over time, consistent with empirical findings that many investors underperform when exposed to high-volatility assets.
 
-![Individual Q5 P2](../img/Individual%20Q5%20P2.png)
+![Individual Q3P2 asset allocation](../img/Individual%20Q3P2%20asset%20allocation.png)
 
 **Figure 2:** Households that engage in risky investments exhibit lower average working hours.
 
-![Individual Q5 P3](../img/Individual%20Q5%20P3.png)
+![Individual Q3P3 asset allocation](../img/Individual%20Q3P3%20asset%20allocation.png)
 
 **Figure 3:** Households with risky investments achieve higher long-term cumulative rewards.
 
@@ -118,26 +138,23 @@ For each time period:
 
 ---
 
-### Experiment 2 : Macroeconomic Impact of Asset‑Allocation Behavior
+### Experiment  2 : Macroeconomic Impact of Asset‑Allocation Behavior
 
 * **Experiment Description:**
+  
   Divide households into two groups—those engaging in risky investments (e.g., equities, cryptocurrencies) and those holding only risk-free assets (e.g., bank deposits, government bonds)—and model societies composed of these different household types. Compare the long-term GDP growth trajectories of each society to simulate how heterogeneous asset-allocation behaviors affect aggregate production over time.
-* **Involved Social Roles:**
-  * *Individual: ​*Ramsey Model
-  * *Financial Institutions: ​*Commercial Banks & No-Arbitrage Platform
-* **AI Agents:**
-  * *Households (Option A):* RL Agent
-  * *Households (Option B): ​*Rule-Based Agent
-  * *Financial Institutions: ​*Rule-Based Agent
 * **Experimental Variables:**
+  
   * Risky Investment vs. Risk-Free Investment
   * Long-Term GDP Trajectory
 * **​ Visualized Experimental Results：**
 
-![Individual Q5 P4](../img/Individual%20Q5%20P4.png)
+![Individual Q3P4 asset allocation](../img/Individual%20Q3P4%20asset%20allocation.png)
 
 **Figure 4:** The blue line represents a society composed of households engaging in risky investments, while the green line represents a society of households holding only risk-free assets. Over the long run, the society with risky investments exhibits relatively slower GDP growth.
 
 * Over a 300-year observation period, both societies display nearly identical GDP levels and growth trends for the first 100 years. From year 100 to 150, the risky-investment society’s GDP notably exceeds that of the risk-free society. However, for t > 150, the risk-free society’s GDP clearly surpasses the risky-investment society’s, and the gap widens over time.
 * Nevertheless, the risky-investment society’s GDP continues to exhibit a sustained positive growth trend over the long term.
+
+
 
