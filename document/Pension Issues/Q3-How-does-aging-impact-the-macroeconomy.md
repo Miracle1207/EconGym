@@ -124,14 +124,14 @@ population_aging_5: High birth rate / Low death rate
     
 * **Baselines:**
   
-  We constructed the simulated economic environment using **Individuals modeled as Behavior Cloning Agents** and ​**the Government modeled as a Rule-Based Agent**​. The bar charts illustrate household income distributions under different population aging scenarios:
+  We constructed the simulated economic environment using **Individuals** modeled as **Behavior Cloning Agents** and ​**the Government** modeled as a **Rule-Based Agent**​. The bar charts illustrate household income distributions under different population aging scenarios:
   
   * **Population aging settings (groups of bars):**
-    * **population\_aging\_1 (Blue line):** Medium birth rate / High death rate
-    * **population\_aging\_2 (Green line):** Medium birth rate / Medium death rate
-    * **population\_aging\_3 (Yellow line):** High birth rate / Medium death rate
-    * **population\_aging\_4 (Red line):** Medium birth rate / Low death rate
-    * **population\_aging\_5 (Light blue line):** High birth rate / Low death rate
+    * **population\_aging\_1 :** Medium birth rate / High death rate
+    * **population\_aging\_2 :** Medium birth rate / Medium death rate
+    * **population\_aging\_3 :** High birth rate / Medium death rate
+    * **population\_aging\_4 :** Medium birth rate / Low death rate
+    * **population\_aging\_5 :** High birth rate / Low death rate
   * **Color coding (within each group):**
     * **Left panel:** Different bar colors represent **age cohorts** (e.g., <24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
     * **Right panel:** Different bar colors represent **income classes** (rich, middle, poor, and mean).

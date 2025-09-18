@@ -114,7 +114,7 @@ class SACPolicy(nn.Module):
         log_prob = normal.log_prob(x_t)
         # Enforcing action bound
         log_prob -= torch.log((1 - y_t.pow(2)) + 1e-6)
-        log_prob = log_prob.sum(1, keepdim=True)
+        log_prob = log_prob.sum(dim=-1, keepdim=True)
         mean = torch.tanh(mean)
         return action, log_prob, mean
 
@@ -146,16 +146,23 @@ class SACQNetwork(nn.Module):
 
 class sac_agent:
     """Soft Actor-Critic (SAC) agent"""
-    def __init__(self, envs, args, agent_name="households"):
+    def __init__(self, envs, args, type=None, agent_name="households"):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
+        self.agent_type = type
         
         env_agent_name = "households" if agent_name == "households" else agent_name
-        self.agent = getattr(self.envs, env_agent_name)
-        self.obs_dim = self.agent.observation_space.shape[0]
-        self.action_dim = self.agent.action_space.shape[-1]
+
+        if env_agent_name == "government":
+            self.government_agent = self.envs.government[type]
+            self.obs_dim = self.government_agent.observation_space.shape[0]
+            self.action_dim = self.government_agent.action_space.shape[0]
+        else:
+            self.agent = getattr(self.envs, env_agent_name)
+            self.obs_dim = self.agent.observation_space.shape[0]
+            self.action_dim = self.agent.action_space.shape[-1]
 
         if self.args.cuda:
             self.device = "cuda"
@@ -203,8 +210,111 @@ class sac_agent:
 
     def train(self, transition_dict):
         """Train the SAC agent"""
+        # Extract data from new nested dictionary structure
+        obs_dict = transition_dict['obs_dict']
+        next_obs_dict = transition_dict['next_obs_dict']
+        action_dict = transition_dict['action_dict']
+        reward_dict = transition_dict['reward_dict']
+        done_list = transition_dict['done']
+
+        # Extract data based on agent type
+        if self.agent_name == "government":
+            # Get government observations and actions based on government type
+            if self.agent_type == "pension":
+                gov_obs_list = [obs['government']['pension'] for obs in obs_dict]
+                next_gov_obs_list = [obs['government']['pension'] for obs in next_obs_dict]
+                gov_action_list = [action['government']['pension'] for action in action_dict]
+                gov_reward_list = [reward['government']['pension'] for reward in reward_dict]
+            elif self.agent_type == "tax":
+                gov_obs_list = [obs['government']['tax'] for obs in obs_dict]
+                next_gov_obs_list = [obs['government']['tax'] for obs in next_obs_dict]
+                gov_action_list = [action['government']['tax'] for action in action_dict]
+                gov_reward_list = [reward['government']['tax'] for reward in reward_dict]
+            elif self.agent_type == "central_bank":
+                gov_obs_list = [obs['government']['central_bank'] for obs in obs_dict]
+                next_gov_obs_list = [obs['government']['central_bank'] for obs in next_obs_dict]
+                gov_action_list = [action['government']['central_bank'] for action in action_dict]
+                gov_reward_list = [reward['government']['central_bank'] for reward in reward_dict]
+
+            # Store transitions in replay buffer
+            for i in range(len(gov_obs_list)):
+                self.store_transition(
+                    gov_obs_list[i], 
+                    gov_action_list[i], 
+                    gov_reward_list[i], 
+                    next_gov_obs_list[i], 
+                    done_list[i]
+                )
+
+        elif self.agent_name == "households":
+            # Extract household data from new structure
+            house_obs_list = [obs['households'] for obs in obs_dict]
+            next_house_obs_list = [obs['households'] for obs in next_obs_dict]
+            house_action_list = [action['households'] for action in action_dict]
+            house_reward_list = [reward['households'] for reward in reward_dict]
+
+            # Store transitions for each household
+            for i in range(len(house_obs_list)):
+                for j in range(len(house_obs_list[i])):
+                    self.store_transition(
+                        house_obs_list[i][j], 
+                        house_action_list[i][j], 
+                        house_reward_list[i][j][0], 
+                        next_house_obs_list[i][j], 
+                        done_list[i]
+                    )
+
+        elif self.agent_name == "market":
+            if self.agent_type == "perfect":
+                return 0.0, 0.0
+
+            market_obs_list = [obs.get('market', []) for obs in obs_dict]
+            if len(market_obs_list) == 0 or (isinstance(market_obs_list[0], list) and len(market_obs_list[0]) == 0):
+                return 0.0, 0.0
+
+            next_market_obs_list = [obs.get('market', []) for obs in next_obs_dict]
+            market_action_list = [action.get('market', []) for action in action_dict]
+            market_reward_list = [reward.get('market', []) for reward in reward_dict]
+
+            # Store transitions for each firm
+            for i in range(len(market_obs_list)):
+                for j in range(len(market_obs_list[i])):
+                    self.store_transition(
+                        market_obs_list[i][j], 
+                        market_action_list[i][j], 
+                        market_reward_list[i][j][0], 
+                        next_market_obs_list[i][j], 
+                        done_list[i]
+                    )
+
+        elif self.agent_name == "bank":
+            if self.agent_type == 'non_profit':
+                return 0.0, 0.0
+
+            bank_obs_list = [obs.get('bank', []) for obs in obs_dict]
+            if len(bank_obs_list) == 0 or (isinstance(bank_obs_list[0], list) and len(bank_obs_list[0]) == 0):
+                return 0.0, 0.0
+
+            next_bank_obs_list = [obs.get('bank', []) for obs in next_obs_dict]
+            bank_action_list = [action.get('bank', []) for action in action_dict]
+            bank_reward_list = [reward.get('bank', 0.0) for reward in reward_dict]
+
+            # Store transitions
+            for i in range(len(bank_obs_list)):
+                self.store_transition(
+                    bank_obs_list[i], 
+                    bank_action_list[i], 
+                    bank_reward_list[i], 
+                    next_bank_obs_list[i], 
+                    done_list[i]
+                )
+
+        else:
+            return 0.0, 0.0
+
+        # Train if we have enough samples
         if len(self.replay_buffer) < self.batch_size:
-            return 0.0, 0.0, 0.0
+            return 0.0, 0.0
 
         # Sample batch from replay buffer
         state_batch, action_batch, reward_batch, next_state_batch, done_batch = self.replay_buffer.sample(self.batch_size)
@@ -266,19 +376,20 @@ class sac_agent:
         self._soft_update(self.target_qf1, self.qf1, self.tau)
         self._soft_update(self.target_qf2, self.qf2, self.tau)
 
-        return policy_loss.item(), qf_loss.item(), alpha_loss
+        return policy_loss.item(), qf_loss.item()
 
     def _soft_update(self, target, source, tau):
         """Soft update of target network"""
         for target_param, param in zip(target.parameters(), source.parameters()):
             target_param.data.copy_(target_param.data * (1.0 - tau) + param.data * tau)
 
-    def get_action(self, global_obs_tensor, private_obs_tensor, gov_action=None, env=None):
+    def get_action(self, obs_tensor):
         """Get action from the policy"""
-        if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-            obs_tensor = global_obs_tensor.reshape(-1, self.obs_dim)
-        else:
-            obs_tensor = private_obs_tensor
+        if self.agent_name == "bank" and self.agent_type == "non_profit":
+            return np.random.randn(self.action_dim)
+        if self.agent_name == "market" and self.agent_type == "perfect":
+            firm_n = len(obs_tensor)
+            return np.random.randn(firm_n, self.action_dim)
 
         # Update state normalization
         if self.step_counter < self.max_warmup_steps:
@@ -295,39 +406,12 @@ class sac_agent:
         with torch.no_grad():
             action, _, _ = self.policy.sample(obs_tensor)
 
-        # Apply agent-specific action constraints
-        if self.agent_name == "government" and self.envs.government.type == "tax" or self.agent_name == "tax_gov":
-            action[0][2] = 0
-            action[0][3] = 0
-
-        if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-            return self.gov_action_wrapper(action.cpu().numpy().flatten())
-        else:
-            return action.cpu().numpy()
+        return action.cpu().numpy()
 
     def store_transition(self, state, action, reward, next_state, done):
         """Store transition in replay buffer"""
         self.replay_buffer.push(state, action, reward, next_state, done)
 
-    def gov_action_wrapper(self, gov_action):
-        """Convert normalized action to real action space"""
-        return self.agent.real_action_min + (self.agent.real_action_max - self.agent.real_action_min) * gov_action
-
-    def inverse_action_wrapper(self, action):
-        """Convert real action to normalized space"""
-        if action.is_cuda:
-            action_np = action.cpu().numpy()
-        else:
-            action_np = action.numpy()
-
-        result_np = (action_np - self.agent.real_action_min) / (
-                self.agent.real_action_max - self.agent.real_action_min)
-
-        result_tensor = torch.tensor(result_np, dtype=action.dtype)
-        if action.is_cuda:
-            return result_tensor.cuda()
-        else:
-            return result_tensor
 
     def save(self, dir_path):
         """Save the model"""

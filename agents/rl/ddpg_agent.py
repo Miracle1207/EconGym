@@ -40,24 +40,23 @@ class RunningMeanStd:
 
 
 class ddpg_agent:
-    def __init__(self, envs, args, agent_name="households"):
+    def __init__(self, envs, args, type=None, agent_name="households"):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
+        self.agent_type = type
 
         env_agent_name = "households" if agent_name == "households" else agent_name
 
-        self.agent = getattr(self.envs, env_agent_name)
-
-        if agent_name == "households":
-            self.obs_dim = self.envs.observation_space.shape[0]
-            self.action_dim = self.envs.households.action_space.shape[1]
-        elif agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-            self.obs_dim = self.agent.observation_space.shape[0]
-            self.action_dim = self.agent.action_space.shape[0]
+        if env_agent_name == "government":
+            self.government_agent = self.envs.government[type]
+            self.obs_dim = self.government_agent.observation_space.shape[0]
+            self.action_dim = self.government_agent.action_space.shape[0]
         else:
-            print("AgentError: Please choose the correct agent name!")
+            self.agent = getattr(self.envs, env_agent_name)
+            self.obs_dim = self.agent.observation_space.shape[0]
+            self.action_dim = self.agent.action_space.shape[-1]
         if self.args.cuda:
             self.device = "cuda"
         else:
@@ -101,48 +100,89 @@ class ddpg_agent:
         self.normalizer_applied = False
 
     def train(self, transitions, other_agent=None):
-        # households_n = len(transitions['hou_action'][0])
-        # private_obses = torch.tensor(transitions['private_obs'], dtype=torch.float32,
-        #                              device='cuda' if self.args.cuda else 'cpu')
-        global_obses = torch.tensor(transitions['global_obs'], dtype=torch.float32,
-                                    device='cuda' if self.args.cuda else 'cpu')
-        if self.agent_name == "pension_gov":
-            gov_actions = torch.tensor(transitions['pension_gov_action'], dtype=torch.float32,
-                                       device='cuda' if self.args.cuda else 'cpu')
-        elif self.agent_name == "central_bank_gov":
-            gov_actions = torch.tensor(transitions['central_bank_gov_action'], dtype=torch.float32,
-                                       device='cuda' if self.args.cuda else 'cpu')
+        device = 'cuda' if self.args.cuda else 'cpu'
+        # transitions is a batch from ReplayBuffer.sample with keys: obs_dict, next_obs_dict, action_dict, reward_dict, done
+        obs_dict_batch = transitions['obs_dict']
+        next_obs_dict_batch = transitions['next_obs_dict']
+        action_dict_batch = transitions['action_dict']
+        reward_dict_batch = transitions['reward_dict']
+        done_batch = transitions['done']
+
+        states = []
+        actions = []
+        rewards = []
+        next_states = []
+        dones = []
+
+        batch_size = len(obs_dict_batch)
+
+        if self.agent_name == "government":
+            key = self.agent_type
+            for i in range(batch_size):
+                s = obs_dict_batch[i]['government'][key]
+                a = action_dict_batch[i]['government'][key]
+                r = reward_dict_batch[i]['government'][key]
+                ns = next_obs_dict_batch[i]['government'][key]
+                d = done_batch[i]
+                states.append(s);
+                actions.append(a);
+                rewards.append(r);
+                next_states.append(ns);
+                dones.append(d)
+
+        elif self.agent_name == "households":
+            for i in range(batch_size):
+                hh_obs = obs_dict_batch[i]['households']
+                hh_act = action_dict_batch[i]['households']
+                hh_rwd = reward_dict_batch[i]['households']
+                hh_nobs = next_obs_dict_batch[i]['households']
+                for j in range(len(hh_obs)):
+                    states.append(hh_obs[j])
+                    actions.append(hh_act[j])
+                    rewards.append(hh_rwd[j][0])
+                    next_states.append(hh_nobs[j])
+                    dones.append(done_batch[i])
+
+        elif self.agent_name == "market":
+            if self.agent_type == "perfect":
+                return 0.0, 0.0
+            for i in range(batch_size):
+                mk_obs = obs_dict_batch[i].get('market', [])
+                mk_act = action_dict_batch[i].get('market', [])
+                mk_rwd = reward_dict_batch[i].get('market', [])
+                mk_nobs = next_obs_dict_batch[i].get('market', [])
+                for j in range(len(mk_obs)):
+                    states.append(mk_obs[j])
+                    actions.append(mk_act[j])
+                    rewards.append(mk_rwd[j][0])
+                    next_states.append(mk_nobs[j])
+                    dones.append(done_batch[i])
+
+        elif self.agent_name == "bank":
+            if self.agent_type == 'non_profit':
+                return 0.0, 0.0
+            for i in range(batch_size):
+                s = obs_dict_batch[i].get('bank', [])
+                a = action_dict_batch[i].get('bank', [])
+                r = reward_dict_batch[i].get('bank', 0.0)
+                ns = next_obs_dict_batch[i].get('bank', [])
+                states.append(s);
+                actions.append(a);
+                rewards.append(r);
+                next_states.append(ns);
+                dones.append(done_batch[i])
+
         else:
-            gov_actions = torch.tensor(transitions['gov_action'], dtype=torch.float32,
-                                       device='cuda' if self.args.cuda else 'cpu')
+            return 0.0, 0.0
 
-        # house_actions = torch.tensor(transitions['hou_action'], dtype=torch.float32,
-        #                              device='cuda' if self.args.cuda else 'cpu')
-        gov_rewards = torch.tensor(transitions['gov_reward'], dtype=torch.float32,
-                                   device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
-        # house_rewards = torch.tensor(transitions['house_reward'], dtype=torch.float32,
-        #                              device='cuda' if self.args.cuda else 'cpu')
-        next_global_obses = torch.tensor(transitions['next_global_obs'], dtype=torch.float32,
-                                         device='cuda' if self.args.cuda else 'cpu')
-        # next_private_obses = torch.tensor(transitions['next_private_obs'], dtype=torch.float32,
-        #                                   device='cuda' if self.args.cuda else 'cpu')
-        inverse_dones = torch.tensor(1 - transitions['done'], dtype=torch.float32,
-                                     device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
+        if len(states) == 0:
+            return 0.0, 0.0
 
-        if self.agent_name in ("government", "pension_gov", "tax_gov", "central_bank_gov"):
-            obs_tensor = global_obses
-            action_tensor = self.inverse_action_wrapper(gov_actions)
-            reward_tensor = gov_rewards
-            next_obs_tensor = next_global_obses
-        # elif self.agent_name == "households":
-        #     obs_tensor = private_obses
-        #     action_tensor = house_actions
-        #     reward_tensor = house_rewards
-        #     next_obs_tensor = next_private_obses
-        #     inverse_dones = inverse_dones.unsqueeze(-1).repeat(1, households_n, 1)
-
-        else:
-            obs_tensor, action_tensor, reward_tensor, next_obs_tensor = None, None, None, None
+        obs_tensor = torch.tensor(np.array(states), dtype=torch.float32, device=device)
+        action_tensor = torch.tensor(np.array(actions), dtype=torch.float32, device=device)
+        reward_tensor = torch.tensor(np.array(rewards), dtype=torch.float32, device=device).unsqueeze(-1)
+        next_obs_tensor = torch.tensor(np.array(next_states), dtype=torch.float32, device=device)
+        inverse_dones = torch.tensor(1 - np.array(dones), dtype=torch.float32, device=device).unsqueeze(-1)
 
         next_q_values = self.target_critic(next_obs_tensor, self.target_actor(next_obs_tensor))
         q_targets = reward_tensor + self.args.gamma * next_q_values * inverse_dones
@@ -162,20 +202,19 @@ class ddpg_agent:
         self.actor_scheduler.step()
         self.critic_scheduler.step()
 
-        return actor_loss, critic_loss
+        return actor_loss.item(), critic_loss.item()
 
     # soft update the target network...
     def _soft_update_target_network(self, target, source):
         for target_param, param in zip(target.parameters(), source.parameters()):
             target_param.data.copy_((1 - self.args.tau) * param.data + self.args.tau * target_param.data)
 
-    def get_action(self, global_obs_tensor, private_obs_tensor, gov_action=None, env=None):
-        if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-            obs_tensor = global_obs_tensor.reshape(-1, self.obs_dim)
-        elif self.agent_name == "households":
-            obs_tensor = private_obs_tensor
-        else:
-            obs_tensor = None
+    def get_action(self, obs_tensor):
+        if self.agent_name == "bank" and self.agent_type == "non_profit":
+            return np.random.randn(self.action_dim)
+        if self.agent_name == "market" and self.agent_type == "perfect":
+            firm_n = len(obs_tensor)
+            return np.random.randn(firm_n, self.action_dim)
 
         # === 1. Running mean/std update ===
         if self.step_counter < self.max_warmup_steps:
@@ -191,26 +230,9 @@ class ddpg_agent:
         # === 3. Compute action ===
         action = self.actor(obs_tensor).detach().cpu().numpy()
         sigma = 0.01
-        action = action + sigma * np.random.randn(self.action_dim)
-
-        if self.agent_name == "government":
-            if self.envs.government.type == "tax":
-                action[0][2] = 0
-                action[0][3] = 0
-            # if self.envs.government.type == "pension":
-            #     action[0][0] = round(action[0][0])
-        if self.agent_name == "tax_gov":
-            action[0][2] = 0
-            action[0][3] = 0
-        # if self.agent_name == "pension_gov":
-        #     action[0][0] = round(action[0][0])
-
-        if self.agent_name in ("government", "tax_gov", "pension_gov", "central_bank_gov"):
-            wrapper_action = self.gov_action_wrapper(action.flatten())
-            return wrapper_action
-
-        elif self.agent_name == "households":
-            return action
+        noise = sigma * np.random.randn(*action.shape)
+        action = action + noise
+        return action
 
     def gov_action_wrapper(self, gov_action):
         # gov_action = (gov_action +1)/2

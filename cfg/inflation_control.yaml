@@ -28,7 +28,7 @@ Environment:
     - entity_name: 'bank'
       entity_args:
         params:
-          type: 'non_profit'   # [ 'non_profit', 'commercial' ]
+          type: 'commercial'   # [ 'non_profit', 'commercial' ]
           n: 1
           lending_rate: 0.0345
           deposit_rate: 0.0345
@@ -39,10 +39,10 @@ Environment:
           real_action_min: [ 0.0, -1e-3 ]
 
 Trainer:
-  house_alg: "bc"
-  gov_alg: "llm"
-  firm_alg: "llm"
-  bank_alg: "llm"
+  house_alg: "ddpg"
+  gov_alg: "ddpg"
+  firm_alg: "ddpg"
+  bank_alg: "ddpg"
   seed: 1
   epoch_length: 300
   cuda: False
