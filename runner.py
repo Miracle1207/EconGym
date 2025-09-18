@@ -8,10 +8,6 @@ import os, sys
 import swanlab as wandb
 import json
 
-from omegaconf import OmegaConf
-
-from env import EconomicSociety
-
 sys.path.append(os.path.abspath('../..'))
 from agents.log_path import make_logpath, save_args
 from utils.experience_replay import ReplayBuffer
@@ -70,7 +66,6 @@ class Runner:
                 name=self.file_name + "_seed=" + str(self.args.seed),
                 dir=str(self.model_path),
                 job_type="training",
-                # mode="offline"
             )
 
     def _get_tensor_inputs(self, obs_dict):
@@ -336,6 +331,21 @@ class Runner:
             file_name = f"{self.file_name}_data.json"
             # f"{self.eval_env.problem_scene}_{self.eval_env.households.type}_{self.households_n}_{self.args.house_alg}_" \
             #         f"{self.eval_env.main_gov.type}_{self.gov_alg}_data.json"
+
+            file_path = os.path.join(store_path, file_name)
+            with open(file_path, "w") as file:
+                json.dump(eval_econ_dict, file, cls=NumpyEncoder)
+
+            print("============= Finish Writing================")
+
+        return final_econ_dict
+
+        # write_evaluate_data=False
+        if write_evaluate_data:
+            store_path = "viz/data/"
+            if not os.path.exists(store_path):
+                os.makedirs(store_path)
+            file_name = f"{self.file_name}_data.json"
 
             file_path = os.path.join(store_path, file_name)
             with open(file_path, "w") as file:

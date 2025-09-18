@@ -17,12 +17,14 @@ Dividing adults into four groups:Youth (18–30), Early Middle Age (31–45), La
 * **Late-middle-aged (46–65):**  Individuals in this stage are typically at their career peak and focus increasingly on retirement and health security. Their MPC decreases further as they prioritize savings for retirement and future needs, leading to more stable spending and reduced non‐essential expenditures.
 * **Elderly (65 and older):**  Seniors typically live on fixed pensions or accumulated savings, concentrating consumption on daily necessities and healthcare. With lower income, their MPC is low, and spending centers on essential goods and medical support.
 
-### 1.2**​ Research Questions**
+### 1.2 Research Questions
 
-This study leverages an economic simulation platform to examine differences in consumption propensities across age cohorts. Specifically, it covers:
+This study uses an economic simulation platform to investigate the ​**economic impacts of age-dependent consumption patterns**​, specifically examining:
 
-* **Consumption and Saving Behaviors:** Investigate how marginal propensity to consume and saving rates vary by age group, and briefly analyze the potential societal implications of these differences.
-* **Income–Consumption Relationship:** Explore how changes in income influence consumption behavior in different age cohorts.
+* **Household Consumption:** How do different age cohorts affect aggregate household consumption levels and structures?
+* **Household Utility:** How does age influence individual utility derived from consumption and saving decisions?
+* ​**Social Welfare:** What are the overall welfare implications of heterogeneous consumption behaviors across age groups?
+
 
 ### 1.3 **Research Significance**
 
@@ -71,24 +73,58 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule‑Based Agent | Adjusts prices and supply under predefined rules to match demand shifts and keep the market in equilibrium.                               |
 | Bank | Rule‑Based Agent | Delivers standardized financial services—uniform risk assessment and product pricing—for all age cohorts.                               |
 
+---
 
+## **4. Running the Experiment**
 
-## 4.Illustrative Experiment
+### **4.1 Quick Start**
 
-### **Experiment 1: Baseline Consumption Propensity Analysis**
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## 5.Illustrative Experiment
+
+### **Experiment : Baseline Consumption Propensity Analysis**
 
 * **Experiment Description:**
+  
   Build benchmark models of consumption propensity for each age group based on statistical survey data, and record their consumption outcomes when run on the simulated economic platform.
-* **Involved Social Roles:**
-  * *Firm: ​*Perfect Competition
-  * *Individual: ​​*Ramsey ​Model
-* **AI**​**​ Agents:**
-  * *Firm: ​*Rule‐Based Agent
-  * *Individual: ​*RL Agent
-  * *Bank: ​*Rule‐Based Agent
 * **Experimental Variables:**
+  
   * Four age groups: Youth (18–30), Early Middle Age (31–45), Late Middle Age (46–65), Senior (> 65)
   * Each group’s average and marginal propensity to consume
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each group of bars in the visualization to help readers better understand the results. The bar charts show household consumption distributions under different tax policies at year 50.
+  
+  * **​Left panel (ppo\_rule\_based\_100\_ramsey):​**Households are modeled as **PPO**​**​ Agent,** and the government is a **Rule-based Agent** following a simple fiscal rule.Households operate under the **Ramsey Model** with 100 total households.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
+  * **​Middle panel (ppo\_saez\_100\_ramsey):​**Households are modeled as **PPO**​​**​ Agent**​, and the government is a **Rule-based Agent** implementing the **Saez tax formula** from optimal taxation theory.Households operate under the **Ramsey Model** with 100 total households.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
+  * **​Right panel (ppo\_us\_federal\_100\_ramsey):​**Households are modeled as **PPO**​​**​ Agent**​, and the government is a **Rule-based Agent** applying the **U.S. federal tax system** as a real-data baseline.Households operate under the **Ramsey Model** with 100 total households.
+    * Blue bar: Rich households
+    * Green bar: Middle-class households
+    * Yellow bar: Poor households
+    * Red bar: Overall average
 
 ```Python
 #c denotes the initial consumption ratio​ ​(i.e., proportion of income consumed).
@@ -113,7 +149,7 @@ For each individual in the household population:
 
 ![Individual Q3 P1](../img/Individual%20Q3%20P1.png)
 
-**Figure 1:** Compared to the baseline scenario (left panel), the simulated U.S. consumption patterns under age‐group–specific MPC settings (middle and right panels) show higher consumption by the middle class (green bars) than in the baseline.
+**Figure 1:** Compared to the baseline scenario (left panel), the simulated U.S. consumption patterns under age‐group–specific MPC settings show higher consumption by the middle class than in the baseline.
 
 * As age increases, the marginal propensity to consume (MPC) of adult cohorts exhibits a general downward trend.
 * The age‐stratified simulation environment better stimulates consumption among the middle‐class cohort. Incorporating age layering alongside the platform’s existing income stratification enables a more accurate characterization of household groups and yields a more complete model.

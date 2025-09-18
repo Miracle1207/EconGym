@@ -16,12 +16,14 @@ Both involve intertemporal decision‐making, but differ in motivation, scale, a
 * With the rise of modern financial systems and consumer‐credit products, front‐loading and overdraft consumption have become pervasive economic phenomena.
 * Digital finance and internet lending platforms have drastically lowered access barriers to consumer credit, making borrowing easier than ever. Meanwhile, younger generations embrace **“buy now, pay later.”** Post‐pandemic recovery has accentuated the complex interplay between consumption and debt, and widening inequality has driven some groups to rely heavily on credit, creating class‐based consumption patterns.
 
-### 1.3 Research Questions
+### **1.3 Research Questions**
 
-Using an economic‐simulation platform, this study explores the societal impacts of front‐loading and overdraft consumption, focusing on:
+Using an economic simulation platform, this study explores the societal impacts of front-loading and overdraft consumption, specifically examining:
 
-* **Macroeconomic stability:** How do these consumption modes affect GDP volatility and social welfare?
-* **Income distribution:** How do consumption‐borrowing patterns differ across income groups, and what is their effect on inequality?
+* **Income Distribution:** How do consumption–borrowing patterns differ across income groups, and what is their effect on inequality?
+* **Household Wealth:** How does over-leveraged consumption influence long-term household wealth accumulation and debt sustainability?
+* **Market Price:** What are the implications of widespread consumer borrowing for asset and credit market prices?
+* **Household Utility:** How do different borrowing strategies affect lifetime utility across demographic cohorts?
 
 ### 1.4 Research Significance
 
@@ -36,9 +38,9 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
 | ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
-| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
-| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
-| Bank       | Commercial Banks    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts                    | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $$\lambda_t^i = 0$$                               |$r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)<br/>OLG includes pension if retired |
+| **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| **Bank**       | Commercial Banks    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts                    | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
 
 ---
 
@@ -69,28 +71,53 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent | Specify how firms adjust wages, production scale, and hiring decisions in response to technological progress.      |
 | Bank | Rule-Based Agent | Set interest-rate and investment-return rules to measure technological impacts on capital markets.                 |
 
+---
 
+## **4. Running the Experiment**
 
-## 4.Illustrative Experiments
+### **4.1 Quick Start**
 
-### Experiment 1: Macroeconomic Impact of Front-Loading Consumption Spread
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## 5.Illustrative Experiments
+
+### Experiment : Macroeconomic Impact of Front-Loading Consumption Spread
 
 * **Experiment Description:**
+  
   Create two simulated economies: one permits households to engage in front-loading consumption via credit overdrafts, the other restricts consumption to current income. Compare macro-indicators (GDP, aggregate wealth, saving rate, financial-system stability) to assess how borrowing-enabled consumption trades off short-term stimulus against long-term sustainability.
-* **Involved Social Roles:**
-  * *Market:* Perfectly Competitive Market
-  * *Individual: ​*Overlapping Generations (OLG) Model
-* **AI**​**​ Agents:**
-  * *Market: ​*Rule-Based Agent
-  * *Individual:* Rule-Based Agent
 * **Experimental Variables:**
+  
   * Degree of front-loading propensity in the population
   * Wealth levels, consumption, and working hours of households across different age and wealth groups under the influence of front-loading consumption
   * GDP level
-* **Visualized Experimental Results:**
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results. The figure shows GDP dynamics under different leverage conditions in the OLG model.
+  
+  * **​over\_leverage\_rule\_based\_rule\_based\_100\_OLG :​**Households are modeled as ​**Rule-based Agents**​, and the government is also a **Rule-based Agent** applying fixed fiscal rules.Households operate within the **OLG Model** with **100** total households, under an **over-leverage condition.**
+  * **​baseline\_rule\_based\_rule\_based\_100\_OLG :​**Households are modeled as ​**Rule-based Agents**​, and the government is also a **Rule-based Agent** applying fixed fiscal rules.Households operate within the **OLG Model** with **100** total households, following a **standard ​**​**leverage**​**​ baselin.**
+  * **Panel Description:**
+    * **Left panel:** Bars represent the distribution of **average annual work hours across age cohorts** (e.g., <24, 25–34, 35–44, …, 85+, and total).
+    * **Right panel:** Bars represent the distribution of **average annual work hours across income classes** (rich, middle-class, poor, and mean).
+
 ![Individual Q5 P1](../img/Individual%20Q5%20P1.png)
 
-​**Figure 1**​: Comparison of household consumption distribution between front-loading (overdraft-enabled) and normal consumption groups. From the age perspective (left chart), young households in the front-loading group show significantly higher consumption (green bar); from the income perspective (right chart), front-loading consumption notably increases the average consumption of poor households (yellow bar).
+​**Figure 1**​: Comparison of household consumption distribution between front-loading (overdraft-enabled) and normal consumption groups. From the age perspective, young households in the front-loading group show significantly higher consumption; from the income perspective, front-loading consumption notably increases the average consumption of poor households (yellow bar).
 
 ![Individual Q5 P2](../img/Individual%20Q5%20P2.png)
 
@@ -102,8 +129,9 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 ![Individual Q5 P4](../img/Individual%20Q5%20P4.png)
 
-​**Figure 4**​: Comparison of GDP trends between the two simulated economies. Overall, front-loading consumption promotes higher long-term GDP growth (blue line).
+​**Figure 4**​: Comparison of GDP trends between the two simulated economies. Overall, front-loading consumption (blue line) promotes higher long-term GDP growth.
 
 * In the simulated economy under the front-loading consumption assumption, household consumption, individual utility, and aggregate output differ from those in the normal economy. While front-loading significantly increases consumption among younger households, the corresponding improvement in their utility is less pronounced. Under moderate front-loading behavior, the overall economy exhibits relatively higher GDP growth.
+
 
 

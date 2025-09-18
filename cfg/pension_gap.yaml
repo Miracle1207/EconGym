@@ -51,3 +51,4 @@ Trainer:
   cuda: False
   n_epochs: 1000
   test: False
+  wandb: True

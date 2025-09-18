@@ -33,10 +33,10 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
 | ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
-| Individual  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | — (same as above)<br/>*OLG*: old agents $$\lambda_t^i = 0$$ | — (same as above)<br/>OLG includes pension if retired |
-| Government  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | — (same as above)                                                                                                                                    | $$a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                          |
-| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
-| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i, \text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: distributional statistics | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br/>Asset allocation, labor, investment, old agents $\lambda_t^i = 0$ | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility) |
+| **Government**  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | $o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$<br/>Public debt, wage, price level, inflation, GDP, income dist. | $a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$<br/>Retirement age, contribution rate, growth rate | Pension fund sustainability              |
+| **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
+| **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
 
 ---
@@ -124,14 +124,14 @@ population_aging_5: High birth rate / Low death rate
     
 * **Baselines:**
   
-  We constructed the simulated economic environment using **Individuals modeled as Behavior Cloning Agents** and ​**the Government modeled as a Rule-Based Agent**​. The bar charts illustrate household income distributions under different population aging scenarios:
+  We constructed the simulated economic environment using **Individuals** modeled as **Behavior Cloning Agents** and ​**the Government** modeled as a **Rule-Based Agent**​. The bar charts illustrate household income distributions under different population aging scenarios:
   
   * **Population aging settings (groups of bars):**
-    * **population\_aging\_1 (Blue line):** Medium birth rate / High death rate
-    * **population\_aging\_2 (Green line):** Medium birth rate / Medium death rate
-    * **population\_aging\_3 (Yellow line):** High birth rate / Medium death rate
-    * **population\_aging\_4 (Red line):** Medium birth rate / Low death rate
-    * **population\_aging\_5 (Light blue line):** High birth rate / Low death rate
+    * **population\_aging\_1 :** Medium birth rate / High death rate
+    * **population\_aging\_2 :** Medium birth rate / Medium death rate
+    * **population\_aging\_3 :** High birth rate / Medium death rate
+    * **population\_aging\_4 :** Medium birth rate / Low death rate
+    * **population\_aging\_5 :** High birth rate / Low death rate
   * **Color coding (within each group):**
     * **Left panel:** Different bar colors represent **age cohorts** (e.g., <24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
     * **Right panel:** Different bar colors represent **income classes** (rich, middle, poor, and mean).

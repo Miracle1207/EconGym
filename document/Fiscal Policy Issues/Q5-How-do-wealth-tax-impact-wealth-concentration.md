@@ -33,10 +33,10 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                               | Observation                                                                                               | Action                                                                                 | Reward                                   |
 | ----------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
-| Individual  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.        | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics             | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility) |
-| Government  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.             | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist. | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending          | GDP growth, equality, welfare            |
-| Firm       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.           | /                                                                                                         | /                                                                                    | Zero (long-run)                          |
-| Bank       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                         | No rate control                                                                      | No profit                                |
+| **Individual**  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.        | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics             | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility) |
+| **Government**  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.             | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist. | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending          | GDP growth, equality, welfare            |
+| **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.           | /                                                                                                         | /                                                                                    | Zero (long-run)                          |
+| **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                         | No rate control                                                                      | No profit                                |
 
 
 ---
@@ -107,7 +107,7 @@ Each simulation scene has its own parameter file that describes how it differs f
   
   Below, we provide explanations of the experimental settings corresponding to each bar group in the visualization to help readers better understand the results.
   
-  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Left group):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. No wealth tax is imposed, serving as the baseline scenario.
+  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Left group):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. **No wealth tax** is imposed, serving as the baseline scenario.
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households
@@ -160,7 +160,7 @@ Each simulation scene has its own parameter file that describes how it differs f
   
   Below, we provide explanations of the experimental settings in this visualization to help readers better understand the results.
   
-  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (blue line):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. No wealth tax is imposed, serving as the baseline scenario.
+  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (blue line):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. **No wealth tax** is imposed, serving as the baseline scenario.
   * **5%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (green line):** Households are modeled using the Ramsey Model with BC Agents, while the government applies a ​**Saez rule-based tax system**​. A **5% wealth tax** is imposed on household assets.
   * **3%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (yellow line):** Households follow the Ramsey Model with BC Agents, and the government adopts the ​**Saez rule-based tax policy**​. A **3% wealth tax** is applied to household assets.
 * **Visualized Experimental Results:**
@@ -172,11 +172,11 @@ Each simulation scene has its own parameter file that describes how it differs f
 ![Wealth Tax Impact](../img/Fiscal%20Q5P7.jpeg)
 
 
-**Figure 7:** GDP grows fastest under the 0% property tax scenario (blue). The economy with the highest tax rate (green) exhibits the lowest long-run GDP level.
+**Figure 7:** GDP grows fastest under the 0% property tax scenario . The economy with the highest tax rate exhibits the lowest long-run GDP level.
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P5.jpeg)
 
-**Figure 8:** Social welfare is maximized in the absence of property tax (blue).
+**Figure 8:** Social welfare is maximized in the absence of property tax .
 
 * Although property tax can reduce inequality in the short term, it significantly suppresses GDP growth and eventually results in even greater wealth disparity over time.
 

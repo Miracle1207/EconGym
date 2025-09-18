@@ -80,27 +80,51 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule‐Based Agent      | Focuses on how market structure shapes wage‐ and price‐formation; employs rules to model firm pricing and wage behavior, sidestepping strategic game simulations. |
 | Bank | Rule‐Based Agent      | Simulates interest‐rate impacts on prices and wages via preset rules to capture macro feedback channels, without modeling profit‐maximizing bank strategies.      |
 
+## **4. Running the Experiment**
 
-## 4. Illustrative Experiments
+### **4.1 Quick Start**
 
-### Experiment 1: Impact of Market Structure on Households
+To run the simulation with a specific problem scene, use the following command:
 
-* **Experiment Description:**  Conduct a direct comparison of simulated societies under four market structures to analyze the effects of different market structures on key household indicators.
-* **Involved Social Roles:**
-  * Market: Perfect Competition / Monopoly / Oligopoly / Monopolistic Competition
-  * Individual: Ramsey Model
-* **AI**​**​ Agents:**
-  * Market: Rule-Based Agent (or RL Agent to explore non-linear responses)
-  * Invididual: Behavior Cloning Agent
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## 5.Illustrative Experiments
+
+### Experiment : Impact of Market Structure on Households
+
+* **Experiment Description:**
+
+   Conduct a direct comparison of simulated societies under four market structures to analyze the effects of different market structures on key household indicators.
 * **Experimental Variables:**
+  
   * Market structure design (choice among the four regimes)
   * Household wealth level
   * Household utility
-* **Visualized Experimental Results:**
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **monopolistic\_ramsey\_100\_bc\_pension\_data\_based:** Households are modeled as **Behavior Cloning Agents** operating under the **Ramsey model** with **100** total households, while the government is represented as a**​ Rule-Based Agent** applying pension policies based on empirical data, and the overall market structure follows a ​**monopolistic setting**​.**(In the figure,from left to right are Monopoly, Monopolistic Competition, Perfect Competition, and ​**​**Oligopoly**​**​ markets----with all other agent settings kept unchanged)**
+  * **Blue bars:** Represent the average wealth of ​**rich households**​.
+  * **Green bars:** Represent the average wealth of ​**middle-class households**​.
+  * **Yellow bars:** Represent the average wealth of ​**poor households**​.
+  * **Red bars:** Represent the **overall mean** across all households.
 
 ![Individual Q6 P1](../img/Individual%20Q6%20P1.png)
 
-**Figure 1:** The impact of different market structures on household wealth. From left to right are Monopoly, Monopolistic Competition, Perfect Competition, and Oligopoly markets. Different colored bars represent households from different income groups. At year 50, households in the Monopolistic Competition market show significantly higher average wealth, especially among the affluent group (blue bars). In contrast, households in the Monopoly market have the lowest average wealth.
+**Figure 1:** The impact of different market structures on household wealth. From left to right are Monopoly, Monopolistic Competition, Perfect Competition, and Oligopoly markets. Different colored bars represent households from different income groups. At year 50, households in the Monopolistic Competition market show significantly higher average wealth, especially among the rich group. In contrast, households in the Monopoly market have the lowest average wealth.
 
 ![Individual Q6 P2](../img/Individual%20Q6%20P2.png)
 
