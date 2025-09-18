@@ -107,7 +107,7 @@ Each simulation scene has its own parameter file that describes how it differs f
   
   Below, we provide explanations of the experimental settings corresponding to each bar group in the visualization to help readers better understand the results.
   
-  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Left group):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. No wealth tax is imposed, serving as the baseline scenario.
+  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Left group):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. **No wealth tax** is imposed, serving as the baseline scenario.
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households
@@ -160,7 +160,7 @@ Each simulation scene has its own parameter file that describes how it differs f
   
   Below, we provide explanations of the experimental settings in this visualization to help readers better understand the results.
   
-  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (blue line):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. No wealth tax is imposed, serving as the baseline scenario.
+  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (blue line):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. **No wealth tax** is imposed, serving as the baseline scenario.
   * **5%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (green line):** Households are modeled using the Ramsey Model with BC Agents, while the government applies a ​**Saez rule-based tax system**​. A **5% wealth tax** is imposed on household assets.
   * **3%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (yellow line):** Households follow the Ramsey Model with BC Agents, and the government adopts the ​**Saez rule-based tax policy**​. A **3% wealth tax** is applied to household assets.
 * **Visualized Experimental Results:**
@@ -172,11 +172,11 @@ Each simulation scene has its own parameter file that describes how it differs f
 ![Wealth Tax Impact](../img/Fiscal%20Q5P7.jpeg)
 
 
-**Figure 7:** GDP grows fastest under the 0% property tax scenario (blue). The economy with the highest tax rate (green) exhibits the lowest long-run GDP level.
+**Figure 7:** GDP grows fastest under the 0% property tax scenario . The economy with the highest tax rate exhibits the lowest long-run GDP level.
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P5.jpeg)
 
-**Figure 8:** Social welfare is maximized in the absence of property tax (blue).
+**Figure 8:** Social welfare is maximized in the absence of property tax .
 
 * Although property tax can reduce inequality in the short term, it significantly suppresses GDP growth and eventually results in even greater wealth disparity over time.
 
