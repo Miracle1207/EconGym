@@ -18,10 +18,11 @@ In reality, monopolistic firms exert strong control over pricing and market acce
 
 ### **1.3 Research Questions**
 
-This study uses an economic simulation platform to examine how monopolistic market structures affect resource allocation and household welfare, focusing on:
+This study uses an economic simulation platform to investigate the economic impacts of monopoly market structures, specifically examining:
 
-* ​**Macroeconomic outcomes and inequality**​: How do monopoly markets influence overall output and wealth distribution?
-* ​**Household income**​: Do household earnings increase or decrease under monopoly conditions?
+* **Household Consumption: ​**How does monopoly pricing reduce household purchasing power and overall consumption levels?
+* **Wealth Distribution: ​**How do monopoly profits influence the concentration of income and wealth across households?
+* ​**Social Welfare: ​**What is the net effect of monopolies on social welfare, considering losses in consumer surplus and deadweight loss?
 
 ### **1.4 Research Significance**
 
@@ -71,8 +72,28 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | RL Agent                  | Possesses pricing power and typically sets prices based on a profit-maximization strategy.                                                                          |
 | Bank| Rule-Based Agent          | Operates under the no-arbitrage principle; uses rule-based mechanisms to maintain market stability and analyze capital flows under monopoly pricing.                |
 
+---
+## **4. Running the Experiment**
 
-## **4. Illustrative Experiment**
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **​5.​**​**Illustrative Experiment**
 
 ```python
 # Scenario setup related to Monopoly Market
@@ -86,23 +107,25 @@ If firm_type == "monopoly":
 ### **Experiment 1: The Impact of Monopoly Market on Income Inequality**
 
 * **Experiment Description:**
+  
   Investigate the impact of monopolies on income inequality.
-* **Involved Social Roles:**
-  * ​*Firm*​: Monopoly
-  * ​*Individual*​: OLG Model
-  * ​*Government*​: Fiscal Authority
-* **AI**​**​ Agents:**
-  * ​*Firm*​: RL Agent
-  * ​*Individual*​: BC Agent
-  * ​*Government*​：Rule-Based Agent
 * **Experimental Variables:**
+  
   * Monopoly Market vs. Perfectly Competitive Market
   * Change in income inequality (measured by the Gini coefficient)
+* **Baselines:**
+
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  * **baseline\_real\_rule\_based\_100\_OLG (Blue line):**​​**Perfectly competitive market**​.The households modeled as ​**Behavior-Cloning agents,100 households**​.The government modeled as a **Rule-Based Agent.**
+    
+  * **baseline\_real\_ppo\_100\_OLG:**​**​Perfectly competitive market.​**The households modeled as ​**Behavior-Cloning agents,100 households**​.The government modeled as a **PPO**​**​ Agent.**
+  * **monopoly\_real\_rule\_based\_100\_OLG (Yellow line):**​**​Monopoly market.​**The households modeled as ​**Behavior-Cloning agents,100 households**​.The government modeled as a **Rule-Based Agent.**
+  * **monopoly\_real\_ppo\_100\_OLG:**​​**Monopoly market**​.The households modeled as ​**Behavior-Cloning agents,100 households**​.The government modeled as a **PPO**​**​ Agent.**
 * **​ Visualized Experimental Results：**
 
 ![Market Q2 P1](../img/Market%20Q2%20P1.png)
 
-**Figure 1:** In the first 50 years, under the monopoly market (yellow line), income inequality is similar to that in a perfectly competitive market (blue line). However, over time, income inequality under the monopoly market becomes significantly higher compared to the perfectly competitive market.
+**Figure 1:** In the first 50 years, under the monopoly market, income inequality is similar to that in a perfectly competitive market. However, over time, income inequality under the monopoly market becomes significantly higher compared to the perfectly competitive market.
 
 * The monopoly market increases the wealth gap between households in the medium to long term.
 
@@ -110,18 +133,26 @@ If firm_type == "monopoly":
 
 ### **Experiment 2: The Impact of Monopoly Market on Household Consumption and Income**
 
-* **Experiment Description:**  Simulate changes in household consumption and income under a monopoly market to observe the effects of monopolies on micro-level individuals.
-* **Involved Social Roles:**
-  * ​*Firm*​: Monopoly 
-  * ​*Individual*​: Ramsey Model
-  * ​*Government*​: Fiscal Authority
-* **AI**​**​ Agents:**
-  * ​*Firm*​: RL Agent
-  * ​*Individual*​: BC Agent
-  * ​*Government*​: Rule-Based Agent / RL Agent
+* **Experiment Description:**
+
+  Simulate changes in household consumption and income under a monopoly market to observe the effects of monopolies on micro-level individuals.
 * **Experimental Variables:**
+  
   * Monopoly Market vs. Perfectly Competitive Market
   * Household income and consumption levels (divided by income tiers)
+* **Baselines:**
+
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  * **Groups from left to right:**
+    * **baseline\_real\_rule\_based\_100\_OLG :**​​**Perfectly competitive market**​.The households modeled as ​**Behavior-Cloning agents,100 households**​.The government modeled as a **Rule-Based Agent.**
+    * **baseline\_real\_ppo\_100\_OLG:**​**​Perfectly competitive market.​**The households modeled as ​**Behavior-Cloning agents,100 households**​.The government modeled as a **PPO**​**​ Agent.**
+    * **monopoly\_real\_rule\_based\_100\_OLG :**​**​Monopoly market.​**The households modeled as ​**Behavior-Cloning agents,100 households**​.The government modeled as a **Rule-Based Agent.**
+    * **monopoly\_real\_ppo\_100\_OLG:**​​**Monopoly market**​.The households modeled as ​**Behavior-Cloning agents,100 households**​.The government modeled as a **PPO**​**​ Agent.**
+  * **Bar description:**
+    * **Blue bar:** Rich households
+    * **Green bar:** Middle-class households
+    * **Yellow bar:** Poor households
+    * **Red bar:** Overall average
 * **Visualized Experimental Results：**
 
 ![Market Q2 P2](../img/Market%20Q2%20P2.png)
