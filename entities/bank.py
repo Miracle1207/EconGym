@@ -96,7 +96,11 @@ class Bank(BaseEntity):
         if self.type == "non_profit":
             return np.array([0.])
         elif self.type == "commercial":
-            return np.array([self.profit])
+            if isinstance(self.profit, np.ndarray):
+                return self.profit
+            else:
+                return np.array([self.profit])
+        
         else:
             raise ValueError(f"Invalid bank type: '{self.type}'. Expected 'non_profit' or 'commercial'.")
     
