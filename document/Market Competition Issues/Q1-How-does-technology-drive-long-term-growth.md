@@ -14,9 +14,9 @@ According to ​**endogenous growth theory**​, technological progress originat
 
 This study leverages an economic simulation platform to investigate the long-term effects of technological progress on economic and social dynamics, focusing on:
 
-* ​**Wage levels**​: Does technological progress raise or lower average wages?
-* ​**Income inequality**​: Does it widen or narrow the wealth gap between individuals?
-* ​**Aggregate output**​: How does technological progress impact GDP?
+* ​**Wage Levels**​: Does technological progress raise or lower average wages?
+* ​**Income Inequality**​: Does it widen or narrow the wealth gap between individuals?
+* **GDP**​​**​ Effect**​: How does technological progress impact GDP?
 
 ### **1.4 Research Significance**
 
@@ -86,6 +86,105 @@ At each time step:
     4. Exponentiate the result to get updated Z_t
 ```
 
+## **4. Running the Experiment**
+
+### **4.1 Quick Start**
+
+To run the simulation with a specific problem scene, use the following command:
+
+```Bash
+python main.py --problem_scene ""
+```
+
+This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### **4.2 Problem Scene Configuration**
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### **Example ​**​**YAML**​**​ Configuration: ​**
+
+---
+
+## **5.Illustrative Experiment**
+
+```python
+# Scenario setup related to technological progress
+# Z represents the Total Factor Productivity (TFP) level
+
+# Default: In general, Z_t is updated by adding noise in the logarithmic space
+At each time step:
+    1. Compute log(Z_t)
+    2. Add a random noise term (e.g., drawn from uniform or normal distribution)
+    3. Exponentiate the result to obtain the updated Z_t
+# Technological Progress: Assume a 1% annual growth in TFP on top of the existing value
+At each time step:
+    1. Compute log(Z_t)
+    2. Add a fixed technological growth term (e.g., 1% per period)
+    3. Add a random noise term to represent uncertainty
+    4. Exponentiate the result to get updated Z_t
+```
+
+### **Experiment 1: The Impact of Technological Progress on Average Wages**
+
+* ​**Experiment Description**​:
+
+  Analyze how technological progress influences workers' wages.
+* ​**Experimental Variables**​:
+  
+  * Rate of technological progress (or parameters representing tech growth)
+  * Social wage level
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.The following experiments have the same agent settings as this experiment, so we will give all explaination here.
+  
+  * **base\_rule\_based\_ppo\_100\_OLG (blue line):** Households are modeled as **Rule\_based Agents** under the **OLG model ​**with ​**100 households**​, while the government is modeled as **Reinforcement Learning**​**​ ​**​**PPO**​**​​ Agent.​**The government is accompanied by a higher rate of technological growth.
+  * **TechGrowth\_rule\_based\_ppo\_100\_OLG (green line):** Households are modeled as **Rule\_based Agents** under the **OLG model ​**with ​**100 households**​, while the government is modeled as **Reinforcement Learning**​**​ ​**​**PPO**​**​​ Agent.​**The government has a normal growth rate.
+* **​ Visualized Experimental Results：**
+  
+![Market Q1 P1](../img/Market%20Q1%20P1.png)
+
+**Figure 1:** Under accelerated technological progress, the social wage rate rises steadily, and the gap with the baseline scenario of normal progress expands over time.
+
+* Technological progress has significantly driven the increase in the **average wage** level in society, and this **gap** has become increasingly pronounced over time, sufficient to demonstrate that technological progress will raise the overall wage rate in society.
+
+---
+
+### **Experiment 2: The Impact of Technological Progress on Income Inequality**
+
+* ​**Experiment Description**​:
+
+  Does technological progress promote employment? What are its short-term and long-term utility effects?
+* ​**Experimental Variables**​:
+  * Speed of technological progress (or parameters representing tech growth)
+  * Income inequality (measured by the Gini coefficient)
+* **​ Visualized Experimental Results：**
+
+![Market Q1 P2](../img/Market%20Q1%20P2.png)
+
+​**Figure 2**​: When technological progress accelerates, income inequality increases compared to the case of normal progress, with a higher Gini coefficient indicating more severe social inequality.
+
+* Technological progress has led to an increase in income inequality in society (as indicated by the rise in the ​**Gini coefficient**​), suggesting that the wage growth rate of high-skilled workers will outpace that of general workers, thereby creating a larger income ​**disparity**​.
+
+---
+
+### **Experiment 3: The Impact of Technological Progress on Total Social ​**​**Output**
+
+* ​**Experiment Description**​:
+
+  Does technological progress lead to an increase in total social output?
+* ​**Experimental Variables**​:
+  * Speed of technological progress (or parameters representing tech growth)
+  * Total social output (GDP)
+* **Visualized Experimental Results：**
+
+![Market Q1 P3](../img/Market%20Q1%20P3.png)
+
+**Figure 3: ​**Technological progress leads to a rapid increase in total social output.
+
+* Technological progress has significantly increased the ​**level of social output**​, and while the disparity in social output was not particularly noticeable at first, it has become increasingly **pronounced** over time.
+
+
 ### **Experiment 1: The Impact of Technological Progress on Average Wages**
 
 * ​**Experiment Description**​:
@@ -102,7 +201,7 @@ At each time step:
   * Social wage level
 * **​ Visualized Experimental Results：**
 
-![Market Q1 P1](../img/Market%20Q1%20P1.png)
+
 
 **Figure 1:** Under accelerated technological progress (green line), the social wage rate rises steadily, and the gap with the baseline scenario of normal progress (blue line) expands over time.
 
@@ -125,7 +224,7 @@ At each time step:
   * Income inequality (measured by the Gini coefficient)
 * **​ Visualized Experimental Results：**
 
-![Market Q1 P2](../img/Market%20Q1%20P2.png)
+
 
 ​**Figure 2**​: When technological progress accelerates (green line), income inequality increases compared to the case of normal progress (blue line), with a higher Gini coefficient indicating more severe social inequality.
 
@@ -149,7 +248,7 @@ At each time step:
   * Total social output (GDP)
 * **Visualized Experimental Results：**
 
-![Market Q1 P3](../img/Market%20Q1%20P3.png)
+
 
 Figure 3: Technological progress (green line) leads to a rapid increase in total social output.
 
