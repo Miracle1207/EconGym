@@ -432,6 +432,7 @@ class Household(BaseEntity):
         # === Step 7: Log final values for writing ===
         self.at_next_write = copy.copy(self.at_next)
         self.age_write = copy.copy(self.age)
+        self.e_write = copy.copy(self.e)
 
         # Age update
         self.age += 1
@@ -522,7 +523,7 @@ class Household(BaseEntity):
         # Update population count
         self.households_n = len(self.age)
         self.is_old = self.age >= retire_age
-        self.old_percent = self.old_n / self.households_n  # old / all_population
+        self.old_percent = self.old_n / max(self.households_n, 1e-8)  # old / all_population
         self.dependency_ratio = self.old_n / (
                     self.households_n - self.old_n + 1e-8)  # Dependency ratio，measure the pressure of pension
     
@@ -603,7 +604,7 @@ class Household(BaseEntity):
 
     def is_terminal(self):
         """Determine whether simulation should terminate due to collapse or invalid state."""
-        if self.households_n <= 2:
+        if self.households_n <= 1:
             return True
         else:
             # Unreasonably large borrowing

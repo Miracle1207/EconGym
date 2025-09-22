@@ -25,6 +25,8 @@ class EconObservations:
         sorted_wealth_based_index = sorted(range(len(wealth)), key=lambda k: wealth[k], reverse=True)
         top10_wealth_based_index = sorted_wealth_based_index[:int(0.1 * n_households)]  # top 10% households
         bottom50_wealth_based_index = sorted_wealth_based_index[int(0.5 * n_households):]  # bottom 50% households
+        
+        # todo : 增加 example，告诉大家怎么改
 
         top10_e = education[top10_wealth_based_index]
         bot50_e = education[bottom50_wealth_based_index]
@@ -65,17 +67,24 @@ class EconObservations:
         if not self.households:
             raise ValueError("Household object is required for individual observations.")
 
-        wealth = getattr(self.households, 'at_next', np.zeros(self.households.households_n))
-        education = getattr(self.households, 'e', np.zeros(self.households.households_n))
+        
 
         n_households = self.households.households_n
 
         # Private observations
         if 'OLG' in self.households.type:
+            # age = getattr(self.households, 'age_write', np.zeros(n_households))
+            # wealth = getattr(self.households, 'at_next_write', np.zeros(self.households.households_n))
+            # education = getattr(self.households, 'e_write', np.zeros(self.households.households_n))
+
+            wealth = getattr(self.households, 'at_next', np.zeros(self.households.households_n))
+            education = getattr(self.households, 'e', np.zeros(self.households.households_n))
             age = getattr(self.households, 'age', np.zeros(n_households))
             # Each household's private obs: [education, wealth, age]
             private_obs_per_household = np.column_stack([education, wealth, age])
         elif "ramsey" in self.households.type:
+            wealth = getattr(self.households, 'at_next', np.zeros(self.households.households_n))
+            education = getattr(self.households, 'e', np.zeros(self.households.households_n))
             # Each household's private obs: [education, wealth]
             private_obs_per_household = np.column_stack([education, wealth])
         else:

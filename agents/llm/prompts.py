@@ -24,8 +24,8 @@ def build_central_bank_prompt(central_bank_obs: np.ndarray) -> str:
         - Bank lending rate: {o[5]:.4f}
         - Bank deposit rate: {o[6]:.4f}
         - General price level: {o[7]:.4f}
-        - Society inflation rate: {0[8]:.4f}
-        - Society economic growth rate: {0[9]:.4f}
+        - Society inflation rate: {o[8]:.4f}
+        - Society economic growth rate: {o[9]:.4f}
         ---
         **Your reasoning should consider**:
         1. Does a higher base interest rate encourage savings at the expense of current consumption?

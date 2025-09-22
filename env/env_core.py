@@ -311,9 +311,13 @@ class EconomicSociety:
 
     def gini_coef(self, values):
         """Fast Gini coefficient computation for 1D or column vector values."""
+        
+        if self.households.households_n == 0:  # empty array check
+            return 0.
+        
         if values.ndim == 2 and values.shape[1] == 1:
             values = values.flatten()
-        
+
         values = np.sort(values + 1e-7)  # Avoid division by zero
         values = values / np.max(values)
         n = values.size

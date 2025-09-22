@@ -41,6 +41,7 @@ class RunningMeanStd:
 
 class ddpg_agent:
     def __init__(self, envs, args, type=None, agent_name="households"):
+        self.name = 'ddpg'
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
@@ -183,26 +184,26 @@ class ddpg_agent:
         action = action + noise
         return action
 
-    def gov_action_wrapper(self, gov_action):
-        # gov_action = (gov_action +1)/2
-        return self.agent.real_action_min + (self.agent.real_action_max - self.agent.real_action_min) * gov_action
-
-    def inverse_action_wrapper(self, action):
-        if action.is_cuda:
-            action_np = action.cpu().numpy()  # 将张量从 GPU 移动到 CPU 并转换为 numpy 数组
-        else:
-            action_np = action.numpy()  # 如果 action 已经在 CPU 上，则直接转换为 numpy 数组
-
-        result_np = (action_np - self.agent.real_action_min) / (
-                self.agent.real_action_max - self.agent.real_action_min)
-
-        # 将计算结果转换回 PyTorch 的 tensor，并根据原始 action 是否在 GPU 上决定是否要将结果放回 GPU
-        result_tensor = torch.tensor(result_np, dtype=action.dtype)
-
-        if action.is_cuda:
-            return result_tensor.cuda()  # 如果原始 action 在 GPU 上，则将结果也放回 GPU
-        else:
-            return result_tensor  # 否则保持在 CPU 上
+    # def gov_action_wrapper(self, gov_action):
+    #     # gov_action = (gov_action +1)/2
+    #     return self.agent.real_action_min + (self.agent.real_action_max - self.agent.real_action_min) * gov_action
+    #
+    # def inverse_action_wrapper(self, action):
+    #     if action.is_cuda:
+    #         action_np = action.cpu().numpy()  # 将张量从 GPU 移动到 CPU 并转换为 numpy 数组
+    #     else:
+    #         action_np = action.numpy()  # 如果 action 已经在 CPU 上，则直接转换为 numpy 数组
+    #
+    #     result_np = (action_np - self.agent.real_action_min) / (
+    #             self.agent.real_action_max - self.agent.real_action_min)
+    #
+    #     # 将计算结果转换回 PyTorch 的 tensor，并根据原始 action 是否在 GPU 上决定是否要将结果放回 GPU
+    #     result_tensor = torch.tensor(result_np, dtype=action.dtype)
+    #
+    #     if action.is_cuda:
+    #         return result_tensor.cuda()  # 如果原始 action 在 GPU 上，则将结果也放回 GPU
+    #     else:
+    #         return result_tensor  # 否则保持在 CPU 上
 
     def save(self, dir_path):
         torch.save(self.actor.state_dict(), str(dir_path) + '/' + self.agent_name + '_ddpg_net.pt')

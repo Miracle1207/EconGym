@@ -52,7 +52,7 @@ Environment:
             tau_a: 0.0
             xi_a: 0.0
             Gt_prob: 0.189
-          real_action_max: [0.6, 2, 0.05, 2., 1.0]
+          real_action_max: [0.6, 2, 0.05, 2., 0.6]
           real_action_min: [0., 0., 0.0, 0., 0.0]
         pension:
           type: "pension"
@@ -68,8 +68,8 @@ Environment:
             pension_growth_rate: 0.01
 #          real_action_max: [75, 0.2, 0.05]
 #          real_action_min: [50, 0.05, 0.001]
-          real_action_max: [ 70, 0.2]
-          real_action_min: [ 60, 0.05]
+          real_action_max: [70, 0.2]
+          real_action_min: [60, 0.05]
         central_bank:
           type: "central_bank"
           action_dim: 2
@@ -120,8 +120,9 @@ Environment:
           Z: 1.0
           sigma_z: 0.0038
           epsilon: 0.5
-          real_action_max: [1e8]
-          real_action_min: [1e-4]
+          real_action_max: [ 1e2, 1e2 ]
+          real_action_min: [ 0.0001, 0.0001 ]
+
         perfect:
           type: "perfect"
           firm_n: 1
@@ -176,7 +177,7 @@ Environment:
           base_interest_rate: 0.0345
           depreciation_rate: 0.06
           real_action_max: [1.0, 0.20]
-          real_action_min: [0.0, -1e-3]
+          real_action_min: [0.0, -0.001]
           action_space:
             low: -0.001
             high: 0.001
@@ -201,7 +202,7 @@ Trainer:
   buffer_size: 1e6
   env_name: 'wealth_distribution'
   init_exploration_policy: 'gaussian'
-  n_epochs: 1000
+  n_epochs: 2
   update_cycles: 100
   epoch_length: 300
   target_update_interval: 1

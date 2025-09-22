@@ -7,6 +7,7 @@ import os, sys
 # import wandb
 import swanlab as wandb
 import json
+from omegaconf import ListConfig
 
 sys.path.append(os.path.abspath('../..'))
 from agents.log_path import make_logpath, save_args
@@ -77,21 +78,78 @@ class Runner:
 
         return {k: to_tensor(v) for k, v in obs_dict.items()}
 
+    # ------------------------------
+    # RL-specific action postprocessing
+    # ------------------------------
+    def _process_rl_action(self, policy, action, path):
+        """
+        Postprocess RL actions:
+        - Require network outputs in (-1, 1).
+        - Scale them into [action_min, action_max] as defined by the agent.
+        """
+        rl_agent_list = ['ppo', 'ddpg', 'sac']  # extendable list of RL agents
+        if getattr(policy, "name", None) not in rl_agent_list:
+            return action  # skip if this is not an RL agent
+    
+        # Locate the corresponding agent entity
+        if "." in path:
+            main, sub = path.split(".", 1)
+            agent = self.envs.agents[main][sub]
+        else:
+            agent = self.envs.agents[path]
+
+        # Ensure real_action_min/max are numpy arrays
+        action_min, action_max = agent.real_action_min, agent.real_action_max
+        if isinstance(action_min, ListConfig):
+            action_min = np.array(action_min, dtype=np.float32)
+        if isinstance(action_max, ListConfig):
+            action_max = np.array(action_max, dtype=np.float32)
+       
+        # Scale to [action_min, action_max]
+        action = action_min + (action + 1.0) * (action_max - action_min) / 2.0
+        return action
+
+    # ------------------------------
+    # Main function
+    # ------------------------------
     def agents_get_action(self, obs_dict_tensor):
+        """
+        Get actions from all agents.
+        Returns:
+            raw_actions_dict: actions directly from policy.get_action (for replay buffer)
+            processed_actions_dict: actions scaled/processed for environment execution
+        """
+    
         def act(policy, obs, path=""):
             if isinstance(policy, dict):
-                return {k: act(policy[k], obs[k], f"{path}.{k}" if path else k) for k in policy}
+                raw, proc = {}, {}
+                for k in policy:
+                    raw_k, proc_k = act(policy[k], obs[k], f"{path}.{k}" if path else k)
+                    raw[k], proc[k] = raw_k, proc_k
+                return raw, proc
+        
             try:
-                return policy.get_action(obs)
+                action = policy.get_action(obs)
+            
+                # Raw action (saved into replay buffer)
+                raw_action = action
+            
+                # Processed action (executed in the environment)
+                proc_action = self._process_rl_action(policy, action, path)
+            
+                return raw_action, proc_action
+        
             except KeyError as e:
                 print(f"[Warning] obs missing key at '{path}': {e}")
-                return None
+                return None, None
             except Exception as e:
                 print(
-                    f"[Warning] get_action failed at '{path}' for policy {getattr(policy, 'name', type(policy).__name__)}: {e}")
-                return None
-
-        return act(self.agents_policy, obs_dict_tensor)
+                    f"[Warning] get_action failed at '{path}' "
+                    f"for policy {getattr(policy, 'name', type(policy).__name__)}: {e}")
+                return None, None
+    
+        raw_actions_dict, processed_actions_dict = act(self.agents_policy, obs_dict_tensor)
+        return raw_actions_dict, processed_actions_dict
 
     def run(self):
         obs_dict = self.envs.reset()
@@ -112,8 +170,8 @@ class Runner:
 
             for t in range(self.args.epoch_length):
                 obs_dict_tensor = self._get_tensor_inputs(obs_dict)
-                action_dict = self.agents_get_action(obs_dict_tensor)
-                next_obs_dict, reward_dict, done = self.envs.step(action_dict, t)
+                action_dict, processed_actions_dict = self.agents_get_action(obs_dict_tensor)
+                next_obs_dict, reward_dict, done = self.envs.step(processed_actions_dict, t)
 
                 on_policy_process = all(self.envs.recursive_decompose_dict(self.agents_policy, lambda a: a.on_policy))
 
@@ -157,12 +215,18 @@ class Runner:
                     wandb.log(economic_idicators_dict)
                     wandb.log(sum_loss)
 
+                firm_reward = np.mean([v for k, v in economic_idicators_dict.items() if k.startswith("firm_reward")])  # if multiple firms, print mean reward. show multiple reward in wandb or swanlab
+
                 print(
-                    '[{}] Epoch: {} / {}, Frames: {}, Gov_Rewards: {:.3f}, House_Rewards: {:.3f}, Firm_Rewards: {:.3f}, Bank_Rewards: {:.3f},  years:{:.3f}'.format(
+                    "[{}] Epoch: {} / {}, Frames: {}, Gov_Rewards: {:.3f}, Mean_House_Rewards: {:.3f}, Mean_Firm_Rewards: {:.3f}, Bank_Rewards: {:.3f}, years:{:.3f}".format(
                         datetime.now(), epoch, self.args.n_epochs, (epoch + 1) * self.args.epoch_length,
-                        economic_idicators_dict["gov_reward"], economic_idicators_dict["house_reward"],
-                        economic_idicators_dict["firm_reward"], economic_idicators_dict["bank_reward"],
-                        economic_idicators_dict["years"]))
+                        economic_idicators_dict.get("gov_reward", 0.0),
+                        economic_idicators_dict.get("house_reward", 0.0),
+                        firm_reward,
+                        economic_idicators_dict.get("bank_reward", 0.0),
+                        economic_idicators_dict.get("years", 0.0)
+                    )
+                )
 
             if epoch % self.args.save_interval == 0:  # save_interval=10
                 self.envs.recursive_decompose_dict(self.agents_policy, lambda a: a.save(dir_path=self.model_path))
@@ -222,9 +286,11 @@ class Runner:
             "house_wealth_tax": self.eval_env.households.asset_tax,
             "per_gdp": self.eval_env.main_gov.per_household_gdp,
             "GDP": self.eval_env.main_gov.GDP,  # sum
+            "firm_production": self.eval_env.market.Yt_j,  # sum
             "income_gini": self.eval_env.income_gini,
             "wealth_gini": self.eval_env.wealth_gini,
             "WageRate": self.eval_env.market.WageRate,
+            "price": self.eval_env.market.price,
             "total_labor": self.eval_env.market.Lt,
             "house_consumption": self.eval_env.households.consumption,
             "house_work_hours": self.eval_env.households.ht,
@@ -255,10 +321,10 @@ class Runner:
 
     def _evaluate_agent(self, write_evaluate_data=False):
         eval_econ = ["gov_reward", "tax_gov_reward", "central_bank_gov_reward", "pension_gov_reward",
-                     "house_reward", "social_welfare", "per_gdp", "income_gini",
+                     "house_reward", "social_welfare", "per_gdp", "income_gini", "firm_production",
                      "wealth_gini", "years", "GDP", "gov_spending", "house_total_tax", "house_income_tax",
                      "house_wealth_tax", "house_wealth", "house_income", "house_consumption", "house_pension",
-                     "house_work_hours", "total_labor", "WageRate", "house_age", "firm_reward", "bank_reward"]
+                     "house_work_hours", "total_labor", "WageRate", "price", "house_age", "firm_reward", "bank_reward"]
 
         if hasattr(self, 'pension_gov_agent'):
             eval_econ += [
@@ -270,7 +336,8 @@ class Runner:
             ]
         obs_dict = self.eval_env.reset()
         episode_econ_dict = dict(zip(eval_econ, [[] for i in range(len(eval_econ))]))
-        final_econ_dict = dict(zip(eval_econ, [None for i in range(len(eval_econ))]))
+        # final_econ_dict = dict(zip(eval_econ, [None for i in range(len(eval_econ))]))
+        final_econ_dict = {}
 
         for epoch_i in range(self.args.eval_episodes):
             eval_econ_dict = dict(zip(eval_econ, [[] for i in range(len(eval_econ))]))
@@ -278,8 +345,8 @@ class Runner:
             while True:
                 with torch.no_grad():
                     obs_dict_tensor = self._get_tensor_inputs(obs_dict)
-                    action_dict = self.agents_get_action(obs_dict_tensor)
-                    next_obs_dict, rewards_dict, done = self.eval_env.step(action_dict, t)
+                    action_dict, processed_actions_dict = self.agents_get_action(obs_dict_tensor)
+                    next_obs_dict, rewards_dict, done = self.eval_env.step(processed_actions_dict, t)
                 t += 1
                 self.init_economic_dict(rewards_dict)
 
@@ -295,24 +362,28 @@ class Runner:
                     break
 
             for key, value in eval_econ_dict.items():
-                if key == "gov_reward" or key == "GDP" or key == "bank_reward" or key == "firm_reward":  # You can store the firm_reward for each firm individually.
+                if key == "gov_reward" or key == "GDP" or key == "bank_reward":
                     episode_econ_dict[key].append(np.sum(value))
+                elif key == "firm_reward" or key == "price" or key == "WageRate" or key == "firm_production":
+                    episode_econ_dict[key].append(np.sum(value, axis=0))
                 elif key == "years":
                     episode_econ_dict[key].append(np.max(value))
                 elif key == "house_reward":
                     episode_econ_dict[key].append(self.sum_non_uniform_dict(value))
                 elif "house_" in key and key != "house_reward":
                     episode_econ_dict[key].append(self.mean_non_uniform_dict(value))
-                elif key == "WageRate":
-                    WageRate_flattened = np.array([item[0][0] for item in value])
-                    episode_econ_dict[key].append(np.mean(WageRate_flattened))
                 elif key == "age":
                     episode_econ_dict[key].append(value)
                 else:
                     episode_econ_dict[key].append(np.mean(value))
 
         for key, value in episode_econ_dict.items():
-            final_econ_dict[key] = np.mean(value)
+            value = np.array(value)
+            if value.ndim == 3:
+                for i in range(value.shape[1]):
+                    final_econ_dict[f"{key}_{i}"] = np.mean(value[:, i])
+            else:
+                final_econ_dict[key] = np.mean(value)
 
         if int(self.econ_dict['years']) > int(self.eva_year_indicator):
             write_evaluate_data = True
@@ -322,24 +393,7 @@ class Runner:
             if gov_return > self.eva_reward_indicator:
                 write_evaluate_data = True
                 self.eva_reward_indicator = copy.deepcopy(gov_return)
-
-        # write_evaluate_data=False
-        if write_evaluate_data:
-            store_path = "viz/data/"
-            if not os.path.exists(store_path):  # 确保路径存在
-                os.makedirs(store_path)
-            file_name = f"{self.file_name}_data.json"
-            # f"{self.eval_env.problem_scene}_{self.eval_env.households.type}_{self.households_n}_{self.args.house_alg}_" \
-            #         f"{self.eval_env.main_gov.type}_{self.gov_alg}_data.json"
-
-            file_path = os.path.join(store_path, file_name)
-            with open(file_path, "w") as file:
-                json.dump(eval_econ_dict, file, cls=NumpyEncoder)
-
-            print("============= Finish Writing================")
-
-        return final_econ_dict
-
+        
         # write_evaluate_data=False
         if write_evaluate_data:
             store_path = "viz/data/"

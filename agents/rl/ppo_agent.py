@@ -51,6 +51,7 @@ class RunningMeanStd:
 
 class ppo_agent:
     def __init__(self, envs, args, type=None, agent_name="households"):
+        self.name = 'ppo'
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
@@ -75,32 +76,6 @@ class ppo_agent:
             self.device = "cpu"
         
         self.net = mlp_net(state_dim=self.obs_dim, num_actions=self.action_dim).to(self.device)
-        
-        # Initialize the MLP network
-        self.net = mlp_net(state_dim=self.obs_dim, num_actions=self.action_dim).to(self.device)
-        
-        # Flag to choose whether to load an existing policy or not
-        self.load_exist_policy = False  # Set to True to load the trained policy
-        
-        # Check if the policy should be loaded
-        if self.load_exist_policy:
-            if agent_name == "households":
-                # Load policy for household agent based on its type
-                if "OLG" in self.envs.households.type:
-                    # Load PPO policy for OLG type households
-                    self.net.load_state_dict(
-                        torch.load("agents/models/trained_policy/ppo_OLG/ppo_net.pt", weights_only=True))
-                elif "ramsey" in self.envs.households.type:
-                    # Load PPO policy for Ramsey type households
-                    self.net = mlp_net(state_dim=self.obs_dim, num_actions=3).to(self.device)  # Action dim = 3
-                    self.net.load_state_dict(
-                        torch.load("agents/models/trained_policy/ppo_Ramsey/ppo_net.pt", weights_only=True))
-
-            elif agent_name == "government":
-                # Load policy for government agent if type is 'tax'
-                if self.envs.government.type == "tax":
-                    self.net.load_state_dict(
-                        torch.load("agents/models/bc_ppo/100/gdp/run8/ppo_net.pt", weights_only=True))
         
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.args.p_lr, eps=1e-5)
         lambda_function = lambda epoch: 0.97 ** (epoch // 10)

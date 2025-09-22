@@ -86,6 +86,7 @@ class Market(BaseEntity):
         if actions is not None:
             self.price = actions[:, 0][:, np.newaxis]
             self.WageRate = actions[:, 1][:, np.newaxis]
+
     
     def step(self, society):
         """Calculate firm's labor demand and production output."""
@@ -95,13 +96,14 @@ class Market(BaseEntity):
         self.firm_labor_j = (society.households.h_ij_ratio * society.households.ht * society.households.e).sum(axis=0)[:, np.newaxis]
         self.Lt = np.sum(self.firm_labor_j)
         self.Yt_j = self.production_output(self.Kt, self.firm_labor_j)
-        self.WageRate = self.price * self.Zt * (1 - self.alpha) * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha)
+        self.MarketClear_WageRate = self.price * self.Zt * (1 - self.alpha) * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha)
         self.MarketClear_InterestRate = self.price * self.Zt * self.alpha * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha-1)
 
         if society.bank.type == "non_profit":
             if self.type == "perfect":
                 society.bank.lending_rate = np.nanmean(self.MarketClear_InterestRate)
                 society.bank.deposit_rate = np.nanmean(self.MarketClear_InterestRate)
+                self.WageRate = copy.copy(self.MarketClear_WageRate)
             else:
                 society.bank.lending_rate = society.bank.base_interest_rate
                 society.bank.deposit_rate = society.bank.base_interest_rate

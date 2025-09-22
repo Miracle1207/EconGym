@@ -271,7 +271,7 @@ def generate_data():
         os.environ['OMP_NUM_THREADS'] = '1'
         os.environ['MKL_NUM_THREADS'] = '1'
 
-        yaml_cfg = OmegaConf.load('cfg/default.yaml')
+        yaml_cfg = OmegaConf.load('cfg/base_config.yaml')
         yaml_cfg.Environment.Entities[1].entity_args.params.households_n = args.households_n
         yaml_cfg.Environment.env_core["env_args"].gov_task = args.task
         yaml_cfg.Trainer["seed"] = args.seed
