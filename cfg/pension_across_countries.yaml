@@ -39,8 +39,6 @@ Environment:
           reserve_ratio: 0.1
           base_interest_rate: 0.0345
           depreciation_rate: 0.06
-          real_action_max: [ 1.0, 0.20 ]
-          real_action_min: [ 0.0, -1e-3 ]
 
 Trainer:
   house_alg: "bc"

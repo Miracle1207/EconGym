@@ -53,9 +53,6 @@ class Government(BaseEntity):
             'action_dim'] else 1
 
     def get_action(self, actions, firm_n):
-        self.old_per_gdp = copy.copy(self.per_household_gdp)
-        self.old_GDP = copy.copy(self.GDP)
-        self.Bt = copy.copy(self.Bt_next)
 
         policy_actions = actions[:self.policy_action_len]
         Gt_prob_ratios = np.ones(firm_n)/firm_n
@@ -63,8 +60,9 @@ class Government(BaseEntity):
             # self.retire_age, self.contribution_rate, self.pension_growth_rate = policy_actions
             self.retire_age, self.contribution_rate = policy_actions
         elif self.type == "tax":
-            self.tau, self.xi, self.tau_a, self.xi_a, self.Gt_prob = policy_actions
-            Gt_prob_ratios = actions[self.policy_action_len:]
+            if self.tax_type == "ai_agent":
+                self.tau, self.xi, self.tau_a, self.xi_a, self.Gt_prob = policy_actions
+                Gt_prob_ratios = actions[self.policy_action_len:]
         elif self.type == "central_bank":
             self.base_interest_rate, self.reserve_ratio = policy_actions
         else:
@@ -80,31 +78,24 @@ class Government(BaseEntity):
 
 
     def step(self, society):
+        self.old_per_gdp = copy.copy(self.per_household_gdp)
+        self.old_GDP = copy.copy(self.GDP)
+        self.Bt = copy.copy(self.Bt_next)
+        
         self.tax_step(society)
         if self.type == "pension" and ("OLG" in society.households.type):
             self.pension_step(society)
 
-
-    def get_reward_central(self, inflation_rate, growth_rate,
-                           target_inflation=0.02, target_growth=0.05):
-        """Reward decays with squared inflation deviation and penalizes only below-target growth."""
-        inflation_deviation = (inflation_rate - target_inflation) ** 2
-        growth_deviation = (target_growth - growth_rate) ** 2
-
-        k_inflation = 500
-        k_growth = 300
-        reward = np.exp(-k_inflation * inflation_deviation - k_growth * growth_deviation)
-        return reward
 
     def tax_step(self, society):
         """Calculate government metrics such as taxes, investment, and GDP."""
         households = society.households
         self.tax_array = (households.income_tax + households.asset_tax + np.dot(households.final_consumption, society.market.price) * society.consumption_tax_rate) + households.estate_tax
         self.gov_spending = self.Gt_prob_j * society.market.Yt_j
-        self.Bt_next = ((1 + society.bank.base_interest_rate) * self.Bt + np.sum(self.gov_spending) - np.sum(self.tax_array))
+        self.Bt_next = ((1 + society.bank.base_interest_rate) * self.Bt + np.sum(self.gov_spending * society.market.price) - np.sum(self.tax_array))
 
         self.GDP = np.sum(society.market.price * society.market.Yt_j)
-        self.per_household_gdp = self.GDP / households.households_n
+        self.per_household_gdp = self.GDP / max(households.households_n, 1e-8)
         
 
     def pension_step(self, society):
@@ -112,7 +103,6 @@ class Government(BaseEntity):
         self.current_net_households_pension = society.households.pension.sum()
         self.pension_fund = (1 + self.pension_growth_rate) * self.pension_fund - self.current_net_households_pension
 
-        # self.labor_participate_rate = society.households.ht[~society.households.is_old].mean()/society.households.h_max
 
     def calculate_pension(self, households):
         """Calculate the pension benefits for a given household."""
@@ -181,7 +171,8 @@ class Government(BaseEntity):
             return taxes_paid
 
         income_tax = income_tax_function(income)
-        asset_tax = np.zeros_like(asset)
+        
+        _, asset_tax = self.tax_function(income, asset)
         return income_tax, asset_tax
 
     def compute_tax(self, income, asset):
@@ -204,7 +195,9 @@ class Government(BaseEntity):
     def softsign(self, x):
         return x / (1.0 + np.abs(x))
 
-    def sigmoid(self, x):
+    def safe_sigmoid(self, x, threshold=80.0):
+        x = np.asarray(x, dtype=np.float64)
+        x = np.clip(x, -threshold, threshold)
         return 1 / (1 + np.exp(-x))
     
     def get_reward(self,  society, gov_goal=None):
@@ -235,7 +228,7 @@ class Government(BaseEntity):
         if gov_goal == "gdp":
             log_gdp_growth = np.log(self.GDP + 1e-8) - np.log(self.old_GDP + 1e-8)
             # reward = self.softsign(log_gdp_growth / SCALE["gdp_growth"])
-            reward = self.sigmoid(log_gdp_growth / SCALE["gdp_growth"])
+            reward = self.safe_sigmoid(log_gdp_growth / SCALE["gdp_growth"])
             return np.array([reward])  # \in (0,1)
     
         elif gov_goal == "gini":
@@ -249,7 +242,7 @@ class Government(BaseEntity):
             after_tax_income_gini = society.gini_coef(society.households.post_income)
             impr_i = before_tax_income_gini - after_tax_income_gini
             # return (delta_income_gini + delta_wealth_gini) * 100
-            reward = self.sigmoid((impr_w + impr_i) / (2 * SCALE["gini_scale"]))  # \in (0,1)
+            reward = self.safe_sigmoid((impr_w + impr_i) / (2 * SCALE["gini_scale"]))  # \in (0,1)
             return np.array([reward])
     
         elif gov_goal == "social_welfare":
@@ -271,12 +264,13 @@ class Government(BaseEntity):
     
         elif gov_goal == "pension_gap":
             # pension_surplus = sum(-self.calculate_pension(society.households))
-            return self.get_pension_reward(self.pension_fund)
+            return self.get_pension_reward(self.pension_fund, society.households.households_n)
     
         else:
             raise ValueError("Invalid government goal specified.")
 
-    def get_pension_reward(self, pension_surplus, scale=10, beta=10):
+
+    def get_pension_reward(self, pension_surplus, households_n, k=2, center=1e6):
         """
         Compute the reward for pension fund sustainability.
 
@@ -291,26 +285,89 @@ class Government(BaseEntity):
         pension_surplus : float
             The surplus or deficit of the pension fund.
 
-        scale : float, optional, default=10
-            The scaling factor for normalizing the final reward.
-
-        beta : float, optional, default=10
-            A factor that adjusts the sensitivity to surpluses.
-
-        Returns:
-        --------
-        normalized_reward : float
-            The normalized reward, constrained within a bounded range, typically [0, 1].
+        k : float, steepness of the curve
+        center : float, center of rapid growth region (default=1e6)
         """
     
         # Log transformation for diminishing returns and penalty for extreme surpluses
-        pension_surplus = max(0, pension_surplus)
-        pension_growth = np.log(1 + pension_surplus) - beta
+        per_household_pension_surplus = pension_surplus / max(households_n, 1e-8)
+        pension_surplus = max(0, per_household_pension_surplus)
+        pension_growth = np.log(1 + pension_surplus)
+        log_center = np.log(center)
     
         # Normalize the reward using tanh
-        normalized_reward = self.sigmoid(pension_growth / scale)
+        normalized_reward = self.safe_sigmoid(k * (pension_growth - log_center))
     
         return np.array([normalized_reward])
+
+
+    def get_reward_central(self,
+            actual_inflation,
+            actual_growth,
+            target_inflation=0.02,
+            target_growth=0.05,
+            weight_inflation=120.0,  # penalty weight for inflation deviations
+            weight_growth_low=80.0,  # penalty weight when growth < target
+            weight_growth_high=20.0,  # penalty weight when growth > target
+            smoothness=0.01  # smoothing parameter for differentiability
+    ):
+        """
+        Central bank reward function (smooth & asymmetric).
+
+        - Penalizes inflation deviations symmetrically (quadratic).
+        - Penalizes growth below target more heavily than growth above target (asymmetric).
+        - Uses softplus for smooth approximation of max(0, x), keeping the function differentiable.
+        - Final reward is bounded in (0, 1] via exponential decay.
+
+        Parameters
+        ----------
+        actual_inflation : float
+            Observed inflation rate.
+        actual_growth : float
+            Observed economic growth rate.
+        target_inflation : float, default=0.02
+            Central bank's target inflation rate (e.g., 2%).
+        target_growth : float, default=0.05
+            Desired sustainable growth rate (e.g., 5%).
+        weight_inflation : float, default=120.0
+            Weight applied to inflation deviation penalty.
+        weight_growth_low : float, default=80.0
+            Weight applied when growth falls below target.
+        weight_growth_high : float, default=20.0
+            Weight applied when growth exceeds target.
+        smoothness : float, default=0.01
+            Controls how closely softplus approximates ReLU. Smaller = sharper.
+
+        Returns
+        -------
+        reward : float
+            A smooth, bounded reward in (0, 1]. Higher values indicate conditions closer
+            to central bank objectives.
+        """
+    
+        # Stable softplus: softplus(x) = log(1 + exp(x))
+        def softplus(x):
+            return np.log1p(np.exp(-np.abs(x))) + np.maximum(x, 0.0)
+    
+        # Inflation deviation (symmetric quadratic penalty)
+        inflation_gap = actual_inflation - target_inflation
+        loss_inflation = weight_inflation * (inflation_gap ** 2)
+    
+        # Growth deviation
+        growth_gap = actual_growth - target_growth
+    
+        # Smooth decomposition into below-target and above-target parts
+        below_target = softplus(-growth_gap / smoothness) * smoothness  # >0 if growth < target
+        above_target = softplus(growth_gap / smoothness) * smoothness  # >0 if growth > target
+    
+        # Asymmetric growth penalties
+        loss_growth = weight_growth_low * (below_target ** 2) + weight_growth_high * (above_target ** 2)
+    
+        # Total loss and reward
+        total_loss = loss_inflation + loss_growth
+        reward = np.exp(-total_loss)
+    
+        return reward
 
     def is_terminal(self):
         '''

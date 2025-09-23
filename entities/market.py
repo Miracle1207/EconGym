@@ -15,7 +15,7 @@ class Market(BaseEntity):
         self.__dict__.update(entity_args['params'])
         self.firm_n = entity_args[self.type]['firm_n']
         self.action_dim = entity_args[self.type]['action_dim']
-        self.Zt = self.Z * (1 + np.random.rand(self.firm_n, 1))
+        self.Zt_init = self.Z * (1 + np.random.rand(self.firm_n, 1))
         if (self.type == "perfect" or self.type == "monopoly") and self.firm_n != 1:
             raise ValueError("Invalid market type specified or invalid firm number specified.")
         
@@ -74,7 +74,7 @@ class Market(BaseEntity):
         real_total_hours = 265888.875e6  # total hours worked, large L
         real_population = 333428e3
 
-        self.Zt = self.Z * (1 + np.random.rand(self.firm_n, 1))
+        self.Zt = copy.copy(self.Zt_init)
         self.Lt = (real_total_hours / real_population) * households_n
         # self.Kt = real_capital_rate * GDP / self.firm_n * np.ones((self.firm_n, 1))
         self.Kt = (np.sum(households_asset) - GDP * real_debt_rate )/ self.firm_n * np.ones((self.firm_n, 1))
@@ -86,6 +86,7 @@ class Market(BaseEntity):
         if actions is not None:
             self.price = actions[:, 0][:, np.newaxis]
             self.WageRate = actions[:, 1][:, np.newaxis]
+
     
     def step(self, society):
         """Calculate firm's labor demand and production output."""
@@ -95,13 +96,14 @@ class Market(BaseEntity):
         self.firm_labor_j = (society.households.h_ij_ratio * society.households.ht * society.households.e).sum(axis=0)[:, np.newaxis]
         self.Lt = np.sum(self.firm_labor_j)
         self.Yt_j = self.production_output(self.Kt, self.firm_labor_j)
-        self.WageRate = self.price * self.Zt * (1 - self.alpha) * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha)
+        self.MarketClear_WageRate = self.price * self.Zt * (1 - self.alpha) * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha)
         self.MarketClear_InterestRate = self.price * self.Zt * self.alpha * np.power((self.Kt) / (self.firm_labor_j + 1e-8), self.alpha-1)
 
         if society.bank.type == "non_profit":
             if self.type == "perfect":
                 society.bank.lending_rate = np.nanmean(self.MarketClear_InterestRate)
                 society.bank.deposit_rate = np.nanmean(self.MarketClear_InterestRate)
+                self.WageRate = copy.copy(self.MarketClear_WageRate)
             else:
                 society.bank.lending_rate = society.bank.base_interest_rate
                 society.bank.deposit_rate = society.bank.base_interest_rate
@@ -121,10 +123,20 @@ class Market(BaseEntity):
             return np.array([0.])
         else:
             profit = self.price * society.real_deals - self.WageRate * self.firm_labor_j - society.bank.lending_rate * self.Kt
-            if isinstance(profit, np.ndarray):
-                return profit
+            reward = self.scaled_reward(profit)
+            if isinstance(reward, np.ndarray):
+                return reward
             else:
-                return np.array([profit])
+                return np.array([reward])
+            
+
+    def scaled_reward(self, x, eps=1e-8, k=0.15):  # \in (0,1)
+        x = np.asarray(x, dtype=np.float64)
+        log_scaled = np.sign(x) * np.log1p(np.abs(x) + eps)
+        
+        if np.any(np.abs(-k * log_scaled) > 50):
+            print(f"[Warning Firm reward] Large input to exp detected: max |x| = {np.max(np.abs(-k * log_scaled)):.2f}")
+        return 1 / (1 + np.exp(-k * log_scaled))
     
     def is_terminal(self):
         if np.sum(self.Kt_next) < 0:

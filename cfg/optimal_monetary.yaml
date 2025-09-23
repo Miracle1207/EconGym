@@ -7,6 +7,7 @@ Environment:
       entity_args:
         params:
           type: "central_bank"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+
     - entity_name: 'households'
       entity_args:
         params:
@@ -46,5 +47,5 @@ Trainer:
   seed: 1
   epoch_length: 300
   cuda: False
-  n_epochs: 1000
+#  n_epochs: 1000
   wandb: True

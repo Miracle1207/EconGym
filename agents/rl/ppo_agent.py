@@ -51,6 +51,7 @@ class RunningMeanStd:
 
 class ppo_agent:
     def __init__(self, envs, args, type=None, agent_name="households"):
+        self.name = 'ppo'
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args

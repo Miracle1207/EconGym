@@ -2,7 +2,7 @@
 Environment:
   env_core:
     problem_scene: "estate_tax"
-    estate_tax_rate: 0.0
+    estate_tax_rate: 0.0   # todo: set estate_tax_rate!!
     estate_tax_exemption: 13610000
     episode_length: 300
 

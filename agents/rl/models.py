@@ -90,7 +90,8 @@ class mlp_net(nn.Module):
 
         x_a = torch.tanh(self.fc1_a(x))
         x_a = torch.tanh(self.fc2_a(x_a))
-        mean = torch.sigmoid(self.action_mean(x_a))  # in (0,1)
+        mean = torch.tanh(self.action_mean(x_a))  # in (-1,1)
+        # mean = torch.sigmoid(self.action_mean(x_a))  # in (0,1)
         
         # Handle both 1D and 2D inputs properly
         if mean.dim() == 1:
@@ -201,7 +202,8 @@ class PolicyNet(nn.Module):
         if self.use_norm:
             x = (x - self.mean) / (self.std + 1e-8)
         x = F.relu(self.fc1(x))
-        return torch.sigmoid(self.fc2(x))  # [0, 1]
+        # return torch.sigmoid(self.fc2(x))  # [0, 1]
+        return torch.tanh(self.fc2(x))  # [-1, 1]
 
 
 class QValueNet(torch.nn.Module):

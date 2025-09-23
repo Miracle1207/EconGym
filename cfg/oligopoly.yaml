@@ -19,8 +19,8 @@ Environment:
       entity_args:
         params:
           type: "oligopoly"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
-          alpha: 0.25
-          Z: 10.0
+          alpha: 0.36
+          Z: 1.0
           sigma_z: 0.0038
           epsilon: 0.5
 
@@ -32,10 +32,10 @@ Environment:
 
 Trainer:
   house_alg: "bc"
-  gov_alg: "us_federal"
+  gov_alg: "saez"
   firm_alg: "ppo"
   bank_alg: "rule_based"
   seed: 1
-  epoch_length: 300
   cuda: False
-#  n_epochs: 300
+#  n_epochs: 1000
+  wandb: True

@@ -19,31 +19,29 @@ Environment:
       entity_args:
         params:
           type: "monopoly"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
-          alpha: 0.25
-          Z: 10.0
+          alpha: 0.36
+          Z: 1.0
           sigma_z: 0.0038
           epsilon: 0.5
 
     - entity_name: 'bank'
       entity_args:
         params:
-          type: 'non_profit'   # [ 'non_profit', 'commercial' ]
+          type: 'commercial'   # [ 'non_profit', 'commercial' ]
           n: 1
           lending_rate: 0.0345
           deposit_rate: 0.0345
           reserve_ratio: 0.1
           base_interest_rate: 0.0345
           depreciation_rate: 0.06
-          real_action_max: [ 1.0, 0.20 ]
-          real_action_min: [ 0.0, -1e-3 ]
 
 Trainer:
   house_alg: "bc"
-  gov_alg: "us_federal"
+  gov_alg: "saez"
   firm_alg: "ppo"
-  bank_alg: "rule_based"
+  bank_alg: "ppo"
   seed: 1
   epoch_length: 300
   cuda: False
-  wandb: True
-#  n_epochs: 300
+#  wandb: True
+#  n_epochs: 1000

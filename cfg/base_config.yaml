@@ -1,242 +1,226 @@
-expr_name: test
-log_dir: ./logs
-device_num: 0
-wandb: True
+device_num: 0                      # GPU device number (0 = first GPU)
 
-Environment:
+Environment:                       # Parameters for the environment
   env_core:
-    problem_scene: "estate_tax"
-    consumption_tax_rate: 0.0
-    interest_rate: 0.04
-    gini_weight: 1
-    welfare_weight: 1
-    financial_crisis: False
-    disasters: False
-    tax_moudle: "ai_agent"
-    estate_tax_rate: 0.
-    estate_tax_exemption: 13610000
-    screen: False   # For rendering
-    episode_length: 300
-    step_cnt: 0
+    problem_scene: "estate_tax"    # Economic scenario name (e.g., "delayed_retirement", "consumption_tax", "optimal_monetary", "monopoly")
+    consumption_tax_rate: 0.0      # Initial consumption tax rate
+    estate_tax_rate: 0.0           # Initial estate/inheritance tax rate
+    estate_tax_exemption: 13610000 # Estate tax exemption threshold (USD)
+    screen: False                  # Whether to render the environment (currently unavailable)
+    episode_length: 300            # Number of steps in one episode
+    step_cnt: 0                    # Initial step counter
+
   Entities:
-    - entity_name: 'government'
+    - entity_name: 'government'    # Government agent parameters
       entity_args:
         params:
-          type: "central_bank"
-          type_list: [ 'tax', 'pension', 'central_bank' ]
-          tau: 0.263
-          xi: 0.049
-          tau_a: 0.0
-          xi_a: 0.0
-          Gt_prob: 0.189
-          retire_age: 65
-          contribution_rate: 0.08
-          pension_growth_rate: 0.01
-          base_interest_rate: 0.03
-          reserve_ratio: 0.08
-          gov_task: "gdp"
-          tax_type: "ai_agent"
-          real_gdp: 254746e8  # in USD
-          real_debt_rate: 1.2129  # as a fraction 未修改
-          real_population: 333428e3
+          type: "central_bank"     # government type ("tax", "pension", or "central_bank")
+          type_list: [ 'tax', 'pension', 'central_bank' ]   # Supported government roles
+          tau: 0.263               # Initial HSV tax parameter: average level of marginal income tax. If fiscal government ("tax") is active, actions will override this value.
+          xi: 0.049                # Initial HSV tax parameter: slope (progressivity) of income tax schedule. Larger xi → more progressive taxation.
+          tau_a: 0.0               # Initial HSV parameter: average level of marginal asset tax
+          xi_a: 0.0                # Initial HSV parameter: slope of marginal asset tax schedule
+          Gt_prob: 0.189           # Initial ratio of government spending to GDP
+          retire_age: 65           # Default statutory retirement age (overridden if pension government is active)
+          contribution_rate: 0.08  # Pension contribution rate (employee share of wage)
+          pension_growth_rate: 0.01 # Annual growth rate of pension benefits
+          base_interest_rate: 0.03 # Central bank base interest rate (overridden if central bank is active)
+          reserve_ratio: 0.08      # Central bank reserve requirement ratio
+          gov_task: "gdp"          # Optimization objective ("gdp", "gini", "social_welfare", "mean_welfare", "gdp_gini", "pension_gap"). For central bank: inflation stabilization.
+          tax_type: "ai_agent"     # Tax agent type ("ai_agent", "us_federal", "saez")
+          real_gdp: 254746e8       # Initial real GDP (USD)
+          real_debt_rate: 1.2129   # Initial government debt-to-GDP ratio
+          real_population: 333428e3 # Initial population size
+
         tax:
-          type: "tax"
-          action_dim: 5
+          type: "tax"              # Fiscal authority agent executing tax policy
+          action_dim: 5            # Dimension of action space. If firm_n > 1, action_dim expands (gov spending allocated by firm).
           action_space:
-            low: -1e-3
-            high: 1e-3
-            dtype: float32
-          initial_action:
+            low: -1                # Lower bound for normalized actions. In RL training, constraining policy outputs to (-1, 1) helps stabilize learning.
+            high: 1                # Upper bound for normalized actions
+            dtype: float32         # Action data type
+          initial_action:          # Initial tax policy parameters
             tau: 0.263
             xi: 0.049
             tau_a: 0.0
             xi_a: 0.0
             Gt_prob: 0.189
-          real_action_max: [0.6, 2, 0.05, 2., 1.0]
-          real_action_min: [0., 0., 0.0, 0., 0.0]
+          real_action_max: [0.6, 2, 0.05, 2.0, 0.6]  # Max real-world values for scaling. Each agent's (real_action_max, real_action_min) defines the meaningful range of actions in real-world terms.
+                                                     # After actions enter env.step(), they are automatically scaled and clipped to this range.
+          real_action_min: [0.0, 0.0, 0.0, 0.0, 0.0] # Min real-world values for scaling.
+
         pension:
-          type: "pension"
-#          action_dim: 3
-          action_dim: 2
+          type: "pension"          # Pension authority agent
+          action_dim: 2            # Dimension of action space
           action_space:
-            low: -0.05
-            high: 0.05
+            low: -1                # Lower bound for normalized pension actions
+            high: 1                # Upper bound for normalized pension actions
             dtype: float32
-          initial_action:
+          initial_action:          # Initial pension parameters
             retire_age: 67
             contribution_rate: 0.08
             pension_growth_rate: 0.01
-#          real_action_max: [75, 0.2, 0.05]
-#          real_action_min: [50, 0.05, 0.001]
-          real_action_max: [ 70, 0.2]
-          real_action_min: [ 60, 0.05]
+          real_action_max: [70, 0.2] # Max values for (retirement age, contribution rate)
+          real_action_min: [60, 0.05] # Min values for (retirement age, contribution rate)
+
         central_bank:
-          type: "central_bank"
-          action_dim: 2
+          type: "central_bank"     # Central bank policy agent
+          action_dim: 2            # Dimension of action space
           action_space:
-            low: -0.01
-            high: 0.01
+            low: -1                # Lower bound for normalized monetary actions
+            high: 1                # Upper bound for normalized monetary actions
             dtype: float32
-          initial_action:
+          initial_action:          # Initial monetary policy parameters
             base_interest_rate: 0.03
             reserve_ratio: 0.08
-          real_action_max: [0.1, 0.2]
-          real_action_min: [-0.02, 0.0]
-    - entity_name: 'households'
+          real_action_max: [0.1, 0.2]   # Max values for (base interest rate, reserve ratio)
+          real_action_min: [-0.02, 0.0] # Min values for (base interest rate, reserve ratio)
+
+    - entity_name: 'households'         # Household agents
       entity_args:
         params:
-          type: 'ramsey'
-          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
-          households_n: 100
-          CRRA: 1
-          IFE: 1
-          eta: 0
-          stock_alpha: 0.1
-          private_info_dim: 3
-          action_dim: 2
-          e_p: 2.2e-6
-          e_q: 0.990
-          rho_e: 0.982
-          sigma_e: 0.200
-          super_e: 504.3
-          at_min: -1e6
-          h_max: 2512
-          real_action_max: [1.0, 1.0]
-          real_action_min: [-0.5, 0.0]
+          type: 'ramsey'                # Household type ('ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest')
+          type_list: [ 'ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest' ]  # Supported household models
+          households_n: 100             # Number of households
+          CRRA: 1                       # Coefficient of relative risk aversion
+          IFE: 1                        # Inverse Frisch elasticity
+          stock_alpha: 0.1              # Sensitivity coefficient: controls stock price response to buy/sell imbalance
+          action_dim: 2                 # Household action dimension
+          e_p: 2.2e-6                   # Probability of transitioning from normal to superstar state
+          e_q: 0.990                    # Probability of remaining in the current state
+          rho_e: 0.982                  # Persistence in state transitions (normal/superstar)
+          sigma_e: 0.200                # Volatility of standard normal shocks
+          super_e: 504.3                # Labor productivity in superstar state
+          at_min: -1e6                  # Minimum asset holdings
+          h_max: 2512                   # Maximum annual working hours
+          real_action_max: [ 1.0, 1.0 ]   # Max values for (savings share of income, labor share of h_max)
+          real_action_min: [ -0.5, 0.0 ]  # Min values for (savings share of income, labor share of h_max)
           action_space:
-            low: 0
-            high: 1
+            low: -1                     # Lower bound for normalized actions
+            high: 1                     # Upper bound for normalized actions
             dtype: float32
         OLG:
-          birth_rate: 0.011   # US
-#          die_rate: 0.05
-          initial_working_age: 24
-    - entity_name: 'market'
+          birth_rate: 0.011             # Birth rate (e.g., US demographics)
+          initial_working_age: 24       # Starting age for new workers
+
+    - entity_name: 'market'             # Firm agents in the market
       entity_args:
         params:
-          type: "perfect"
-          type_list: ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
-          alpha: 0.36
-          Z: 1.0
-          sigma_z: 0.0038
-          epsilon: 0.5
-          real_action_max: [1e8]
-          real_action_min: [1e-4]
+          type: "perfect"               # Market type: 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly'
+          type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ] # Supported market types
+          alpha: 0.36                   # Capital share in Cobb-Douglas production
+          Z: 1.0                        # Initial productivity level
+          sigma_z: 0.0038               # Std. deviation of productivity shocks
+          epsilon: 0.5                  # Demand elasticity parameter in CES utility
+          real_action_max: [ 1e2, 1e2 ]   # Max values for firm actions (price, wage rate)
+          real_action_min: [ 0.0001, 0.0001 ] # Min values for firm actions
+
         perfect:
-          type: "perfect"
-          firm_n: 1
-          action_dim: 0
+          type: "perfect"               # Perfect competition market
+          firm_n: 1                     # Number of firms
+          action_dim: 0                 # No decision variables in perfect competition
           action_space:
-            low: -0.2
-            high: 0.2
+            low: -1.
+            high: 1.
             dtype: float32
           initial_action: null
         monopoly:
-          type: "monopoly"
-          action_dim: 2
-          firm_n: 1
+          type: "monopoly"              # Monopoly market
+          action_dim: 2                 # Firm sets price and wage rate
+          firm_n: 1                     # One monopolist
           action_space:
-            low: -0.2
-            high: 0.2
+            low: -1.
+            high: 1.
             dtype: float32
           initial_action:
-            price: 1
-            WageRate: 1
+            price: 1                    # Initial product price
+            WageRate: 1                 # Initial wage rate
         monopolistic_competition:
-          type: "monopolistic_competition"
+          type: "monopolistic_competition" # Monopolistic competition
           action_dim: 2
-          firm_n: 10
+          firm_n: 10                    # Number of firms (user-defined)
           action_space:
-            low: -0.2
-            high: 0.2
+            low: -1.
+            high: 1.
             dtype: float32
           initial_action:
             price: 1
             WageRate: 1
         oligopoly:
-          type: "oligopoly"
+          type: "oligopoly"             # Oligopoly market
           action_dim: 2
-          firm_n: 2
+          firm_n: 2                     # Number of firms (user-defined)
           action_space:
-            low: -0.2
-            high: 0.2
+            low: -1.
+            high: 1.
             dtype: float32
           initial_action:
             price: 1
             WageRate: 1
-    - entity_name: 'bank'
+
+    - entity_name: 'bank'               # Bank agent
       entity_args:
         params:
-          type: 'non_profit'
-          type_list: ['non_profit', 'commercial']
-          n: 1
-          lending_rate: 0.0345
-          deposit_rate: 0.0345
-          reserve_ratio: 0.1
-          base_interest_rate: 0.0345
-          depreciation_rate: 0.06
-          real_action_max: [1.0, 0.20]
-          real_action_min: [0.0, -1e-3]
+          type: 'non_profit'            # Bank type ('non_profit', 'commercial')
+          type_list: [ 'non_profit', 'commercial' ]  # Supported bank types
+          n: 1                          # Number of banks
+          lending_rate: 0.0345          # Initial loan interest rate
+          deposit_rate: 0.0345          # Initial deposit interest rate
+          reserve_ratio: 0.1            # Reserve requirement ratio
+          base_interest_rate: 0.0345    # Base policy interest rate
+          depreciation_rate: 0.06       # Capital depreciation rate
+          real_action_max: [ 0.2, 0.1 ]   # Max values for (loan rate, deposit rate)
+          real_action_min: [ 0.03, -0.001 ] # Min values for (loan rate, deposit rate)
           action_space:
-            low: -0.001
-            high: 0.001
+            low: -1
+            high: 1
             dtype: float32
         non_profit:
-          type: "non_profit"
+          type: "non_profit"            # Non-profit bank (fixed rates)
           action_dim: 0
           initial_action: null
         commercial:
-          type: "commercial"
+          type: "commercial"            # Commercial bank (chooses lending/deposit rates)
           action_dim: 2
-          initial_action: [0.10, 0.003]
+          initial_action: [ 0.03, 0.03 ]  # Initial (lending rate, deposit rate)
 
 
-Trainer:
-  log_std_min: -20
-  log_std_max: 2
-  hidden_size: 128
-  cuda: False
-  q_lr: 3e-4
-  p_lr: 3e-4
-  buffer_size: 1e6
-  env_name: 'wealth_distribution'
-  init_exploration_policy: 'gaussian'
-  n_epochs: 1000
-  update_cycles: 100
-  epoch_length: 300
-  target_update_interval: 1
-  display_interval: 1
-  batch_size: 64
-  gamma: 0.975
-  tau: 0.95
-  eval_episodes: 5
-  init_exploration_steps: 1000
-  ppo_tau: 0.95
-  ppo_gamma: 0.99
-  eps: 1e-5
-  update_epoch: 20
-  clip: 0.1
-  vloss_coef: 0.5
-  ent_coef: 0.01
-  max_grad_norm: 0.5
-  update_freq: 10
-  initial_train: 10
-  noise_rate: 0.01
-  epsilon: 0.1
-  save_interval: 10
-  house_alg: "bc"
-  gov_alg: "rule_based"
-  firm_alg: "rule_based"
-  bank_alg: "rule_based"
-  update_each_epoch: 20
-  seed: 1
-  wandb: False
-  aligned: False
-  best_response: False
-  entropy_coef: 0.025
-  bc: False
-  heter_house_alg: "real"
-  heter_house_rate: 0
-  economic_shock: null
-  test: False
-  bc_test: True
+Trainer:                                # Store parameters related to policy training/testing
+  log_std_min: -20                      # Minimum log standard deviation (policy net)
+  log_std_max: 2                        # Maximum log standard deviation
+  hidden_size: 128                      # Hidden layer size of neural nets
+  cuda: False                           # Whether to use CUDA GPU
+  q_lr: 3e-4                            # Learning rate for Q-network
+  p_lr: 3e-4                            # Learning rate for policy network
+  buffer_size: 1e6                      # Replay buffer size
+  n_epochs: 1                       # Number of training epochs
+  update_cycles: 100                    # Training updates per epoch
+  epoch_length: 300                     # Sample Steps per epoch
+  display_interval: 1                   # Logging/printing interval
+  batch_size: 64                        # Batch size for training
+  gamma: 0.975                          # Discount factor for RL
+  tau: 0.95                             # Soft update coefficient of DDPG
+  eval_episodes: 5                      # Number of evaluation episodes
+  init_exploration_steps: 1000          # Steps before training starts (exploration)
+  ppo_tau: 0.95                         # PPO smoothing coefficient (GAE λ)
+  ppo_gamma: 0.99                       # PPO discount factor
+  eps: 1e-5                             # Small epsilon for numerical stability
+  update_epoch: 20                      # PPO update epochs per iteration
+  clip: 0.1                             # PPO clipping ratio
+  vloss_coef: 0.5                       # Value loss coefficient
+  ent_coef: 0.01                        # Entropy regularization coefficient
+  max_grad_norm: 0.5                    # Gradient clipping norm
+  update_freq: 10                       # Frequency of policy updates
+  initial_train: 10                     # Initial training steps
+  noise_rate: 0.01                      # Exploration noise rate
+  epsilon: 0.1                          # Epsilon-greedy exploration rate
+  save_interval: 10                     # Model save interval
+  house_alg: "bc"                       # Household agent algorithm
+  gov_alg: "rule_based"                 # Government agent algorithm
+  firm_alg: "rule_based"                # Firm agent algorithm
+  bank_alg: "rule_based"                # Bank agent algorithm
+  update_each_epoch: 20                 # Updates per epoch
+  seed: 1                               # Random seed
+  wandb: False                          # Whether to log with W&B/Swanlab
+  test: False                           # Test mode flag
+  bc_test: True                         # in agents/behavior_cloning/bc_agent.py. if False, get actions from real data, and trained via BC; if True, get action from trained BC policy.

@@ -61,7 +61,7 @@ class bc_agent:
             "OLG_risk_invest": "agents/behavior_cloning/trained_models/risky_investment/OLG_risk_invest_bc_net.pt"
         }
 
-        if self.args.bc_test:  # if train, get actions from real data, and trained via BC; if test, get action from trained BC policy.
+        if self.args.bc_test:  # if False, get actions from real data, and trained via BC; if True, get action from trained BC policy.
             if type not in model_paths:
                 raise ValueError(
                     f"Invalid Households type: {type}. Supported types are: 'OLG', 'OLG_risk_invest', 'ramsey', and 'ramsey_risk_invest'."

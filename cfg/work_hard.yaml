@@ -13,7 +13,7 @@ Environment:
         params:
           type: 'OLG'
           type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
-          households_n: 100
+          households_n: 1000
 
 
     - entity_name: 'market'
@@ -29,11 +29,6 @@ Environment:
           n: 1
           lending_rate: 0.0345
           deposit_rate: 0.0345
-          reserve_ratio: 0.1
-          base_interest_rate: 0.0345
-          depreciation_rate: 0.06
-          real_action_max: [ 1.0, 0.20 ]
-          real_action_min: [ 0.0, -1e-3 ]
 
 Trainer:
   house_alg: "bc"
@@ -43,4 +38,4 @@ Trainer:
   seed: 1
   epoch_length: 300
   cuda: False
-#  n_epochs: 300
+  n_epochs: 300

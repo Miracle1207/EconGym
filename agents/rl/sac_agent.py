@@ -68,6 +68,7 @@ class SACPolicy(nn.Module):
 
     def __init__(self, state_dim, action_dim, hidden_dim=256):
         super(SACPolicy, self).__init__()
+        self.name = 'sac'
         self.use_norm = False
 
         self.fc1 = nn.Linear(state_dim, hidden_dim)
@@ -101,10 +102,10 @@ class SACPolicy(nn.Module):
         x = F.relu(self.fc1(state))
         x = F.relu(self.fc2(x))
 
-        mean = torch.sigmoid(self.mean_linear(x))  # [0, 1]
+        mean = torch.tanh(self.mean_linear(x))  # [-1, 1]
         log_std = self.log_std_linear(x)
         log_std = torch.clamp(log_std, min=-20, max=2)
-        std = torch.exp(log_std)
+        std = 0.1 * torch.exp(log_std)
 
         return mean, std
 

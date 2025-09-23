@@ -1,6 +1,6 @@
 Environment:
   env_core:
-    problem_scene: "work-life_well-bing"
+    problem_scene: "work_life_well_being"
     episode_length: 300
   Entities:
     - entity_name: 'government'
