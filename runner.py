@@ -362,10 +362,10 @@ class Runner:
                     break
 
             for key, value in eval_econ_dict.items():
-                if key == "gov_reward" or key == "GDP" or key == "bank_reward":
-                    episode_econ_dict[key].append(np.sum(value))
-                elif key == "firm_reward" or key == "price" or key == "WageRate" or key == "firm_production":
+                if key == "gov_reward" or key == "GDP" or key == "bank_reward" or key == "firm_reward":
                     episode_econ_dict[key].append(np.sum(value, axis=0))
+                elif key == "price" or key == "WageRate" or key == "firm_production":
+                    episode_econ_dict[key].append(np.mean(value, axis=0))
                 elif key == "years":
                     episode_econ_dict[key].append(np.max(value))
                 elif key == "house_reward":
@@ -379,7 +379,7 @@ class Runner:
 
         for key, value in episode_econ_dict.items():
             value = np.array(value)
-            if value.ndim == 3:
+            if value.ndim == 3 and value.shape[1] > 1:
                 for i in range(value.shape[1]):
                     final_econ_dict[f"{key}_{i}"] = np.mean(value[:, i])
             else:

@@ -176,11 +176,11 @@ Environment:
           reserve_ratio: 0.1
           base_interest_rate: 0.0345
           depreciation_rate: 0.06
-          real_action_max: [1.0, 0.20]
-          real_action_min: [0.0, -0.001]
+          real_action_max: [0.2, 0.1]
+          real_action_min: [0.03, -0.001]
           action_space:
-            low: -0.001
-            high: 0.001
+            low: -1
+            high: 1
             dtype: float32
         non_profit:
           type: "non_profit"
@@ -189,7 +189,7 @@ Environment:
         commercial:
           type: "commercial"
           action_dim: 2
-          initial_action: [0.10, 0.003]
+          initial_action: [0.03, 0.03]
 
 
 Trainer:

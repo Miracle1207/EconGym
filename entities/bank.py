@@ -33,12 +33,14 @@ class Bank(BaseEntity):
         self.last_lending_rate = copy.copy(self.lending_rate)
         # self.last_lending_rate_j = copy.copy(self.lending_rate)
 
-    def get_action(self, actions):
+    def get_action(self, actions, central_bank_exist=False):
         if self.type == 'commercial':
             # For commercial banks, actions are lending rate and deposit rate
-            lending_rate, deposit_rate = actions
-            self.lending_rate = np.clip(lending_rate, self.base_interest_rate + 0.01, self.base_interest_rate + 0.03)
-            self.deposit_rate = np.clip(deposit_rate, self.base_interest_rate - 0.01, self.base_interest_rate)
+            self.lending_rate, self.deposit_rate = actions
+            if central_bank_exist:
+                self.lending_rate = np.clip(self.lending_rate, self.base_interest_rate + 0.01, self.base_interest_rate + 0.03)
+                self.deposit_rate = np.clip(self.deposit_rate, self.base_interest_rate - 0.01, self.base_interest_rate)
+
 
     def step(self, society):
         # Retrieve the first government agent from the society's government dictionary
@@ -98,12 +100,18 @@ class Bank(BaseEntity):
         if self.type == "non_profit":
             return np.array([0.])
         elif self.type == "commercial":
-            if isinstance(self.profit, np.ndarray):
-                return self.profit
+            reward = self.scaled_reward(self.profit)
+            if isinstance(reward, np.ndarray):
+                return reward
             else:
-                return np.array([self.profit])
+                return np.array([reward])
         else:
             raise ValueError(f"Invalid bank type: '{self.type}'. Expected 'non_profit' or 'commercial'.")
+
+    def scaled_reward(self, x, eps=1e-8, k=0.15):  # \in (0,1)
+        x = np.asarray(x, dtype=np.float64)
+        log_scaled = np.sign(x) * np.log1p(np.abs(x) + eps)
+        return 1 / (1 + np.exp(-k * log_scaled))
 
     def is_terminal(self):
         return False

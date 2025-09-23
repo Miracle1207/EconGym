@@ -179,7 +179,7 @@ class EconomicSociety:
             for gov_type, gov_agent in self.government.items():
                 gov_agent.get_action(processed_action_dict[self.government[gov_type].name][gov_type], firm_n=self.market.firm_n)
 
-        self.bank.get_action(processed_action_dict[self.bank.name])
+        self.bank.get_action(processed_action_dict[self.bank.name], central_bank_exist=("central_bank" in self.government))
         self.market.get_action(processed_action_dict[self.market.name])
         self.households.get_action(processed_action_dict[self.households.name], firm_n=self.market.firm_n)
 
@@ -277,7 +277,7 @@ class EconomicSociety:
         
         episode_completed = self.step_cnt >= self.episode_length
         agent_terminal = any(self.recursive_decompose_dict(self.agents, lambda a: a.is_terminal()))
-        # if gini_invalid or data_nan or episode_completed or agent_terminal:
+        # if (gini_invalid or data_nan or episode_completed or agent_terminal) and self.step_cnt == 2:
         #     print(self.recursive_decompose_dict(self.agents, lambda a: a.is_terminal()))
         #     print(1)
         

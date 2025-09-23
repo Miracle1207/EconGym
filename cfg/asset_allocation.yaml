@@ -27,10 +27,9 @@ Environment:
 
 Trainer:
   house_alg: "ppo"
-  gov_alg: "rule_based"
+  gov_alg: "saez"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1
-  epoch_length: 300
-  cuda: False
-#  n_epochs: 300
+  n_epochs: 1000
+  wandb: True

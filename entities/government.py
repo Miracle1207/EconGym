@@ -53,9 +53,6 @@ class Government(BaseEntity):
             'action_dim'] else 1
 
     def get_action(self, actions, firm_n):
-        self.old_per_gdp = copy.copy(self.per_household_gdp)
-        self.old_GDP = copy.copy(self.GDP)
-        self.Bt = copy.copy(self.Bt_next)
 
         policy_actions = actions[:self.policy_action_len]
         Gt_prob_ratios = np.ones(firm_n)/firm_n
@@ -80,6 +77,10 @@ class Government(BaseEntity):
 
 
     def step(self, society):
+        self.old_per_gdp = copy.copy(self.per_household_gdp)
+        self.old_GDP = copy.copy(self.GDP)
+        self.Bt = copy.copy(self.Bt_next)
+        
         self.tax_step(society)
         if self.type == "pension" and ("OLG" in society.households.type):
             self.pension_step(society)
@@ -192,7 +193,12 @@ class Government(BaseEntity):
     def softsign(self, x):
         return x / (1.0 + np.abs(x))
 
-    def sigmoid(self, x):
+    def safe_sigmoid(self, x, threshold=80.0):
+        x = np.asarray(x, dtype=np.float64)
+        if np.any(np.abs(x) > threshold):
+            print(f"[Warning] Large input to exp detected: max |x| = {np.max(np.abs(x)):.2f}")
+        
+        x = np.clip(x, -threshold, threshold)
         return 1 / (1 + np.exp(-x))
     
     def get_reward(self,  society, gov_goal=None):
@@ -223,7 +229,7 @@ class Government(BaseEntity):
         if gov_goal == "gdp":
             log_gdp_growth = np.log(self.GDP + 1e-8) - np.log(self.old_GDP + 1e-8)
             # reward = self.softsign(log_gdp_growth / SCALE["gdp_growth"])
-            reward = self.sigmoid(log_gdp_growth / SCALE["gdp_growth"])
+            reward = self.safe_sigmoid(log_gdp_growth / SCALE["gdp_growth"])
             return np.array([reward])  # \in (0,1)
     
         elif gov_goal == "gini":
@@ -237,7 +243,7 @@ class Government(BaseEntity):
             after_tax_income_gini = society.gini_coef(society.households.post_income)
             impr_i = before_tax_income_gini - after_tax_income_gini
             # return (delta_income_gini + delta_wealth_gini) * 100
-            reward = self.sigmoid((impr_w + impr_i) / (2 * SCALE["gini_scale"]))  # \in (0,1)
+            reward = self.safe_sigmoid((impr_w + impr_i) / (2 * SCALE["gini_scale"]))  # \in (0,1)
             return np.array([reward])
     
         elif gov_goal == "social_welfare":
@@ -291,7 +297,7 @@ class Government(BaseEntity):
         log_center = np.log(center)
     
         # Normalize the reward using tanh
-        normalized_reward = self.sigmoid(k * (pension_growth - log_center))
+        normalized_reward = self.safe_sigmoid(k * (pension_growth - log_center))
     
         return np.array([normalized_reward])
 
