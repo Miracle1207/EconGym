@@ -16,7 +16,7 @@ Environment:
     - entity_name: 'market'
       entity_args:
         params:
-          type: "oligopoly"   #  # todo: select from ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+          type: "oligopoly"     # todo: select from ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
 
     - entity_name: 'bank'
       entity_args:

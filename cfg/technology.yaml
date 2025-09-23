@@ -20,6 +20,7 @@ Environment:
       entity_args:
         params:
           type: "perfect"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
+          Z: 1.0                        # todo: set different productivity level
 
 
     - entity_name: 'bank'
@@ -32,8 +33,6 @@ Environment:
           reserve_ratio: 0.1
           base_interest_rate: 0.0345
           depreciation_rate: 0.06
-          real_action_max: [ 1.0, 0.20 ]
-          real_action_min: [ 0.0, -1e-3 ]
 
 Trainer:
   house_alg: "bc"
@@ -44,3 +43,4 @@ Trainer:
   epoch_length: 300
   cuda: False
 #  n_epochs: 300
+#  wandb: True

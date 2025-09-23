@@ -23,8 +23,6 @@ Environment:
       entity_args:
         params:
           type: "perfect"
-          alpha: 0.25
-          Z: 10.0
           sigma_z: 0.0038
           epsilon: 0.5
 

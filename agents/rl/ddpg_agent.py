@@ -64,26 +64,29 @@ class ddpg_agent:
             self.device = "cpu"
         self.actor = PolicyNet(state_dim=self.obs_dim, hidden_dim=128, action_dim=self.action_dim).to(self.device)
         self.critic = QValueNet(state_dim=self.obs_dim, hidden_dim=128, action_dim=self.action_dim).to(self.device)
-        self.use_type = "train"
-        if agent_name == "households":
-            if self.args.bc == True:
-                self.actor.load_state_dict(torch.load("agents/real_data/2024_01_04_21_21_maddpg_trained_model.pth"))
-                self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=1e-6)
-            else:
-                self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=self.args.p_lr)
-        else:
-            self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=self.args.p_lr)
-            if self.use_type == "test":
-                # state_dict = torch.load("agents/models/bc_ddpg/1000/gdp/run20/government_ddpg_net.pt")
-                state_dict = torch.load("agents/models/bc_ddpg/100/gdp/run2/government_ddpg_net.pt")
-                if "mean" in state_dict and "std" in state_dict:
-                    mean = state_dict["mean"]
-                    std = state_dict["std"]
-                    self.actor.set_normalizer(mean, std)
-                    self.actor.load_state_dict(state_dict)
-                else:
-                    # 不含 normalizer，那就直接加载模型，跳过 normalizer 设置
-                    self.actor.load_state_dict(state_dict, strict=False)
+
+        self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=self.args.p_lr)
+        # self.use_type = "train"
+        #
+        # if agent_name == "households":
+        #     if self.args.bc == True:
+        #         self.actor.load_state_dict(torch.load("agents/real_data/2024_01_04_21_21_maddpg_trained_model.pth"))
+        #         self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=1e-6)
+        #     else:
+        #         self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=self.args.p_lr)
+        # else:
+        #     self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=self.args.p_lr)
+        #     if self.use_type == "test":
+        #         # state_dict = torch.load("agents/models/bc_ddpg/1000/gdp/run20/government_ddpg_net.pt")
+        #         state_dict = torch.load("agents/models/bc_ddpg/100/gdp/run2/government_ddpg_net.pt")
+        #         if "mean" in state_dict and "std" in state_dict:
+        #             mean = state_dict["mean"]
+        #             std = state_dict["std"]
+        #             self.actor.set_normalizer(mean, std)
+        #             self.actor.load_state_dict(state_dict)
+        #         else:
+        #             # 不含 normalizer，那就直接加载模型，跳过 normalizer 设置
+        #             self.actor.load_state_dict(state_dict, strict=False)
 
         self.target_actor = copy.copy(self.actor)
         self.target_critic = copy.copy(self.critic)

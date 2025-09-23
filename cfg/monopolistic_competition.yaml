@@ -35,7 +35,6 @@ Trainer:
   firm_alg: "ppo"
   bank_alg: "rule_based"
   seed: 1
-  epoch_length: 300
   cuda: False
-  n_epochs: 300
+#  n_epochs: 300
   wandb: True

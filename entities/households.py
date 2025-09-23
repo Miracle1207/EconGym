@@ -134,13 +134,6 @@ class Household(BaseEntity):
         # Pensions
         self.pension = np.zeros((self.households_n, 1))  # Initialize to zero for each household
 
-        # if isinstance(self.action_space, omegaconf.DictConfig):
-        # self.action_space = Box(low=self.action_space.low,
-        #                         high=self.action_space.high,
-        #                         shape=(self.households_n, self.action_dim), dtype=np.float32)
-        # else:
-        #     self.update_action_space()
-        # todo: 修改规范
         self.real_action_max = np.array(self.real_action_max)
         self.real_action_min = np.array(self.real_action_min)
         real_action_size = np.array(self.real_action_max).size
@@ -604,7 +597,7 @@ class Household(BaseEntity):
 
     def is_terminal(self):
         """Determine whether simulation should terminate due to collapse or invalid state."""
-        if self.households_n <= 1:
+        if self.households_n <= 5 and "OLG" in self.type:
             return True
         else:
             # Unreasonably large borrowing

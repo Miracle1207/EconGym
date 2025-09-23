@@ -23,10 +23,10 @@ class EconObservations:
 
         # Sort indices based on wealth (instead of income) in descending order
         sorted_wealth_based_index = sorted(range(len(wealth)), key=lambda k: wealth[k], reverse=True)
-        top10_wealth_based_index = sorted_wealth_based_index[:int(0.1 * n_households)]  # top 10% households
-        bottom50_wealth_based_index = sorted_wealth_based_index[int(0.5 * n_households):]  # bottom 50% households
-        
-        # todo : 增加 example，告诉大家怎么改
+        top_n = max(1, int(0.1 * n_households))
+        bottom_n = max(1, int(0.5 * n_households))
+        top10_wealth_based_index = sorted_wealth_based_index[:top_n]  # top 10% households
+        bottom50_wealth_based_index = sorted_wealth_based_index[bottom_n:]  # bottom 50% households
 
         top10_e = education[top10_wealth_based_index]
         bot50_e = education[bottom50_wealth_based_index]
@@ -167,7 +167,7 @@ class EconObservations:
 
         Users can add/remove observation variables (e.g., capital, productivity) below.
         """
-
+    
         if self.market.type.lower() == "perfect":
             return np.array([])
         elif self.market.type.lower() in ["monopoly", "oligopoly", "monopolistic_competition"]:
@@ -176,22 +176,22 @@ class EconObservations:
             firm_productivity = getattr(self.market, 'Zt', 0.0)
             firm_rt = np.full((firm_n, 1), getattr(self.bank, 'lending_rate', 0.0))
             if firm_n > 0:
-                firm_capital_2d = np.full((firm_n, 1), firm_capital)  # 形状 (firm_n, 1)
-                firm_productivity_2d = np.full((firm_n, 1), firm_productivity)  # 形状 (firm_n, 1)
+                firm_capital_2d = np.full((firm_n, 1), firm_capital)  # Shape (firm_n, 1)
+                firm_productivity_2d = np.full((firm_n, 1), firm_productivity)  # Shape (firm_n, 1)
             else:
-                # 若firm_n为0，避免维度错误
+                # If firm_n = 0, avoid dimension errors
                 firm_capital_2d = np.array([[firm_capital]])
                 firm_productivity_2d = np.array([[firm_productivity]])
-                firm_rt = np.array([[firm_rt]])  # 确保firm_rt也是2维
-
-            # 此时三个数组均为2维，且形状均为 (firm_n, 1)，可水平拼接
+                firm_rt = np.array([[firm_rt]])  # Ensure firm_rt is also 2D
+        
+            # At this point, all arrays are 2D with shape (firm_n, 1), safe for horizontal stacking
             result = np.hstack([firm_capital_2d, firm_productivity_2d, firm_rt])
-
+        
             return result
-            # wage_rate = getattr(self.market, 'WageRate', 0.0) if self.market else 0.0    # you can add price and WageRate at last timestep
+            # wage_rate = getattr(self.market, 'WageRate', 0.0) if self.market else 0.0    # Optionally add price and WageRate at the last timestep
             # price_level = getattr(self.market, 'price', 1.0) if self.market else 1.0
             # return np.hstack([firm_capital, firm_productivity, firm_rt])
-
+    
         else:
             raise ValueError(f"FirmTypeError: market type {self.market.type} is not supported.")
 

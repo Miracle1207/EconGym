@@ -1,7 +1,7 @@
 Environment:
   env_core:
     problem_scene: "consumption_tax"
-    consumption_tax_rate: 0.07   # update consumption_tax_rate!!
+    consumption_tax_rate: 0.07   # todo: set consumption_tax_rate!!
     episode_length: 300
   Entities:
     - entity_name: 'government'

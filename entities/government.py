@@ -60,8 +60,9 @@ class Government(BaseEntity):
             # self.retire_age, self.contribution_rate, self.pension_growth_rate = policy_actions
             self.retire_age, self.contribution_rate = policy_actions
         elif self.type == "tax":
-            self.tau, self.xi, self.tau_a, self.xi_a, self.Gt_prob = policy_actions
-            Gt_prob_ratios = actions[self.policy_action_len:]
+            if self.tax_type == "ai_agent":
+                self.tau, self.xi, self.tau_a, self.xi_a, self.Gt_prob = policy_actions
+                Gt_prob_ratios = actions[self.policy_action_len:]
         elif self.type == "central_bank":
             self.base_interest_rate, self.reserve_ratio = policy_actions
         else:
@@ -170,7 +171,8 @@ class Government(BaseEntity):
             return taxes_paid
 
         income_tax = income_tax_function(income)
-        asset_tax = np.zeros_like(asset)
+        
+        _, asset_tax = self.tax_function(income, asset)
         return income_tax, asset_tax
 
     def compute_tax(self, income, asset):
@@ -195,9 +197,6 @@ class Government(BaseEntity):
 
     def safe_sigmoid(self, x, threshold=80.0):
         x = np.asarray(x, dtype=np.float64)
-        if np.any(np.abs(x) > threshold):
-            print(f"[Warning] Large input to exp detected: max |x| = {np.max(np.abs(x)):.2f}")
-        
         x = np.clip(x, -threshold, threshold)
         return 1 / (1 + np.exp(-x))
     

@@ -11,19 +11,16 @@ Environment:
       entity_args:
         params:
           type: 'OLG'
-          households_n: 100
+          households_n: 1000
           action_dim: 2
 
         OLG:
           birth_rate: 0.011
-
           initial_working_age: 24
     - entity_name: 'market'
       entity_args:
         params:
           type: "perfect"
-          alpha: 0.25
-          Z: 10.0
           sigma_z: 0.0038
           epsilon: 0.5
 
@@ -37,8 +34,6 @@ Environment:
           reserve_ratio: 0.1
           base_interest_rate: 0.0345
           depreciation_rate: 0.06
-          real_action_max: [ 1.0, 0.20 ]
-          real_action_min: [ 0.0, -1e-3 ]
 
 Trainer:
   house_alg: "bc"

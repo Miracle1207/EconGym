@@ -31,5 +31,5 @@ Trainer:
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1
-  n_epochs: 1000
+#  n_epochs: 1000
   wandb: True

@@ -43,5 +43,5 @@ Trainer:
   seed: 1
   epoch_length: 300
   cuda: False
-  wandb: True
-  n_epochs: 1000
+#  wandb: True
+#  n_epochs: 1000

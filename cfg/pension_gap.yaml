@@ -12,7 +12,6 @@ Environment:
           contribution_rate: 0.08
           gov_task: "pension_gap"
 
-
     - entity_name: 'households'
       entity_args:
         params:
@@ -47,6 +46,6 @@ Trainer:
   p_lr: 1e-4
   epoch_length: 300
   cuda: False
-  n_epochs: 1000
+#  n_epochs: 1000
   test: False
   wandb: True
