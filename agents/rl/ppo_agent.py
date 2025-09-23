@@ -21,29 +21,29 @@ class RunningMeanStd:
         self.mean = np.zeros(shape, 'float64')
         self.var = np.ones(shape, 'float64')
         self.count = epsilon
-    
+
     def update(self, x):
         x = np.asarray(x)
         batch_mean = np.mean(x, axis=0)
         batch_var = np.var(x, axis=0)
         batch_count = x.shape[0]
-        
+
         self.update_from_moments(batch_mean, batch_var, batch_count)
-    
+
     def update_from_moments(self, batch_mean, batch_var, batch_count):
         delta = batch_mean - self.mean
         tot_count = self.count + batch_count
-        
+
         new_mean = self.mean + delta * batch_count / tot_count
         m_a = self.var * self.count
         m_b = batch_var * batch_count
         M2 = m_a + m_b + delta ** 2 * self.count * batch_count / tot_count
         new_var = M2 / tot_count
-        
+
         self.mean = new_mean
         self.var = new_var
         self.count = tot_count
-    
+
     @property
     def std(self):
         return np.sqrt(self.var)
@@ -56,32 +56,32 @@ class ppo_agent:
         self.args = args
         self.agent_name = agent_name
         self.agent_type = type
-        
+
         env_agent_name = "households" if agent_name == "households" else agent_name
-        
+
         if env_agent_name == "government":
             self.government_agent = self.envs.government[type]
             self.obs_dim = self.government_agent.observation_space.shape[0]
             self.action_dim = self.government_agent.action_space.shape[0]
-        
+
         else:
             self.agent = getattr(self.envs, env_agent_name)
             self.obs_dim = self.agent.observation_space.shape[0]
             self.action_dim = self.agent.action_space.shape[-1]
-        
+
         if self.args.cuda:
             self.device = "cuda"
         else:
             self.device = "cpu"
-        
+
         self.net = mlp_net(state_dim=self.obs_dim, num_actions=self.action_dim).to(self.device)
-        
+
         # Initialize the MLP network
         self.net = mlp_net(state_dim=self.obs_dim, num_actions=self.action_dim).to(self.device)
-        
+
         # Flag to choose whether to load an existing policy or not
         self.load_exist_policy = False  # Set to True to load the trained policy
-        
+
         # Check if the policy should be loaded
         if self.load_exist_policy:
             if agent_name == "households":
@@ -101,7 +101,7 @@ class ppo_agent:
                 if self.envs.government.type == "tax":
                     self.net.load_state_dict(
                         torch.load("agents/models/bc_ppo/100/gdp/run8/ppo_net.pt", weights_only=True))
-        
+
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.args.p_lr, eps=1e-5)
         lambda_function = lambda epoch: 0.97 ** (epoch // 10)
         self.scheduler = LambdaLR(self.optimizer, lr_lambda=lambda_function)
@@ -110,7 +110,7 @@ class ppo_agent:
         self.step_counter = 0
         self.max_warmup_steps = 1000
         self.normalizer_applied = False
-    
+
     def compute_advantage(self, gamma, lmbda, td_delta):
         td_delta = td_delta.detach().numpy()
         advantage_list = []
@@ -123,14 +123,14 @@ class ppo_agent:
         # batch adv norm
         norm_advantage = (advantage_output - torch.mean(advantage_output)) / torch.std(advantage_output)
         return norm_advantage
-    
+
     def train(self, transition_dict):
         if self.agent_name == "bank" and self.agent_type == "non_profit":
             return 0, 0
         if self.agent_name == "market" and self.agent_type == "perfect":
             return 0, 0
         sum_loss = torch.tensor([0., 0.], dtype=torch.float32).to(self.device)
-        
+
         agent_data = transition_dict
         obs_tensor = torch.tensor(np.array(agent_data['obs_dict']), dtype=torch.float32).to(self.device)
         next_obs_tensor = torch.tensor(np.array(agent_data['next_obs_dict']), dtype=torch.float32).to(self.device)
@@ -140,7 +140,7 @@ class ppo_agent:
         # Ensure both tensors have the same shape before expanding
         if inverse_dones.shape != reward_tensor.shape:
             inverse_dones = inverse_dones.unsqueeze(-1).expand_as(reward_tensor)
-        
+
         inverse_dones = inverse_dones.to(self.device)
 
         next_value, next_pi = self.net(next_obs_tensor)
@@ -165,18 +165,18 @@ class ppo_agent:
             actor_loss = torch.mean(-torch.min(surr1, surr2))
             critic_loss = torch.mean(F.mse_loss(value, td_target.detach()))
             total_loss = actor_loss + self.args.vloss_coef * critic_loss
-            
+
             self.optimizer.zero_grad()
             total_loss.backward()
             torch.nn.utils.clip_grad_norm_(self.net.parameters(), 0.5)
             self.optimizer.step()
-            
+
             sum_loss[0] += actor_loss
             sum_loss[1] += critic_loss
-        
+
         self.scheduler.step()
         return sum_loss[0], sum_loss[1]
-    
+
     def get_action(self, obs_tensor):
         if self.agent_name == "bank" and self.agent_type == "non_profit":
             return np.random.randn(self.action_dim)
@@ -188,18 +188,18 @@ class ppo_agent:
             obs_np = obs_tensor.detach().cpu().numpy()
             self.state_rms.update(obs_np)
             self.step_counter += 1
-        
+
         # === 2. Inject normalizer after warmup ===
         if (not self.normalizer_applied) and (self.step_counter >= self.max_warmup_steps):
             self.net.set_normalizer(self.state_rms.mean, self.state_rms.std)
             self.normalizer_applied = True
-        
+
         _, pi = self.net(obs_tensor)
         mu, sigma = pi
         action_dist = torch.distributions.Normal(mu, sigma)
         action = action_dist.sample()
-        
+
         return action.cpu().numpy()
 
     def save(self, dir_path):
-        torch.save(self.net.state_dict(), str(dir_path) + '/ppo_net.pt')
+        torch.save(self.net.state_dict(), str(dir_path) + '/' + self.agent_name + '_ppo_net.pt')
