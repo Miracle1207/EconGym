@@ -32,7 +32,7 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
 | ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
-| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $$\lambda_t^i = 0$$                               |$r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)<br/>OLG includes pension if retired |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
 | **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
@@ -65,26 +65,70 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent       | In a perfectly competitive market, firms do not have control over product pricing, and their strategies follow fixed market rules. |
 | Bank | Rule-Based Agent       | Rule-Based Agent ensures that the behavior of financial institutions remains relatively stable.                                    |
 
+
 ---
 
-## **4. Running the Experiment**
+## 4. Running the Experiment
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "delayed_retirement"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/delayed_retirement.yaml`, which defines the setup for the "delayed_retirement" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `delayed_retirement.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "work_hard"
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "tax"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+          consumption_tax_rate: 0.0
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 1000
+
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
+
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'   # [ 'non_profit', 'commercial' ]
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "ppo"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+  n_epochs: 300
+```
 ---
 
 ## **​5.​**​**Illustrative Experiment**
@@ -106,12 +150,6 @@ Each simulation scene has its own parameter file that describes how it differs f
   * **bc\_ppo\_100\_OLG (Blue line):** Households are modeled under the **OLG** framework as ​**Behavior Cloning Agents**​, while the **government is a PPO-based RL Agent** that optimizes policy decisions. The economy contains **100 households** and operates under ​**standard working-hour conditions**​.
   * **996\_bc\_ppo\_100\_OLG (Green line):** Households are modeled under the **OLG** framework as ​**Behavior Cloning Agents**​, and the ​**government is a PPO-based RL Agent**​. The economy contains **100 households** but is subject to a **“996” extended work regime** , which increases effective labor supply relative to the standard condition.
 
-```Python
-#The maximum weekly working hours are extended to 60 or 72 hours per week.
-#working_hours_max representing the maximum annual working hours.
-Working_hours_max= 3120
-Working_hours_max= 4160
-```
 
 * **​ Visualized Experimental Results：**
 
