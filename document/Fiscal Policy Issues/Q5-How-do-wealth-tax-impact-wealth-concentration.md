@@ -68,26 +68,71 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule‐Based Agent | Adjust wages and prices according to labor‐market rules, transmitting the marginal effects of tax burdens on economic activity.                |
 | Bank | Rule‐Based Agent | Adjust interest rates and returns based on changes in savings and capital accumulation, reflecting taxation’s impact on financial equilibrium. |
 
-## **4. Running the Experiment**
-
-### **4.1 Quick Start**
-
-To run the simulation with a specific problem scene, use the following command:
-
-```Bash
-python main.py --problem_scene ""
-```
-
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
-
-### **4.2 Problem Scene Configuration**
-
-Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
-
-### **Example ​**​**YAML**​**​ Configuration: ​**
 
 ---
 
+## 4. Running the Experiment
+
+### 4.1 Quick Start
+
+To run the simulation with a specific problem scene, use the following command:
+
+```bash
+python main.py --problem_scene "delayed_retirement"
+```
+
+This command loads the configuration file `cfg/delayed_retirement.yaml`, which defines the setup for the "delayed_retirement" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+
+### 4.2 Problem Scene Configuration
+
+Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### Example YAML Configuration: `delayed_retirement.yaml`
+
+```yaml
+Environment:
+  env_core:
+    problem_scene: "delayed_retirement"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension"  # Type of government task: ['tax', 'pension', 'central_bank']
+          gov_task: "gdp"
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'  # Household model type: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 1000
+        OLG:
+          birth_rate: 0.011
+          initial_working_age: 24
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   # Market type: ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'   # Bank type: ['non_profit', 'commercial']
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+
+Trainer:
+  house_alg: "bc"  # Household algorithm (e.g., bc = Behavior Cloning)
+  gov_alg: "ppo"   # Government algorithm (e.g., ppo = Proximal Policy Optimization)
+  firm_alg: "rule_based"  # Firm algorithm 
+  bank_alg: "rule_based"  # Bank algorithm 
+  seed: 3  # Random seed for reproducibility
+  epoch_length: 300  # Length of each training episode
+  n_epochs: 1000  # Number of training epochs
+  test: False  # Flag to indicate if this is a test run
+```
+---
 ## 5.Illustrative Experiments
 
 ### Experiment 1: Household Economic Behavior under Different Property Tax Rates
