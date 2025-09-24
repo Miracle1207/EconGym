@@ -68,48 +68,79 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent       | Simulate firms’ direct responses to changes in financing costs, consistent with the perfect-competition assumption.                         |
 | Bank | Rule-Based Agent       | Commercial banks set margins according to preset strategies, facilitating the assessment of systemic effects under different margin regimes. |
 
+---
 
-## **4. Running the Experiment**
+## 4. Running the Experiment
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "population_aging"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/population_aging.yaml`, which defines the setup for the "population_aging" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `population_aging.yaml`
+
+```yaml
+Environment:
+  env_core:
+    problem_scene: "population_aging"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension"
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+          households_n: 1000
+          action_dim: 2
+
+        OLG:
+          birth_rate: 0.011
+          initial_working_age: 24
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"
+          sigma_z: 0.0038
+          epsilon: 0.5
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+```
 
 ---
 
 ## **​5.​**​**Illustrative Experiments**
 
-```Python
-# Based on real-world demographic trends, the simulated economic environment modifies birth and death rates
-# to represent different levels of population aging in various societies.
-
-population_aging_1: Medium birth rate / High death rate  
-  - Used to simulate: Developing societies or countries with limited medical resources 
-
-population_aging_2: Medium birth rate / Medium death rate   
-  - Used to simulate: Emerging economies in transition 
-
-population_aging_3: High birth rate / Medium death rate  
-  - Used to simulate: Youthful population structures in pro-natalist Southeast Asian countries
-
-population_aging_4: Medium birth rate / Low death rate  
-  - Used to simulate: Societies in early stages of aging 
-
-population_aging_5: High birth rate / Low death rate  
-  - Used to simulate: Societies encouraging childbirth with strong healthcare systems
-```
 
 ### Experiment 1: Impact of Population Aging on Individual Wealth and Labor Supply
 
