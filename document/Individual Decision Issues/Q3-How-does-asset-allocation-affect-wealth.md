@@ -28,9 +28,9 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                                    | Observation                                                                                                  | Action                                                                                 | Reward                                              |
 | ----------- | ------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| **Individual**  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)          |
+| **Individual**  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.              | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.               | /                                                                                                            | /                                                                                      | Zero (long-run)                                     |
-| **Bank**       | Commercial Banks/Non-Profit Platform    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.While Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts. | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)/No rate control(Non-Profit Platform)              | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks) / Zero (Non-Profit Platform)  |
+| **Bank**       | Commercial Banks/Non-Profit Platform    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.While Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund.| $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)/No rate control(Non-Profit Platform)              | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks) / Zero (Non-Profit Platform)  |
 
 ---
 
@@ -63,24 +63,63 @@ This section provides a recommended agent configuration. Users are encouraged to
 | No-Arbitrage Platform | Rule‑Based Agent | Generates uncertain investment returns, creating a realistic market‑risk environment.                     |
 | Market                                | Rule‑Based Agent | Delivers background capital‑return rates and macroeconomic conditions that influence investment behavior. |
 
-## **4. Running the Experiment**
+---
 
-### **4.1 Quick Start**
+## 4. Running the Experiment
+
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "asset_allocation"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/asset_allocation.yaml`, which defines the setup for the "asset_allocation" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `asset_allocation.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "asset_allocation"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "tax" # central_bank gov
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'ramsey_risk_invest'
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   # ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'commercial'
+
+
+Trainer:
+  house_alg: "ppo"
+  gov_alg: "saez"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+#  n_epochs: 1000
+  wandb: True
+```
 ---
 
 ## **​5.​**​**Illustrative Experiments**
@@ -95,25 +134,6 @@ Each simulation scene has its own parameter file that describes how it differs f
   * Risky vs. risk‑free allocation
   * Return‑distribution parameters
   * Final net wealth, consumption level, utility trajectory
-
-```python
-# Simulating household wealth under different asset allocation strategies
-
-For each time period:
-    For each household:
-        # Step 1: Decide how to split money
-        - Choose % to invest in risky assets (e.g., stocks)
-        - Put the rest in safe assets (e.g., savings)
-        # Step 2: Calculate total return
-        - Risky part: high return, high risk
-        - Safe part: low, stable return
-        # Step 3: Update wealth
-        - New wealth = previous wealth + investment return - consumption
-        # Step 4: Record consumption and satisfaction (utility)
-
-# After many rounds:
-    - Compare final wealth, total utility, and inequality across households
-```
 
 * **Baselines:**
   
