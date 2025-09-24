@@ -181,3 +181,27 @@ Trainer:
   **Figure 2:** Bar charts showing income distributions by age group (left) and income bracket (right) under different exemption levels. Lower exemptions lead to larger income declines.
 * Generous tax incentives for personal pension contributions are associated with higher long-term household incomes: by increasing households’ willingness to participate in pension schemes, these exemptions channel savings into banks and financial markets, which in turn support greater income growth over time.
 
+---
+
+### **Experiment 3: Training Curves for Pension Problems with Government ​**​**RL**
+
+* **Experiment Description:**
+
+    In certain pension-related problems, the government is trained using the PPO reinforcement learning algorithm, and we observe the relevant economic variables of households and the government.
+* **Experimental Variables:**
+  
+  * Gov\_reward
+  * Pension\_gov\_reward
+  * Years
+  * House\_work\_hours
+  * House\_age
+  * House\_pension
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.* ​**pension\_gap\_1000\_house\_bc\_gov\_ppo\_firm\_rule\_bank\_rule\_seed=1**​: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with ​**1000 households**​, while the government is trained using the **PPO**​​**​ algorithm**​.Bank and firm are modeled as **Rule-Based Agent.**
+
+![Pension Q1 PP](../img/Pension%20Q1%20PP.png)
+
+**Figure 2: After the government is trained with a PPO Agent, both household working hours and wages show a significant long-term increase. The duration of the simulated economy extends as the number of steps increases. In addition, government rewards rise steadily with training steps.**
+
+
