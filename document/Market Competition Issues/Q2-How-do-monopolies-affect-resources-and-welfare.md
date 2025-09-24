@@ -37,7 +37,7 @@ Select the following roles from the social role classification of the economic s
 
 | Social Role | Selected Type        | Role Description                                                                                                    | Observation                                                                                                  | Action                                                                                 | Reward                                              |
 | ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)          |
+| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility) |
 | **Government**  | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                 | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist. | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending          | GDP growth, equality, welfare                       |
 | **Firm**       | Monopoly             | Monopoly Firms set prices and wages to maximize profits under aggregate demand constraints.                        | $$o_t^{\text{mono}} = \{ K_t, L_{t}, Z_t, p_{t-1}, W_{t-1} \}$$<br>Capital, labor, productivity, last price/wage | $$a_t^{\text{mono}} = \{ p_t, W_t \}$$<br>Price and wage decisions                     | $$r_t^{\text{mono}} = p_t Y_t - W_t L_t - R_t K_t$$<br>Profits = Revenue – costs |
 | **Bank**       | Non-Profit Platform  | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                            | No rate control                                                                         | No profit                                           |
@@ -168,4 +168,31 @@ If firm_type == "monopoly":
 ​**Figure 5**​**​：​**Under the monopoly market, households' consumption levels are significantly lower than those in the perfectly competitive market.
 
 * Under the monopoly market, although residents' income levels are higher than those in a perfectly competitive market, the rise in commodity prices and the decline in effective social demand lead to a significant reduction in household consumption levels compared to the perfectly competitive scenario.
+
+  ### **Experiment 3: The Impact of Banking Behavior on Simulated Economies under a Monopoly Market**
+
+* **Experiment Description:**  This experiment simulates how different banking models influence the stability and longevity of a monopoly-driven economy. Specifically, it compares the effects of **non-profit banks** versus **commercial banks** on household consumption, firm profits, and overall system sustainability.
+* **Experimental Variables:**
+  
+  * ​**Monopoly market ​**​(single dominant firm).
+  * Banking model: **non-profit / rule-based** vs. ​**commercial / PPO-optimized**​.
+* **Baselines:**
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **monopoly\_100\_house\_bc\_gov\_seaz\_firm\_ppo\_bank\_ppo(dark red):** Households are modeled as **BC Agent with**​​**100 households**​,while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.Company and bank are modeled using the**​ ​**​**PPO**​**​​ (​**​​**Proximal Policy Optimization**​**)** reinforcement learning algorithm.
+  * **monopoly\_100\_house\_bc\_gov\_seaz\_firm\_ppo\_bank\_rule(green):** Households are modeled as **BC Agent with**​​**100 households**​,while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.Company is modeled using the **PPO**​**​​ (​**​​**Proximal Policy Optimization**​**) ​**algorithm, while bank is modeled as a **Rule-Based**​​**Agent**​.
+* **Visualized Experimental Results：**
+
+![Market Q2 P6](../img/Market%20Q2%20P6.png)
+
+![Market Q2 P7](../img/Market%20Q2%20P7.png)
+
+**​Figure 6–7:​**We observed the changes in key indicators under ​**different banking settings**​, including market prices, wage rates, household consumption, firm rewards, bank rewards, the duration of the simulated economy, household rewards, social welfare, and household wealth.In the ​**non-profit banking setting**​, monopolistic firms rapidly extract ​**consumer surplus**​, leading to a sharp decline in households' ability to consume and save. As a result, financial intermediaries run out of funds and firms face financing shortages. After several iterations, ​**the duration of economic operation (measured in years) converges toward 1**​.
+
+In contrast, under the ​**commercial banking setting**​, banks actively adjust deposit and lending rates to attract savings and build up a capital pool. Funds flow back to the corporate sector,**​ ​**boosting production and profits. Consequently, firms’ rewards increase, and ​**the overall economy sustains a longer lifespan**​. At the same time, the involvement of **commercial banks delays the collapse of the ​**​**social welfare**​​**​ system**​, allowing aggregate output and financial circulation to remain at relatively high levels.
+
+* Under ​**monopoly**​, the extraction of consumer surplus by firms is the primary cause of economic collapse.
+* **Non-profit banks** cannot buffer financial breakdowns, leading to rapid systemic failure.
+* ​**Commercial banks**​, through interest-rate optimization, can “extend the life” of the system to some extent, but cannot fundamentally reverse the downward trend in consumer welfare.
+
 
