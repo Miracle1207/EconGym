@@ -188,45 +188,28 @@ Trainer:
 
 * **Experiment Description:**
 
-   Based on the CES function characterizing consumer utility, different product substitution elasticities (epsilon) are introduced to examine their impact on consumer behavior patterns. The experiment fixes the number of firms in the market for a specific epsilon value and discusses consumer behavior characteristics under different product substitution elasticities.
-* **Involved Social Roles:**
-  
-  * Households: Ramsey Model
-  * Market: Monopolistic Competition Market
-* **AI**​**​ Agents:**
-  
-  * Households: Behavior Cloning Agent
-  * Government: Rule-Based Agent
-  * Market: RL Agent
-  * Financial Institutions: Rule-Based Agent
+  Based on the CES function characterizing consumer utility, different product substitution elasticities (epsilon) are introduced to examine their impact on consumer behavior patterns. The experiment fixes the number of firms in the market for a specific epsilon value and discusses consumer behavior characteristics under different product substitution elasticities.
 * **Experimental Variables:**
   
   * Different product substitution elasticities (epsilon)
   * Product prices and range of product varieties
   * Household reward and consumption in the simulated economy
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * ​**mp\_f8\_e10 (left group)**​: A monopolistic competition market with ​**8 firms**​, households modeled as ​**Ramsey Model and Behavior Cloning Agent**​, government modeled as a ​**rule-based agent**​, elasticity of substitution parameter ​**ε=10**​.
+  * ​**mp\_f8\_e4 (middle group)**​: A monopolistic competition market with ​**8 firms**​, households modeled as ​**Ramsey Model and Behavior Cloning Agent**​, government modeled as a ​**rule-based agent**​, elasticity of substitution parameter ​**ε=4**​.
+  * ​**mp\_f8\_e2 (right group)**​: A monopolistic competition market with ​**8 firms**​, households modeled as ​**Ramsey Model and Behavior Cloning Agent**​, government modeled as a ​**rule-based agent**​, elasticity of substitution parameter ​**ε=2**​.
 
-```python
-# Market scenarios and the impact of epsilon (ε)
-scenarios = [
-    {"scenario": "Moderate Differentiation", "epsilon": 4, "explanation": "Standard value (Dixit-Stiglitz)"},
-    {"scenario": "High Substitutability", "epsilon": 10, "explanation": "Low diversity utility"},
-    {"scenario": "Low Substitutability", "epsilon": 2, "explanation": "High value on diversity, like luxury market"}
-]
-
-# Epsilon's effect on market competition
-effects = [
-    {"epsilon_change": "ε ↑", "effect": "Increased Substitutability", "impact": "More competition, lower value of diversity"},
-    {"epsilon_change": "ε ↓", "effect": "Decreased Substitutability", "impact": "Stronger brand power, higher value of diversity"}
-]
-```
 
 ![Market Q4 P5](../img/Market%20Q4%20P5.png)
 
-​**Figure 5**​: The impact of product substitution elasticity on the consumption of households from different wealth tiers, with Firm = 8 fixed. When ϵ=2, the substitution elasticity is at its lowest, indicating that consumers are less willing to change their purchasing behavior due to price factors, leading to the highest consumption levels (right chart). When ϵ=8, consumers show the lowest consumption levels (left chart).
+​**Figure 5**​: The impact of product substitution elasticity on the consumption of households from different wealth tiers, with Firm = 8 fixed. When ϵ=2, the substitution elasticity is at its lowest, indicating that consumers are less willing to change their purchasing behavior due to price factors, leading to the highest consumption levels. When ϵ=8, consumers show the lowest consumption levels.
 
 ![Market Q4 P6](../img/Market%20Q4%20P6.png)
 
-​**Figure 6**​: Comparison of household utility across different wealth tiers under different consumption elasticities. The effect of consumption elasticity on household utility is not significant. When ϵ=2 (right chart), the average utility of households across different income levels is slightly higher.
+​**Figure 6**​: Comparison of household utility across different wealth tiers under different consumption elasticities. The effect of consumption elasticity on household utility is not significant. When ϵ=2, the average utility of households across different income levels is slightly higher.
 
 ![Market Q4 P7](../img/Market%20Q4%20P7.png)
 
