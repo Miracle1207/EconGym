@@ -38,9 +38,9 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
 | ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
-| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $$\lambda_t^i = 0$$                               |$r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)<br/>OLG includes pension if retired |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.    | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
-| **Bank**       | Commercial Banks    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts                    | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
+| **Bank**       | Commercial Banks    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund. | $a_t^{\text{bank}} = ( r^d_t, r^l_t )$<br>Deposit, lending decisions | $r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$<br>Interest margin |
 
 ---
 
@@ -72,25 +72,62 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Bank | Rule-Based Agent | Set interest-rate and investment-return rules to measure technological impacts on capital markets.                 |
 
 ---
+## 4. Running the Experiment
 
-## **4. Running the Experiment**
-
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "over_leveraged_consumption"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/over_leveraged_consumption.yaml`, which defines the setup for the "over_leveraged_consumption" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `over_leveraged_consumption.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "over_leveraged_consumption"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension" # central_bank gov
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG_adv_consume'
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   # ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'commercial'
+
+
+Trainer:
+  house_alg: "rule_based"  # over_leveraged_consumption as rules
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+```
 ---
 
 ## 5.Illustrative Experiments
@@ -110,7 +147,7 @@ Each simulation scene has its own parameter file that describes how it differs f
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results. The figure shows GDP dynamics under different leverage conditions in the OLG model.
   
   * **​over\_leverage\_rule\_based\_rule\_based\_100\_OLG :​**Households are modeled as ​**Rule-based Agents**​, and the government is also a **Rule-based Agent** applying fixed fiscal rules.Households operate within the **OLG Model** with **100** total households, under an **over-leverage condition.**
-  * **​baseline\_rule\_based\_rule\_based\_100\_OLG :​**Households are modeled as ​**Rule-based Agents**​, and the government is also a **Rule-based Agent** applying fixed fiscal rules.Households operate within the **OLG Model** with **100** total households, following a **standard ​**​**leverage**​**​ baselin.**
+  * **​baseline\_rule\_based\_rule\_based\_100\_OLG :​​**Households are modeled as ​**Rule-based Agents**​, and the government is also a **Rule-based Agent** applying fixed fiscal rules.Households operate within the **OLG Model** with **100** total households, following a **standard ​**​**leverage**​**​ baselin.**
   * **Panel Description:**
     * **Left panel:** Bars represent the distribution of **average annual work hours across age cohorts** (e.g., <24, 25–34, 35–44, …, 85+, and total).
     * **Right panel:** Bars represent the distribution of **average annual work hours across income classes** (rich, middle-class, poor, and mean).
@@ -125,7 +162,7 @@ Each simulation scene has its own parameter file that describes how it differs f
 
 ![Individual Q5 P3](../img/Individual%20Q5%20P3.png)
 
-​**Figure 3**​: Comparison of individual utility between front-loading (overdraft-enabled) and normal consumption groups. The overall impact of front-loading consumption on individual utility is not significant; however, from an age-based perspective, it leads to a slight increase in utility for younger households (left chart, green bar).
+​**Figure 3**​: Comparison of individual utility between front-loading (overdraft-enabled) and normal consumption groups. The overall impact of front-loading consumption on individual utility is not significant; however, from an age-based perspective, it leads to a slight increase in utility for younger households.
 
 ![Individual Q5 P4](../img/Individual%20Q5%20P4.png)
 
