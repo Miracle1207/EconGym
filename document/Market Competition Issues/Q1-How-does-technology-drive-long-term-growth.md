@@ -31,8 +31,8 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                                                                     | Observation                                                                                                                                          | Action                                                                                   | Reward                                 |
 | ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------- |
-| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $$\lambda_t^i = 0$$                               |$r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)<br/>OLG includes pension if retired |
-| **Government**  | Fiscal Authority    | Design and adjust inheritance-tax policy and assess its impact on public finances.                                                                  | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.       | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending            | GDP growth, equality, welfare          |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.    | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
+| **Government**  | Fiscal Authority    | Design and adjust inheritance-tax policy and assess its impact on public finances.                                           |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
 | **Firm**       | Perfect Competition | Observe how shifts in consumer demand affect firms’ production and pricing strategies.                                                              | /                                                                                                                                                    | /                                                                                          | Zero (long-run)                        |
 | **Bank**       | Non-Profit Platform | Study capital-market reactions to inheritance-tax policy, particularly changes in saving rates and investment behavior.                             | /                                                                                                                                                    | No rate control                                                                            | No profit                              |
 
@@ -62,68 +62,81 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Rule-Based Agent | Determine household decisions on consumption, savings, and labor in response to technological progress.      |
-| Government             | RL Agent         | Regulate government behavior based on the principle of maximizing long-term social welfare.                  |
+| Government             | Rule-Based Agent         | Regulate government behavior based on the US-government rules.                  |
 | Firm                 | Rule-Based Agent | Define how firms adjust wages, production scale, and hiring decisions in response to technological change.   |
 | Bank  | Rule-Based Agent | Set interest rates and investment returns to assess the impact of technological progress on capital markets. |
 
+---
 
- ## **4. Illustrative Experiment**
+## 4. Running the Experiment
 
-```python
-# Scenario setup related to technological progress
-# Z represents the Total Factor Productivity (TFP) level
-
-# Default: In general, Z_t is updated by adding noise in the logarithmic space
-At each time step:
-    1. Compute log(Z_t)
-    2. Add a random noise term (e.g., drawn from uniform or normal distribution)
-    3. Exponentiate the result to obtain the updated Z_t
-# Technological Progress: Assume a 1% annual growth in TFP on top of the existing value
-At each time step:
-    1. Compute log(Z_t)
-    2. Add a fixed technological growth term (e.g., 1% per period)
-    3. Add a random noise term to represent uncertainty
-    4. Exponentiate the result to get updated Z_t
-```
-
-## **4. Running the Experiment**
-
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "technology"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/technology.yaml`, which defines the setup for the "technology" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `technology.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "technology"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "tax"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 1000
+          action_dim: 2
+
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
+          Z: 1.0                        # todo: set different productivity level
+
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'   # [ 'non_profit', 'commercial' ]
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "us_federal"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+#  wandb: True
+```
 ---
 
 ## **5.Illustrative Experiment**
-
-```python
-# Scenario setup related to technological progress
-# Z represents the Total Factor Productivity (TFP) level
-
-# Default: In general, Z_t is updated by adding noise in the logarithmic space
-At each time step:
-    1. Compute log(Z_t)
-    2. Add a random noise term (e.g., drawn from uniform or normal distribution)
-    3. Exponentiate the result to obtain the updated Z_t
-# Technological Progress: Assume a 1% annual growth in TFP on top of the existing value
-At each time step:
-    1. Compute log(Z_t)
-    2. Add a fixed technological growth term (e.g., 1% per period)
-    3. Add a random noise term to represent uncertainty
-    4. Exponentiate the result to get updated Z_t
-```
 
 ### **Experiment 1: The Impact of Technological Progress on Average Wages**
 
@@ -183,75 +196,4 @@ At each time step:
 **Figure 3: ​**Technological progress leads to a rapid increase in total social output.
 
 * Technological progress has significantly increased the ​**level of social output**​, and while the disparity in social output was not particularly noticeable at first, it has become increasingly **pronounced** over time.
-
-
-### **Experiment 1: The Impact of Technological Progress on Average Wages**
-
-* ​**Experiment Description**​:
-  Analyze how technological progress influences workers' wages.
-* ​**Involved Social Roles**​:
-  * *Firm: ​*Perfectly Competitive Market
-  * ​*Individual*​: ​OLG Model
-* ​**AI Agents**​:
-  * ​*Firm*​: Rule-Based Agent
-  * ​*Households*​: Rule-Based Agent
-  * *Banks: ​*Rule-Based Agent
-* ​**Experimental Variables**​:
-  * Rate of technological progress (or parameters representing tech growth)
-  * Social wage level
-* **​ Visualized Experimental Results：**
-
-
-
-**Figure 1:** Under accelerated technological progress (green line), the social wage rate rises steadily, and the gap with the baseline scenario of normal progress (blue line) expands over time.
-
-* Technological progress has significantly driven the increase in the **average wage** level in society, and this **gap** has become increasingly pronounced over time, sufficient to demonstrate that technological progress will raise the overall wage rate in society.
-
----
-
-### **Experiment 2: The Impact of Technological Progress on Income Inequality**
-
-* ​**Experiment Description**​:  Does technological progress promote employment? What are its short-term and long-term utility effects?
-* ​**Involved Social Roles**​:
-  * ​*Firm*​: Perfectly Competitive Market
-  * ​*Individual*​: OLG Model
-* ​**AI Agents**​:
-  * ​*Firm*​: Rule-Based Agent
-  * ​*Individual*​:Rule-Based Agent
-  * ​*Government*​: RL Agent
-* ​**Experimental Variables**​:
-  * Speed of technological progress (or parameters representing tech growth)
-  * Income inequality (measured by the Gini coefficient)
-* **​ Visualized Experimental Results：**
-
-
-
-​**Figure 2**​: When technological progress accelerates (green line), income inequality increases compared to the case of normal progress (blue line), with a higher Gini coefficient indicating more severe social inequality.
-
-* Technological progress has led to an increase in income inequality in society (as indicated by the rise in the ​**Gini coefficient**​), suggesting that the wage growth rate of high-skilled workers will outpace that of general workers, thereby creating a larger income ​**disparity**​.
-
----
-
-### **Experiment 3: The Impact of Technological Progress on Total Social Output**
-
-* ​**Experiment Description**​:  Does technological progress lead to an increase in total social output?
-* ​**Involved Social Roles**​:
-  * ​*Firm*​: Perfectly Competitive Market
-  * ​*Individual*​: OLG Model
-  * ​*Government*​: Fiscal Authority
-* ​**AI Agents**​:
-  * ​*Firm*​: Rule-Based Agent
-  * ​*Individual*​:Rule-Based Agent
-  * ​*Government*​: RL Agent
-* ​**Experimental Variables**​:
-  * Speed of technological progress (or parameters representing tech growth)
-  * Total social output (GDP)
-* **Visualized Experimental Results：**
-
-
-
-Figure 3: Technological progress (green line) leads to a rapid increase in total social output.
-
-* Technological progress has significantly increased the ​**level of social output**​, and while the disparity in social output was not particularly noticeable at first, it has become increasingly **pronounced** over time.
-
 
