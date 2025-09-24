@@ -203,6 +203,6 @@ Trainer:
 
 ![Pension Q1 PP](../img/Pension%20Q1%20PP.png)
 
-**Figure 2: After the government is trained with a PPO Agent, both household working hours and wages show a significant long-term increase. The duration of the simulated economy extends as the number of steps increases. In addition, government rewards rise steadily with training steps.**
+Figure 2: After the government is trained with a PPO Agent, both household working hours and wages show a significant long-term increase. The duration of the simulated economy extends as the number of steps increases. In addition, government rewards rise steadily with training steps.
 
 
