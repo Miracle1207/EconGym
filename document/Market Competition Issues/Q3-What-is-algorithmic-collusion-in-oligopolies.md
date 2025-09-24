@@ -37,9 +37,9 @@ Select the following roles from the social role classification of the economic s
 
 | Social Role | Selected Type        | Role Description                                                                                                                                            | Observation                                                                                                                                                                                   | Action                                                                                                  | Reward                                           |
 | ----------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                                                   | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                                                                                                 | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment              | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)       |
-| **Government**  | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                                                        | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.                                                | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending                         | GDP growth, equality, welfare                   |
-| **Firm**       | Oligopoly             | Oligopoly Firms engage in strategic competition, anticipating household responses and rival actions.                                                       | $$o_t^{\text{olig}} = \{ K_t^j, L_t^j, Z_t^j, p_{t-1}^j, W_{t-1}^j \}$$<br>Firm-specific capital, labor, productivity, last price/wage. Here, $$j$$ denotes the firm index.                  | $$a_t^{\text{olig}} = \{ p_t^j, W_t^j \}$$<br>Price and wage decisions for firm $$j$$                 | $$r_t^{\text{olig}} = p_t^j y_t^j - W_t^j L_t^j - R_t K_t^j$$<br>Profits = Revenue – costs for firm $$j$$ |
+| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                                                  | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
+| **Government**  | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                                                         |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
+| **Firm**       | Oligopoly             | Oligopoly Firms engage in strategic competition, anticipating household responses and rival actions.                | $o_t^{\text{olig}} = ( K_t^j,  Z_t^j, r_{t-1}^l)$<br>Production capital, productivity, lending rate | $a_t^{\text{olig}} = ( p_t^j, W_t^j )$<br>Price and wage decisions for firm $j$ | $r_t^{\text{olig}} = p_t^j y_t^j - W_t^j L_t^j - R_t K_t^j$<br>Profits = Revenue – costs for firm $j$ | 
 | **Bank**       | Non-Profit Platform   | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.                                        | /                                                                                                                                                                                             | No rate control                                                                                         | No profit                                         |
 
 
@@ -56,7 +56,8 @@ The Tax Policy Department focuses on market competition and consumer welfare. Wh
 **Firm → ​Oligopoly Market**  
 Firms engage in **tacit coordination** through algorithms, leading to price consistency behavior. The oligopoly market structure provides fertile ground for ​**algorithmic collusion**​, which serves as the core behavior in this study.
 
-**Bank →Non-Profit Platform **  
+**Bank →Non-Profit Platform**
+
 In markets where **firm profits** and **stock prices** are closely linked, financial institutions adjust their investment portfolios, influencing capital allocation. The study aims to evaluate whether **oligopoly**​**​ collusion** distorts investment signals and impacts market efficiency.
 
 ---
@@ -74,48 +75,70 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 ---
 
-## **4. Running the Experiment**
+## 4. Running the Experiment
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "oligopoly"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/oligopoly.yaml`, which defines the setup for the "oligopoly" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `oligopoly.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "oligopoly"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "tax"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'ramsey'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 100
+
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "oligopoly"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
+          alpha: 0.36
+          Z: 1.0
+          sigma_z: 0.0038
+          epsilon: 0.5
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'   # [ 'non_profit', 'commercial' ]
+
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "saez"
+  firm_alg: "ppo"
+  bank_alg: "rule_based"
+  seed: 1
+  cuda: False
+#  n_epochs: 1000
+  wandb: True
+```
 ---
 
 ## **​5.​**​**Illustrative Experiment**
-
-```python
-# Simulating the impact of algorithmic collusion on price, output, and profit
-# Key variables: P (Price), Q (Quantity), Profit
-
-# Scenario 1: Perfectly Competitive Market (Baseline)
-At each time step t:
-    For each firm i:
-        1. Observe the market's average production cost
-        2. Set the product price P_i,t close to marginal cost
-        3. Decide output Q_i,t based on the market price
-        4. Compute profit: Profit_i,t = P_i,t × Q_i,t - cost
-
-# Scenario 2: Algorithmic Collusion Market (Simulating tacit collusion)
-At each time step t:
-    For each firm i:
-        1. Observe past prices of other firms
-        2. Adjust price P_i,t to align with competitors (avoid undercutting)
-        3. Keep output Q_i,t relatively stable
-        4. Profit increases due to coordinated higher pricing
-```
 
 ### **Experiment 1: Pricing Behavior of Firms in an ​**​**Oligopoly**​**​ Market**
 
