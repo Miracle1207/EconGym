@@ -68,6 +68,7 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Bank          | Rule-Based Agent       | Non-Profit Platforms have no interest-rate control authority, and thus can be modeled as rule-based intermediaries. |
 
 
+---
 
 ## 4. Running the Experiment
 
@@ -130,6 +131,7 @@ Trainer:
   n_epochs: 1000  # Number of training epochs
   test: False  # Flag to indicate if this is a test run
 ```
+---
 
 
 
