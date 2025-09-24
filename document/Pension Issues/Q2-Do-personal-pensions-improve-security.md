@@ -198,7 +198,8 @@ Trainer:
   * House\_pension
 * **Baselines:**
   
-  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.* ​**pension\_gap\_1000\_house\_bc\_gov\_ppo\_firm\_rule\_bank\_rule\_seed=1**​: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with ​**1000 households**​, while the government is trained using the **PPO**​​**​ algorithm**​.Bank and firm are modeled as **Rule-Based Agent.**
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  * ​**pension\_gap\_1000\_house\_bc\_gov\_ppo\_firm\_rule\_bank\_rule\_seed=1**​: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with ​**1000 households**​, while the government is trained using the **PPO**​​**​ algorithm**​.Bank and firm are modeled as **Rule-Based Agent.**
 
 ![Pension Q1 PP](../img/Pension%20Q1%20PP.png)
 
