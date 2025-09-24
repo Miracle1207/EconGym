@@ -66,13 +66,12 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent      | Reproduce real-world lifecycle-based decisions on contributions, savings, and retirement using behavior cloning.                        |
-| Government             | Rule-Based Agent / RL Agent | Define rule-based triggers (e.g., bond issuance, tax hikes) in response to pension shortfalls, or employ RL to optimize pension policy. |
+| Government             | RL Agent |  Employ RL agent to optimize pension policy. |
 | Firm                 | Rule-Based Agent            | Map labor-market responses via supply–demand rules, reflecting wage and employment dynamics.                                           |
 | Bank | Rule-Based Agent            | Set investment-return adjustments based on long-term interest rates and demographic shifts using explicit rules.                        |
 
 
 ## **4. Running the Experiment**
-## 4. Running the Experiment
 
 ### 4.1 Quick Start
 
