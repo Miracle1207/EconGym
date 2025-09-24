@@ -81,10 +81,10 @@ This section provides a recommended agent configuration. Users are encouraged to
 To run the simulation with a specific problem scene, use the following command:
 
 ```bash
-python main.py --problem_scene "delayed_retirement"
+python main.py --problem_scene "monopoly"
 ```
 
-This command loads the configuration file `cfg/delayed_retirement.yaml`, which defines the setup for the "delayed_retirement" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `monopoly.yaml`, which defines the setup for the "monopoly" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
 ### 4.2 Problem Scene Configuration
 
@@ -223,18 +223,21 @@ If firm_type == "monopoly":
 
 * Under the monopoly market, although residents' income levels are higher than those in a perfectly competitive market, the rise in commodity prices and the decline in effective social demand lead to a significant reduction in household consumption levels compared to the perfectly competitive scenario.
 
-  ### **Experiment 3: The Impact of Banking Behavior on Simulated Economies under a Monopoly Market**
+### **Experiment 3: The Impact of Banking Behavior on Simulated Economies under a Monopoly Market**
 
-* **Experiment Description:**  This experiment simulates how different banking models influence the stability and longevity of a monopoly-driven economy. Specifically, it compares the effects of **non-profit banks** versus **commercial banks** on household consumption, firm profits, and overall system sustainability.
+* **Experiment Description:**
+
+   This experiment simulates how different banking models influence the stability and longevity of a monopoly-driven economy. Specifically, it compares the effects of **non-profit banks** versus **commercial banks** on household consumption, firm profits, and overall system sustainability.
 * **Experimental Variables:**
   
   * ​**Monopoly market ​**​(single dominant firm).
   * Banking model: **non-profit / rule-based** vs. ​**commercial / PPO-optimized**​.
 * **Baselines:**
+  
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * **monopoly\_100\_house\_bc\_gov\_seaz\_firm\_ppo\_bank\_ppo(dark red):** Households are modeled as **BC Agent with**​​**100 households**​,while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.Company and bank are modeled using the**​ ​**​**PPO**​**​​ (​**​​**Proximal Policy Optimization**​**)** reinforcement learning algorithm.
-  * **monopoly\_100\_house\_bc\_gov\_seaz\_firm\_ppo\_bank\_rule(green):** Households are modeled as **BC Agent with**​​**100 households**​,while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.Company is modeled using the **PPO**​**​​ (​**​​**Proximal Policy Optimization**​**) ​**algorithm, while bank is modeled as a **Rule-Based**​​**Agent**​.
+  * **monopoly\_100\_house\_bc\_gov\_seaz\_firm\_ppo\_bank\_ppo(dark red):** Households are modeled as **BC Agent with**​​**100 households**​,while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.Company and bank are modeled using the**​ ​**​**PPO**​**​​ (​**​​**Proximal Policy Optimization)** reinforcement learning algorithm.
+  * **monopoly\_100\_house\_bc\_gov\_seaz\_firm\_ppo\_bank\_rule(green):** Households are modeled as **BC Agent with**​​**100 households**​,while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.Company is modeled using the **PPO (​**​​**Proximal Policy Optimization) ​**algorithm, while bank is modeled as a **Rule-Based Agent**​.
 * **Visualized Experimental Results：**
 
 ![Market Q2 P6](../img/Market%20Q2%20P6.png)
