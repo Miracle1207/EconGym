@@ -75,16 +75,16 @@ This section provides a recommended agent configuration. Users are encouraged to
 To run the simulation with a specific problem scene, use the following command:
 
 ```bash
-python main.py --problem_scene "delayed_retirement"
+python main.py --problem_scene "work_hard"
 ```
 
-This command loads the configuration file `cfg/delayed_retirement.yaml`, which defines the setup for the "delayed_retirement" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/work_hard.yaml`, which defines the setup for the "work_hard" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
 ### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### Example YAML Configuration: `delayed_retirement.yaml`
+### Example YAML Configuration: `work_hard.yaml`
 
 ```yaml
 Environment:
