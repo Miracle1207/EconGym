@@ -64,7 +64,7 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
-| Individual             | Rule-Based Agent | Define real individual behavior patterns to simulate saving and consumption decisions |
+| Individual             | Behavior Cloning Agent | Imitates real-world behavior by training on empirical data. Enables realistic micro-level behavior |
 | Government             | Rule-Based Agent       | Formulate individual pension policies based on policy parameters    |
 | Firm                 | Rule-Based Agent                          | Simulate firms’ investment and wage‐setting decisions                                       |
 | Bank | Rule-Based Agent                          | Assess how pension savings influence capital markets                                          |
