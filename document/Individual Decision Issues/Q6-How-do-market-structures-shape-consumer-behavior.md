@@ -80,24 +80,62 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule‐Based Agent      | Focuses on how market structure shapes wage‐ and price‐formation; employs rules to model firm pricing and wage behavior, sidestepping strategic game simulations. |
 | Bank | Rule‐Based Agent      | Simulates interest‐rate impacts on prices and wages via preset rules to capture macro feedback channels, without modeling profit‐maximizing bank strategies.      |
 
-## **4. Running the Experiment**
+---
+## 4. Running the Experiment
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "market_type"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/market_type.yaml`, which defines the setup for the "market_type" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `market_type.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "market_type"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "tax"
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'ramsey'
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "oligopoly"     # todo: select from ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'
+
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+```
 ---
 
 ## 5.Illustrative Experiments
