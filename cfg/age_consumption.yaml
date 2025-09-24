@@ -1,6 +1,6 @@
 Environment:
   env_core:
-    problem_scene: "asset_allocation"
+    problem_scene: "age_consumption"
     episode_length: 300
   Entities:
     - entity_name: 'government'
