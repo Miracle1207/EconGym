@@ -69,7 +69,6 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 ---
 
----
 
 ## 4. Running the Experiment
 
