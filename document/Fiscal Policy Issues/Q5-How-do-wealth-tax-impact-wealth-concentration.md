@@ -33,8 +33,8 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                               | Observation                                                                                               | Action                                                                                 | Reward                                   |
 | ----------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
-| **Individual**  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.        | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics             | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility) |
-| **Government**  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.             | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist. | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending          | GDP growth, equality, welfare            |
+| **Individual**  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.        | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
+| **Government**  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.             |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.           | /                                                                                                         | /                                                                                    | Zero (long-run)                          |
 | **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                         | No rate control                                                                      | No profit                                |
 
@@ -78,44 +78,48 @@ This section provides a recommended agent configuration. Users are encouraged to
 To run the simulation with a specific problem scene, use the following command:
 
 ```bash
-python main.py --problem_scene "delayed_retirement"
+python main.py --problem_scene "wealth_tax"
 ```
 
-This command loads the configuration file `cfg/delayed_retirement.yaml`, which defines the setup for the "delayed_retirement" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/wealth_tax.yaml`, which defines the setup for the "wealth_tax" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
 ### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### Example YAML Configuration: `delayed_retirement.yaml`
+### Example YAML Configuration: `wealth_tax.yaml`
 
 ```yaml
 Environment:
   env_core:
-    problem_scene: "delayed_retirement"
-    episode_length: 300
+    problem_scene: "wealth_tax"
   Entities:
     - entity_name: 'government'
       entity_args:
         params:
-          type: "pension"  # Type of government task: ['tax', 'pension', 'central_bank']
-          gov_task: "gdp"
+          type: "tax"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+          tau_a: 0.1  # todo: set asset tax policy
+          xi_a: 0.0
+
     - entity_name: 'households'
       entity_args:
         params:
-          type: 'OLG'  # Household model type: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
-          households_n: 1000
-        OLG:
-          birth_rate: 0.011
-          initial_working_age: 24
+          type: 'ramsey'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 100
+          action_dim: 2
+
+
     - entity_name: 'market'
       entity_args:
         params:
-          type: "perfect"   # Market type: ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+          type: "perfect"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
+
     - entity_name: 'bank'
       entity_args:
         params:
-          type: 'non_profit'   # Bank type: ['non_profit', 'commercial']
+          type: 'non_profit'   # [ 'non_profit', 'commercial' ]
+          n: 1
           lending_rate: 0.0345
           deposit_rate: 0.0345
           reserve_ratio: 0.1
@@ -123,14 +127,14 @@ Environment:
           depreciation_rate: 0.06
 
 Trainer:
-  house_alg: "bc"  # Household algorithm (e.g., bc = Behavior Cloning)
-  gov_alg: "ppo"   # Government algorithm (e.g., ppo = Proximal Policy Optimization)
-  firm_alg: "rule_based"  # Firm algorithm 
-  bank_alg: "rule_based"  # Bank algorithm 
-  seed: 3  # Random seed for reproducibility
-  epoch_length: 300  # Length of each training episode
-  n_epochs: 1000  # Number of training epochs
-  test: False  # Flag to indicate if this is a test run
+  house_alg: "bc"
+  gov_alg: "us_federal"     # if choose "rule_based", you need set asset tax in the `agents/rule_based/government.py`
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 2
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
 ```
 ---
 ## 5.Illustrative Experiments
@@ -175,11 +179,11 @@ Trainer:
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P1.jpeg)
 
-**Figure 2:** Property tax reduces long-run wealth accumulation across all income levels. Households accumulate the most wealth in the absence of property tax (left).
+**Figure 2:** Property tax reduces long-run wealth accumulation across all income levels. Households accumulate the most wealth in the absence of property tax.
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P3.jpeg)
 
-**Figure 3:** Short-term utility is only slightly affected by property tax. Average household utility in the 0% tax economy (left) is marginally higher than in the 5% tax case (middle).
+**Figure 3:** Short-term utility is only slightly affected by property tax. Average household utility in the 0% tax economy (left) is marginally higher than in the 5% tax case.
 
 ![Wealth Tax Impact](../img/Fiscal%20Q5P4.jpeg)
 
