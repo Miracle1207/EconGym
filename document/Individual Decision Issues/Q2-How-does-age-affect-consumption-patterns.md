@@ -73,26 +73,65 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule‑Based Agent | Adjusts prices and supply under predefined rules to match demand shifts and keep the market in equilibrium.                               |
 | Bank | Rule‑Based Agent | Delivers standardized financial services—uniform risk assessment and product pricing—for all age cohorts.                               |
 
+
 ---
 
-## **4. Running the Experiment**
+## 4. Running the Experiment
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "asset_allocation"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/asset_allocation.yaml`, which defines the setup for the "asset_allocation" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `asset_allocation.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "asset_allocation"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension" # central_bank gov
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   # ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'commercial'
+
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+```
 ---
 
 ## 5.Illustrative Experiment
@@ -126,24 +165,6 @@ Each simulation scene has its own parameter file that describes how it differs f
     * Yellow bar: Poor households
     * Red bar: Overall average
 
-```Python
-#c denotes the initial consumption ratio​ ​(i.e., proportion of income consumed).
-#Parameters are initialized based on LLM-informed recommendations and U.S. statistical data tracking.
-
-For each individual in the household population:
-    If 18 ≤ age ≤ 30:
-        Set c ≈ 0.65 ± small random noise
-        # Young adults: high consumption, early-stage overconsumption
-    Else if 31 ≤ age ≤ 45:
-        Set c ≈ 0.55 ± small random noise
-        # Early middle age: career building, moderate consumption
-    Else if 46 ≤ age ≤ 65:
-        Set c ≈ 0.45 ± small random noise
-        # Late middle age: stable income, family burden, more balanced
-    Else if age > 65:
-        Set c ≈ 0.35 ± small random noise
-        # Elderly: consumption needs decline, medical costs rise
-```
 
 * **​ Visualized Experimental Results：**
 
