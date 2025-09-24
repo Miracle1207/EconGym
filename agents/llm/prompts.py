@@ -21,9 +21,9 @@ def build_central_bank_prompt(central_bank_obs: np.ndarray) -> str:
         - Mean household asset of the Bottom 50% (households): {o[2]:.2f}
         - Mean household education level of the Bottom 50% (households): {o[3]:.2f}
         - Market wage rate: {o[4]:.4f}
-        - Bank lending rate: {o[5]:.4f}
-        - Bank deposit rate: {o[6]:.4f}
-        - General price level: {o[7]:.4f}
+        - General price level: {o[5]:.4f}
+        - Bank lending rate: {o[6]:.4f}
+        - Bank deposit rate: {o[7]:.4f}
         - Society inflation rate: {o[8]:.4f}
         - Society economic growth rate: {o[9]:.4f}
         ---
@@ -134,9 +134,9 @@ def build_tax_prompt(tax_obs: np.ndarray) -> str:
         - Mean household asset of the Bottom 50% (households): {o[2]:.2f}
         - Mean household education level of the Bottom 50% (households): {o[3]:.2f}
         - Market wage rate: {o[4]:.4f}
-        - Bank lending rate: {o[5]:.4f}
-        - Bank deposit rate: {o[6]:.4f}
-        - General price level: {o[7]:.4f}
+        - General price level: {o[5]:.4f}
+        - Bank lending rate: {o[6]:.4f}
+        - Bank deposit rate: {o[7]:.4f}
         - Government debt: {o[8]:.4f}
         ---
         **Policy Parameters You Can Adjust**:

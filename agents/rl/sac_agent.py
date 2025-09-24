@@ -383,7 +383,7 @@ class sac_agent:
 
     def load(self, dir_path):
         """Load the model"""
-        checkpoint = torch.load(str(dir_path) + '/sac_net.pt', map_location=self.device)
+        checkpoint = torch.load(str(dir_path) + '/' + self.agent_name + '/sac_net.pt', map_location=self.device)
         self.policy.load_state_dict(checkpoint['policy_state_dict'])
         self.qf1.load_state_dict(checkpoint['qf1_state_dict'])
         self.qf2.load_state_dict(checkpoint['qf2_state_dict'])
