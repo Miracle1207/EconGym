@@ -62,8 +62,8 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
-| Individual    | Rule-Based Agent       | Encodes domain knowledge or user-defined heuristics (e.g., IMF’s fiscal adjustment rule). Provides interpretable, human-crafted policies. |
-| Government    | Rule-Based Agent       | Since delayed retirement is defined by statutory retirement age, this can be directly configured in EconGym as a rule-based policy. |
+| Individual    | Behavior Cloning Agent   | Imitates real-world behavior by training on empirical data. Enables realistic micro-level behavior. |
+| Government    | RL Agent       | Learns through trial-and-error to optimize long-term cumulative rewards. Well-suited for solving dynamic decision-making problems.  |
 | Firm          | Rule-Based Agent       | Perfect competition implies market clearing and first-order optimality conditions, consistent with rule-based methods. |
 | Bank          | Rule-Based Agent       | Non-Profit Platforms have no interest-rate control authority, and thus can be modeled as rule-based intermediaries. |
 
