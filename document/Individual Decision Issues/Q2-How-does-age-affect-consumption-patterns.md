@@ -37,11 +37,12 @@ Population‐structure shifts are a critical determinant of both macroeconomic o
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                | Role Description                                                                                                                              |
-| ------------------------ | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model / Ramsey Model     | The OLG framework captures life‑cycle effects on consumption; the Ramsey model distinguishes age cohorts under an infinite‑horizon setting. |
-| Firm                 | Perfect Competition | Adjusts product supply and prices in response to age‑specific demand shifts.                                                                 |
-| Bank | Commercial Banks             | Provide savings and loan services, influencing liquidity constraints and intertemporal consumption preferences across age groups.             |
+
+| Social Role | Selected Type       | Role Description                                             | Observation                                                  | Action                                                       | Reward                                   |
+| ----------- | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------- |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
+| **Firm**        | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses. | /                                                            | /                                                            | Zero (long-run)                          |
+| **Bank**       | Commercial Banks   | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund.| $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)    | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks) |
 
 ---
 
@@ -68,7 +69,7 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
-| Individual             | RL Agent          | Each household maximizes utility by using reinforcement learning to optimize age‑specific consumption‑saving decisions and preferences. |
+| Individual             | Behavior Cloning Agent          | Each household maximizes utility by using real world data to optimize age‑specific consumption‑saving decisions and preferences. |
 | Government             | Rule‑Based Agent | Executes taxation and transfer policies according to explicit fiscal rules.                                                               |
 | Firm                 | Rule‑Based Agent | Adjusts prices and supply under predefined rules to match demand shifts and keep the market in equilibrium.                               |
 | Bank | Rule‑Based Agent | Delivers standardized financial services—uniform risk assessment and product pricing—for all age cohorts.                               |
@@ -83,21 +84,21 @@ This section provides a recommended agent configuration. Users are encouraged to
 To run the simulation with a specific problem scene, use the following command:
 
 ```bash
-python main.py --problem_scene "asset_allocation"
+python main.py --problem_scene "age_consumption"
 ```
 
-This command loads the configuration file `cfg/asset_allocation.yaml`, which defines the setup for the "asset_allocation" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/age_consumption.yaml`, which defines the setup for the "age_consumption" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
 ### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### Example YAML Configuration: `asset_allocation.yaml`
+### Example YAML Configuration: `age_consumption.yaml`
 
 ```yaml
 Environment:
   env_core:
-    problem_scene: "asset_allocation"
+    problem_scene: "age_consumption"
     episode_length: 300
   Entities:
     - entity_name: 'government'
