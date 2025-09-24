@@ -29,9 +29,9 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type        | Role Description                                                                                                             | Observation                                                                                                  | Action                                                             | Reward                         |
 | ----------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------ |
-| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                    | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility) |
-| **Government**  | Central Bank         | Central Bank adjusts nominal interest rates and reserve requirements, transmitting monetary policy to households and firms. | $o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$<br>Public debt, wage, price level, inflation, GDP, income dist.                                                                                           | $$a_t^{\text{cb}} = \{ \phi_t, \iota_t \}$$<br>Reserve ratio, benchmark rate           | Inflation/GDP stabilization    |
-| **Firm**       | Perfect Competition  | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                       | /                                                                                                            | /                                                                | Zero (long-run)                |
+| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                   | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
+| **Government**  | Central Bank         | Central Bank adjusts nominal interest rates and reserve requirements, transmitting monetary policy to households and firms. |\$\$o\_t^g = (\\mathcal{A}\_{t}, \\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, \\pi\_{t-1}, g\_{t-1})\$\$ <br>Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, inflation rate, growth rate. | $a_t^{\text{cb}} = ( \phi_t, \iota_t )$<br>Reserve ratio, benchmark rate | Inflation/GDP stabilization                                  |
+| **Firm**       | Perfect Competition  | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                       | /                                                            | /                                                            | Zero (long-run)                                              |
 | **Bank**       | Commercial Banks     | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions               | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
 
 ---
@@ -64,26 +64,81 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent       | The market responds according to supply–demand rules (e.g., lower rates boost investment); the simple rule-based approach ensures control. |
 | Bank | Rule-Based Agent       | Commercial banks respond to base-rate changes by expanding loans or cutting deposit rates.                                                  |
 
-## **4. Running the Experiment**
+---
 
-### **4.1 Quick Start**
+## 4. Running the Experiment
+
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "negative_interest"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/negative_interest.yaml`, which defines the setup for the "negative_interest" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `negative_interest.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "negative_interest"
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "central_bank"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+          base_interest_rate: 0.03  # todo: set monetary policy
+          reserve_ratio: 0.08
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'ramsey'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 100
+          action_dim: 2
+        OLG:
+          birth_rate: 0.04
+          die_rate: 0.05
+          initial_working_age: 24
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
+          alpha: 0.25
+          Z: 10.0
+          sigma_z: 0.0038
+          epsilon: 0.5
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'   # [ 'non_profit', 'commercial' ]
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+          real_action_max: [ 1.0, 0.20 ]
+          real_action_min: [ 0.0, -1e-3 ]
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 1000
+```
 ---
-
 ## **​5.​**​**Illustrative Experiment**
 
 ### Experiment 1: Evaluation of the Economic Effects of a Negative-Rate Policy
@@ -93,10 +148,10 @@ Each simulation scene has its own parameter file that describes how it differs f
   Compare a baseline economy with one that falls into a crisis in year 10 but implements a negative-interest-rate policy to assess how such a policy aids recovery.
 * **Experimental Variables:**
   * Crisis onset in year 10 vs. a normally operating economy
-  * Negative-rate policy (r = –1%)
+  * Negative-rate policy (r = –1%) vs. Normal policy
   * Aggregate GDP
   * Income-inequality indicator (e.g., Gini coefficient)
-
+    
 ```Python
 # Initial setup: simulate an economic crisis
 At time T = 10, the economy enters a crisis scenario 
