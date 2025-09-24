@@ -65,21 +65,81 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent       | Adjust wages via supply–demand rules, supporting market responses under varying demographic structures.              |
 | Bank | Rule-Based Agent       | Feedback pension-fund asset changes or fiscal pressure through macro-level rules governing interest and return rates. |
 
-## **4. Running the Experiment**
+---
 
-### **4.1 Quick Start**
+## 4. Running the Experiment
+
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "pension_across_countries"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/pension_across_countries.yaml`, which defines the setup for the "pension_across_countries" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
+
+### Example YAML Configuration: `pension_across_countries.yaml`
+
+```yaml
+Environment:
+  env_core:
+    problem_scene: "pension_across_countries"
+    estate_tax_rate: 0.0
+    estate_tax_exemption: 13610000
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+          retire_age: 62
+          pension_rate: 0.7
+          contribution_rate: 0.08
+          gov_task: "gdp"
+
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+
+          households_n: 1000
+        OLG:
+          birth_rate: 0.011
+          initial_working_age: 24
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  p_lr: 1e-4
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 1000
+  test: False
+```
 
 ---
 
