@@ -170,11 +170,11 @@ Trainer:
 
 ![Pension Q3 P1](../img/PensionQ3P1.png)
 
-**Figure 1:**​​**Household income statistics at Year 52 under different aging scenarios**​.From the age perspective, young individuals in Scenario 3 exhibit the highest income (green and orange bars), while income levels for middle-aged and elderly individuals show no significant differences across scenarios.From the wealth perspective, wealthy (blue bars) and middle-class households (green bars) in Scenario 3 have the highest income, and the average household consumption (red bars) is also the highest in this scenario.
+**Figure 1:**​​**Household income statistics at Year 52 under different aging scenarios**​.From the age perspective, young individuals in Scenario 3 exhibit the highest income (green and orange bars), while income levels for middle-aged and elderly individuals show no significant differences across scenarios.From the wealth perspective, wealthy (blue bars) and middle-class households (green bar) in Scenario 3 have the highest income, and the average household consumption (red bar) is also the highest in this scenario.
 
 ![Pension Q3 P2](../img/PensionQ3P2.png)
 
-**Figure 2:**​​**Household consumption statistics at Year 52 under different aging scenarios**​. From the age perspective, young individuals in Scenario 3 exhibit the highest consumption (green and orange bars), while middle-aged individuals consume the most in Scenario 4 (blue bars). Consumption levels for the elderly remain relatively low across all scenarios. From the income perspective, wealthy (blue bars) and middle-class households (green bars) in Scenario 3 have the highest consumption, with the overall average household consumption (red bars) also highest in this scenario.
+**Figure 2:**​​**Household consumption statistics at Year 52 under different aging scenarios**​. From the age perspective, young individuals in Scenario 3 exhibit the highest consumption (green and orange bars), while middle-older-aged individuals consume the most in Scenario 4 (blue bar). Consumption levels for the oldest people (yellow bar) remain relatively low across all scenarios. From the income perspective, wealthy (blue bars) and middle-class households (green bar) in Scenario 3 have the highest consumption, with the overall average household consumption (red bar) also highest in this scenario.
 
 * Under different aging scenarios, the income and consumption levels of the elderly show no significant changes; however, the combination of high birth rates and moderate death rates results in a notable difference for the young: in this simulated environment, the young exhibit significantly higher income and consumption compared to other scenarios.
 
