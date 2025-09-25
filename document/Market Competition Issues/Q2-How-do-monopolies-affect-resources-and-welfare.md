@@ -47,14 +47,14 @@ Select the following roles from the social role classification of the economic s
 ### Rationale for Selected Roles
 
 **Individual →Ramsey Model**  
-**​ Ramsey Model** is used to capture how price changes in a monopoly market influence household consumption decisions, focusing on differences across individuals rather than across age groups.
+Ramsey Model is used to capture how price changes in a monopoly market influence household consumption decisions, focusing on differences across individuals rather than across age groups.
 Although the Overlapping Generations (OLG) model accounts for intergenerational decision-making—e.g., younger individuals tend to save more for the future—the focus here is not on age-specific behavior, but rather on heterogeneity unrelated to the life stage.
 
 **Government → Fiscal Authority**  
 The Treasury Department may implement price control policies to ensure market fairness and balance social welfare under monopolistic conditions.
 
 **Firm → Monopoly**  
-The model studies how monopolistic pricing behavior influences market competition and broader socioeconomic outcomes.
+The firm sets a monopoly price, thereby impacting households and further influencing society as a whole.
 
 **Bank → Non-Profit Platform**  
 These sets ensure the efficiency of capital markets and help analyze the indirect effects of monopoly structures on the financial system.
@@ -68,8 +68,8 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent    | Learns consumer behavior from historical data, including price sensitivity, consumption patterns, and responses to monopoly pricing.                                |
-| Government             | Rule-Based Agent/RL Agent | The government should be able to execute regulatory functions through predefined rules, or interact with the market to implement more targeted regulatory policies. |
-| Firm                 | RL Agent                  | Possesses pricing power and typically sets prices based on a profit-maximization strategy.                                                                          |
+| Government             | Rule-Based Agent | The government should be able to execute regulatory functions through predefined rules,like Seaz tax framework. |
+| Firm                 |  Rule-Based Agent                  |The firm adopts certain predetermined rules in order to maximize its own profit.                                                                          |
 | Bank| Rule-Based Agent          | Operates under the no-arbitrage principle; uses rule-based mechanisms to maintain market stability and analyze capital flows under monopoly pricing.                |
 
 ---
@@ -207,7 +207,7 @@ Trainer:
 
 ![Market Q2 P4](../img/Market%20Q2%20P4.png)
 
-**Figure 2-4:** The blue, green, yellow, and red bars represent the average income levels of different income groups (Top 10%, Mid 40%, Bottom 50%,Average in 100%). From left to right, we show the income levels under a perfectly competitive market with government using a rule-based agent and RL agent, and under a monopoly market with both agents.Under the monopoly market, households' exhibit higher income levels in the medium to long term.
+**Figure 2-4:** The blue, green, yellow, and red bars represent the average income levels of different income groups. From left to right, we show the income levels under a perfectly competitive market with government using a rule-based agent or RL agent, and under a monopoly market with both agents.Under the monopoly market, households' exhibit higher income levels in the medium to long term.
 
 ![Market Q2 P5](../img/Market%20Q2%20P5.png)
 
