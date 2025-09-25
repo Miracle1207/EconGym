@@ -67,7 +67,7 @@ We consider four market structures:
 **Oligopoly:** a few firms compete strategically.
 **Monopolistic Competition:** many firms with differentiated products and some pricing power.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 We abstract from profit-seeking bank behavior and instead focus on how capital markets adjust to technological and wage shocks under no-arbitrage conditions.
 
 ---
