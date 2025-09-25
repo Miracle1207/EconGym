@@ -55,7 +55,7 @@ Pension and monetary policy are not core variables in this study and thus are no
 Selecting perfectly competitive markets helps eliminate distortions, making the impact of consumption tax policies on supply-demand dynamics, pricing, and distribution clearer.
 Monopolistic markets have non-market-determined prices and complex corporate strategies, potentially obscuring the economic effects of consumption taxes and reducing experimental clarity.
 
-**Bank→ No-Arbitrage Platform**  
+**Bank→ Non-Profit Platform**  
 No-Arbitrage Platform are more suitable for analyzing long-term wealth accumulation and asset allocation responses, without active participation in credit expansion. They clearly reflect savings and investment behavior under policy changes.
 Commercial banks involve complex behaviors like lending, interest spreads, and financial risks, less suited for focused macroeconomic policy analysis.
 
