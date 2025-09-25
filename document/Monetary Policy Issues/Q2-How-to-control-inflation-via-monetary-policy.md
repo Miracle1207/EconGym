@@ -156,13 +156,13 @@ Trainer:
 
 ![Monetary Q2 P1](../img/Monetary%20Q2%20P1.png)
 
-**Figure 1:** The simulated economy under an inflation‐control regime (blue line) shows a lower long-run GDP level compared with the economy governed by a predefined rule-based policy (green line), indicating that monetary policy aimed at curbing inflation does indeed dampen GDP growth.
+**Figure 1:** The simulated economy under an inflation‐control regime shows a lower long-run GDP level compared with the economy governed by a predefined rule-based policy , indicating that monetary policy aimed at curbing inflation does indeed dampen GDP growth.
 
 ![Monetary Q2 P2](../img/Monetary%20Q2%20P2.png)
 
-**Figure 2:** The inflation‐control policy (blue line) increases income inequality.
+**Figure 2:** The inflation‐control policy increases income inequality.
 
-* During an overheating episode, the central bank employs an RL approach to learn an inflation-targeted policy. While this policy reduces growth relative to the overheated scenario, it also aggravates income inequality. The RL-derived tightening disproportionately lowers incomes of low-income households due to falling employment rates, whereas high-income households are less impacted, thus widening the wealth gap.
+* During an overheating episode, the central bank employs an RL approach to learn an inflation-targeted policy. This policy reduces growth relative to the overheated scenario, and it also aggravates income inequality. The RL-derived tightening disproportionately lowers incomes of low-income households due to falling employment rates, whereas high-income households are less impacted, thus widening the wealth gap.
 * The simulation platform enables quantification of different policy mixes’ effectiveness in suppressing inflation, offering decision support to balance economic growth against price stability.
 
 
