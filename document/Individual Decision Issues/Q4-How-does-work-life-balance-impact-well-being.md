@@ -50,10 +50,10 @@ In the Ramsey model, individuals’ choices in balancing life and work are more 
 In the work–life balance experiments, the government must coordinate across multiple departments, for example: the Ministry of Labor enforces maximum working‐hour limits; the pension authority calibrates relevant pension regulations; and the tax authority adapts fiscal rules to the evolving social environment.
 
 **Firm → Perfect Competition**  
-Firms compete for talent through ​**wages and flexible work policies**​. Workers choose environments that best match their balance preferences, forcing companies to adapt HR strategies.
+Firms compete for talent through ​wages and flexible work policies. Workers choose environments that best match their balance preferences, forcing companies to adapt HR strategies.
 
-**Bank →Non-Profit Platform   
-Provide ​life‑cycle financial products**​—retirement accounts, health insurance, liquidity support. As work–life patterns shift, so do saving needs and demand for these services.
+**Bank →Non-Profit Platform**   
+Provide ​life‑cycle financial products—retirement accounts, health insurance, liquidity support. As work–life patterns shift, so do saving needs and demand for these services.
 
 ---
 
