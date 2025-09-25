@@ -67,7 +67,7 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Individual             | Behavior Cloning Agent | Replicate sensitivity differences of various income groups to interest-rate changes, reflecting realistic saving and consumption behaviors.  |
 | Government             | RL Agent       | Train the optimal policy rules to control the permissible range of interest-margin fluctuations.                                       |
 | Firm                 | Rule-Based Agent       | Simulate firms’ direct responses to changes in financing costs, consistent with the perfect-competition assumption.                         |
-| Bank  | Rule-Based Agent       | Learns through trial-and-error to optimize long-term cumulative rewards. Well-suited for solving dynamic decision-making problems. |
+| Bank  | RL Agent| Learns through PPO algorithm to optimize long-term cumulative rewards. Well-suited for solving dynamic decision-making problems. |
 
 ---
 
