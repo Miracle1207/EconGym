@@ -127,7 +127,7 @@ Environment:
 
 
 Trainer:
-  house_alg: "bc"
+  house_alg: "bc" #The Rule-Based Agent can also be chosen in this experiment.
   gov_alg: "saez"
   firm_alg: "ppo"
   bank_alg: "rule_based"
