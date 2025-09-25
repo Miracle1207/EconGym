@@ -61,7 +61,7 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
-| Individual             | Rule-Based Agent | Determine household decisions on consumption, savings, and labor in response to technological progress.      |
+| Individual             | Behavior Cloning Agent | Imitates real-world behavior by training on empirical data. Enables realistic micro-level behavior.      |
 | Government             | Rule-Based Agent         | Regulate government behavior based on the US-government rules.                  |
 | Firm                 | Rule-Based Agent | Define how firms adjust wages, production scale, and hiring decisions in response to technological change.   |
 | Bank  | Rule-Based Agent | Set interest rates and investment returns to assess the impact of technological progress on capital markets. |
@@ -145,7 +145,7 @@ Trainer:
   Analyze how technological progress influences workers' wages.
 * ​**Experimental Variables**​:
   
-  * Rate of technological progress (or parameters representing tech growth)
+  * Rate of technological progress (the parameters representing tech growth)
   * Social wage level
 * **Baselines:**
   
@@ -159,7 +159,7 @@ Trainer:
 
 **Figure 1:** Under accelerated technological progress, the social wage rate rises steadily, and the gap with the baseline scenario of normal progress expands over time.
 
-* Technological progress has significantly driven the increase in the **average wage** level in society, and this **gap** has become increasingly pronounced over time, sufficient to demonstrate that technological progress will raise the overall wage rate in society.
+* Technological progress has significantly driven the increase in the average wage level in society, and this gap has become increasingly pronounced over time, sufficient to demonstrate that technological progress will raise the overall wage rate in society.
 
 ---
 
@@ -169,7 +169,7 @@ Trainer:
 
   Does technological progress promote employment? What are its short-term and long-term utility effects?
 * ​**Experimental Variables**​:
-  * Speed of technological progress (or parameters representing tech growth)
+  * Speed of technological progress (the parameters representing tech growth)
   * Income inequality (measured by the Gini coefficient)
 * **​ Visualized Experimental Results：**
 
@@ -177,7 +177,7 @@ Trainer:
 
 ​**Figure 2**​: When technological progress accelerates, income inequality increases compared to the case of normal progress, with a higher Gini coefficient indicating more severe social inequality.
 
-* Technological progress has led to an increase in income inequality in society (as indicated by the rise in the ​**Gini coefficient**​), suggesting that the wage growth rate of high-skilled workers will outpace that of general workers, thereby creating a larger income ​**disparity**​.
+* Technological progress has led to an increase in income inequality in society (as indicated by the rise in the ​Gini coefficient), suggesting that the wage growth rate of high-skilled workers will outpace that of general workers, thereby creating a larger income ​disparity​.
 
 ---
 
@@ -195,5 +195,5 @@ Trainer:
 
 **Figure 3: ​**Technological progress leads to a rapid increase in total social output.
 
-* Technological progress has significantly increased the ​**level of social output**​, and while the disparity in social output was not particularly noticeable at first, it has become increasingly **pronounced** over time.
+* Technological progress has significantly increased the ​level of social output, and while the disparity in social output was not particularly noticeable at first, it has become increasingly pronounced over time.
 
