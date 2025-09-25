@@ -124,8 +124,8 @@ Environment:
           depreciation_rate: 0.06
 
 Trainer:
-  house_alg: "bc"
-  gov_alg: "us_federal"
+  house_alg: "bc" #The rule-based Agent can also be chosen in this experiment.
+  gov_alg: "us_federal" #The PPO Agent can also be chosen in this experiment.
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1
