@@ -132,15 +132,15 @@ Trainer:
 
 ## 5.Illustrative Experiments
 
-### Experiment : Macroeconomic Impact of Front-Loading Consumption Spread
+### Experiment : Macroeconomic Impact of Over-leverage Consumption Spread
 
 * **Experiment Description:**
   
-  Create two simulated economies: one permits households to engage in front-loading consumption via credit overdrafts, the other restricts consumption to current income. Compare macro-indicators (GDP, aggregate wealth, saving rate, financial-system stability) to assess how borrowing-enabled consumption trades off short-term stimulus against long-term sustainability.
+  Create two simulated economies: one permits households to engage in over-leverage consumption via credit overdrafts, the other restricts consumption to current income. Compare macro-indicators (GDP, aggregate wealth, saving rate, financial-system stability) to assess how borrowing-enabled consumption trades off short-term stimulus against long-term sustainability.
 * **Experimental Variables:**
   
   * Degree of front-loading propensity in the population
-  * Wealth levels, consumption, and working hours of households across different age and wealth groups under the influence of front-loading consumption
+  * Household utility, consumption, and working hours of households across different age and wealth groups under the influence of front-loading consumption
   * GDP level
 * **Baselines:**
   
@@ -154,21 +154,21 @@ Trainer:
 
 ![Individual Q5 P1](../img/Individual%20Q5%20P1.png)
 
-​**Figure 1**​: Comparison of household consumption distribution between front-loading (overdraft-enabled) and normal consumption groups. From the age perspective, young households in the front-loading group show significantly higher consumption; from the income perspective, front-loading consumption notably increases the average consumption of poor households (yellow bar).
+​**Figure 1**​: Comparison of household consumption distribution between over-leverage consumption and normal consumption groups. From the age perspective, young households in the front-loading group show significantly higher consumption; from the income perspective, front-loading consumption notably increases the average consumption of poor households (yellow bar).
 
 ![Individual Q5 P2](../img/Individual%20Q5%20P2.png)
 
-​**Figure 2**​: Comparison of household working hours between front-loading (overdraft-enabled) and normal consumption groups. Front-loading consumption does not significantly alter household labor supply.
+​**Figure 2**​: Comparison of household working hours between over-leverage consumption and normal consumption groups. Front-loading consumption does not significantly alter household labor supply.
 
 ![Individual Q5 P3](../img/Individual%20Q5%20P3.png)
 
-​**Figure 3**​: Comparison of individual utility between front-loading (overdraft-enabled) and normal consumption groups. The overall impact of front-loading consumption on individual utility is not significant; however, from an age-based perspective, it leads to a slight increase in utility for younger households.
+​**Figure 3**​: Comparison of individual utility between over-leverage consumption and normal consumption groups. The overall impact of front-loading consumption on individual utility is not significant; however, from an age-based perspective, it leads to a slight increase in utility for younger households.
 
 ![Individual Q5 P4](../img/Individual%20Q5%20P4.png)
 
-​**Figure 4**​: Comparison of GDP trends between the two simulated economies. Overall, front-loading consumption (blue line) promotes higher long-term GDP growth.
+​**Figure 4**​: Comparison of GDP trends between the two simulated economies. Overall, over-leverage consumption (blue line) promotes higher long-term GDP growth.
 
-* In the simulated economy under the front-loading consumption assumption, household consumption, individual utility, and aggregate output differ from those in the normal economy. While front-loading significantly increases consumption among younger households, the corresponding improvement in their utility is less pronounced. Under moderate front-loading behavior, the overall economy exhibits relatively higher GDP growth.
+* In the simulated economy under the over-leverage consumption assumption, household consumption, individual utility, and aggregate output differ from those in the normal economy. While front-loading significantly increases consumption among younger households, the corresponding improvement in their utility is less pronounced. Under moderate front-loading behavior, the overall economy exhibits relatively higher GDP growth.
 
 
 
