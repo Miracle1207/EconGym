@@ -193,7 +193,7 @@ Trainer:                                # Store parameters related to policy tra
   q_lr: 3e-4                            # Learning rate for Q-network
   p_lr: 3e-4                            # Learning rate for policy network
   buffer_size: 1e6                      # Replay buffer size
-  n_epochs: 1                       # Number of training epochs
+  n_epochs: 1000                        # Number of training epochs
   update_cycles: 100                    # Training updates per epoch
   epoch_length: 300                     # Sample Steps per epoch
   display_interval: 1                   # Logging/printing interval
@@ -224,3 +224,6 @@ Trainer:                                # Store parameters related to policy tra
   wandb: False                          # Whether to log with W&B/Swanlab
   test: False                           # Test mode flag
   bc_test: True                         # in agents/behavior_cloning/bc_agent.py. if False, get actions from real data, and trained via BC; if True, get action from trained BC policy.
+  llm_name: "gpt-4o-mini"               # Name of the LLM to be used for decision-making or interaction, {"deepseek-chat", "gpt-4o", ...}
+  api_key: ""                           # API key for the LLM service. Can be set here or via environment variable; either option will take effect.
+

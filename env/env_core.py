@@ -1,6 +1,6 @@
 import copy
 import numpy as np
-from gym.spaces import Box
+from gymnasium.spaces import Box
 from pathlib import Path
 ROOT_PATH = str(Path(__file__).resolve().parent.parent)
 from entities.households import Household
@@ -8,7 +8,6 @@ from entities.government import Government
 from entities.market import Market
 from entities.bank import Bank
 from .set_observation import EconObservations
-
 
 
 class EconomicSociety:

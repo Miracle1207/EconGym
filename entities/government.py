@@ -1,6 +1,6 @@
 from entities.base import BaseEntity
 import numpy as np
-from gym.spaces import Box
+from gymnasium.spaces import Box
 from agents.saez import SaezGovernment
 import copy
 

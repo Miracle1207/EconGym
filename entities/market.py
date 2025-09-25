@@ -1,9 +1,7 @@
 from entities.base import BaseEntity
-from utils.episode import EpisodeKey
-import math
 import copy
 import numpy as np
-from gym.spaces import Box
+from gymnasium.spaces import Box
 
 
 class Market(BaseEntity):

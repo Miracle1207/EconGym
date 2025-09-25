@@ -37,117 +37,118 @@ class llm_agent:
         self.args = args
         self.agent_name = agent_name
         self.agent_type = type
+        self.llm_name = args.llm_name
+        self.device = "cuda" if getattr(self.args, 'cuda', False) else "cpu"
+        self.on_policy = True
 
+        # Map agent_name to corresponding environment object
         if self.agent_name == "government":
             if type is None:
                 raise ValueError(
                     "agent_type must be specified for government agent (e.g., 'central_bank', 'tax', 'pension')")
-                self.government_agent = self.envs.government[type]
-                self.obs_dim = self.government_agent.observation_space.shape[0]
-                self.action_dim = self.government_agent.action_space.shape[0]
+            agent = self.envs.government[type]
+            self.gov_task = agent.gov_task
         elif self.agent_name == "bank":
-            self.obs_dim = self.envs.bank.observation_space.shape[0]
-            self.action_dim = self.envs.bank.action_space.shape[-1]
+            agent = self.envs.bank
         elif self.agent_name == "market":
-            self.obs_dim = self.envs.market.observation_space.shape
-            self.action_dim = self.envs.market.action_space.shape[-1]
+            agent = self.envs.market
         else:
             raise ValueError(f"LLM agent does not support agent_name '{self.agent_name}'.")
 
-        # self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        self.client = OpenAI(api_key="sk-9f0862fb6328446f99cdca6e84ecf4ae", base_url="https://api.deepseek.com")
+        obs_shape = agent.observation_space.shape
+        self.obs_dim = obs_shape[0] if len(obs_shape) > 0 else obs_shape
+        self.action_dim = agent.action_space.shape[-1]
 
-        self.device = "cuda" if getattr(self.args, 'cuda', False) else "cpu"
-        self.on_policy = True
+        # Get API key: prefer environment variable
+        api_key = os.environ.get("OPENAI_API_KEY") or getattr(args, "api_key", None)
+        if not api_key:
+            raise ValueError("API key not found. Please set `self.api_key` or `OPENAI_API_KEY` environment variable.")
 
-    def get_action(self, obs_tensor):
-        """Produce actions for the configured role using an LLM."""
-        obs_np = obs_tensor.cpu().numpy() if isinstance(obs_tensor, torch.Tensor) else np.array(obs_tensor)
-
-        if self.agent_name == "government":
-            if self.agent_type == "central_bank":
-                prompt = build_central_bank_prompt(obs_np)
-            elif self.agent_type == "pension":
-                prompt = build_pension_prompt(obs_np)
-            else:
-                prompt = build_tax_prompt(obs_np)
-        elif self.agent_name == "bank":
-            if self.agent_type == "non_profit":
-                return np.random.randn(self.action_dim)
-            prompt = build_bank_prompt(obs_np)
-        elif self.agent_name == "market":
-            if self.agent_type == "perfect":
-                firm_n = len(obs_tensor)
-                return np.random.randn(firm_n, self.action_dim)
-            prompt = build_market_prompt(obs_np)
+        # Choose client based on LLM name
+        llm_name = self.llm_name.lower()
+        if "deepseek" in llm_name:
+            # DeepSeek uses its own API endpoint
+            self.client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
+        elif "gpt" in llm_name:
+            # GPT series uses default OpenAI endpoint
+            self.client = OpenAI(api_key=api_key)
         else:
-            raise ValueError(f"Unsupported agent_name '{self.agent_name}' for LLM agent")
+            # Other LLMs need to be configured manually
+            raise ValueError(f"Unsupported LLM name '{self.llm_name}'. Please configure your own client.")
 
+
+    def build_prompt(self, agent_name, agent_type, obs_np):
+        """Build the LLM prompt based on agent role and type."""
+        if agent_name == "government":
+            if agent_type == "central_bank":
+                return build_central_bank_prompt(obs_np)
+            elif agent_type == "pension":
+                return build_pension_prompt(obs_np, objective=self.gov_task)
+            else:
+                return build_tax_prompt(obs_np, objective=self.gov_task)
+    
+        elif agent_name == "bank":
+            return build_bank_prompt(obs_np)
+    
+        elif agent_name == "market":
+            return build_market_prompt(obs_np)
+    
+        else:
+            raise ValueError(f"Unsupported agent_name '{agent_name}' for LLM agent")
+
+    def parse_action(self, agent_name, agent_type, decision, obs_np):
+        """Parse the LLM decision into structured actions with fallback."""
         try:
-            response = self.client.chat.completions.create(
-                model="deepseek-chat",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.3,
-            )
-            print(f"{self.agent_name} Get LLM  Response Successfully")
-
-            gpt_output = response.choices[0].message.content
-            decision = self.extract_json(gpt_output)
-            if decision is None:
-                raise ValueError("Failed to parse GPT output.")
-
-            if self.agent_name == "government":
-                if self.agent_type == "central_bank":
-                    base_interest_rate = float(decision["base_interest_rate"])
-                    reserve_ratio = float(decision["reserve_ratio"])
-                    return np.array([base_interest_rate, reserve_ratio])
-                elif self.agent_type == "pension":
-                    retire_age = float(decision["retire_age"])
-                    contribution_rate = float(decision["contribution_rate"])
-                    return np.array([retire_age, contribution_rate])
-                else:
-                    Gt_prob = float(decision["Gt_prob"])
-                    tau = float(decision["tau"])
-                    xi = float(decision["xi"])
-                    return np.array([tau, xi, 0, 0, Gt_prob])
-            elif self.agent_name == "bank":
-                lending_rate = float(decision["lending_rate"])
-                deposit_rate = float(decision["deposit_rate"])
-                return np.array([lending_rate, deposit_rate])
-            elif self.agent_name == "market":
+            if agent_name == "government":
+                if agent_type == "central_bank":
+                    return np.array([float(decision["base_interest_rate"]), float(decision["reserve_ratio"])])
+                elif agent_type == "pension":
+                    return np.array([float(decision["retire_age"]), float(decision["contribution_rate"])])
+                else:  # tax
+                    return np.array([
+                        float(decision["tau"]),
+                        float(decision["xi"]),
+                        float(decision["tau_a"]),
+                        float(decision["xi_a"]),
+                        float(decision["Gt_prob"])
+                    ])
+        
+            elif agent_name == "bank":
+                return np.array([float(decision["lending_rate"]), float(decision["deposit_rate"])])
+        
+            elif agent_name == "market":
                 if isinstance(decision, list):
-                    actions = [[float(item["price"]), float(item["wage"])] for item in decision]
-                    return np.array(actions, dtype=np.float32)
+                    return np.array([[float(item["price"]), float(item["wage"])] for item in decision],
+                                    dtype=np.float32)
                 else:
                     raise ValueError("Market decision must be a list of {price, wage}")
-
+    
         except Exception as e:
-            print("Error calling GPT or parsing result:", e)
-            if self.agent_name == "government":
-                if self.agent_type == "central_bank":
+            print("Error parsing decision, fallback to heuristic:", e)
+        
+            # Fallback strategies
+            if agent_name == "government":
+                if agent_type in ["central_bank", "pension"]:
                     return np.array(obs_np[-2:])
-                elif self.agent_type == "pension":
-                    return np.array(obs_np[-2:])
-                else:
-                    return np.array([0.2, 0.2, 0.0, 0.0, float(obs_np[-1])])
-            elif self.agent_name == "bank":
+                else:  # tax fallback
+                    return np.array([0., 0., 0., 0., float(obs_np[-1])])
+        
+            elif agent_name == "bank":
                 base_rate = float(obs_np[0]) if len(obs_np) > 0 else 0.03
                 return np.array([base_rate + 0.02, base_rate - 0.005])
-            elif self.agent_name == "market":
+        
+            elif agent_name == "market":
                 firm_n = obs_np.shape[0] if obs_np.ndim == 2 else 1
                 return np.zeros((firm_n, 2), dtype=np.float32)
-
-    def save(self, dir_path):
-        pass
-
+            
     def extract_json(self, gpt_output):
         """
-        尝试从 GPT 的输出文本中解析出 JSON 格式数据。
-        为了尽可能提高成功率，本函数会依次采用多种方式进行提取和解析：
-            1. 整体尝试解析
-            2. 提取 ```json ...``` 代码块
-            3. 提取任意 ```...``` 代码块
-            4. 从第一处 '{' 到最后一处 '}' 截取并解析
+        Attempt to parse JSON-formatted data from the GPT output text.
+        To maximize the success rate, this function tries multiple extraction and parsing strategies in sequence:
+            1. Directly attempt to parse the entire text
+            2. Extract the ```json ...``` code block
+            3. Extract any ```...``` code block
+            4. Capture the substring from the first '{' to the last '}' and parse it
         """
         try:
             return json.loads(gpt_output)
@@ -182,3 +183,69 @@ class llm_agent:
                 pass
 
         return None
+
+    def get_action(self, obs_tensor):
+        """Produce actions for the configured role using an LLM."""
+        # Handle special random-action cases
+        if self.agent_name == "bank" and self.agent_type == "non_profit":
+            return np.random.randn(self.action_dim)
+        elif self.agent_name == "market" and self.agent_type == "perfect":
+            firm_n = len(obs_tensor)
+            return np.random.randn(firm_n, self.action_dim)
+    
+        # Convert obs to numpy
+        obs_np = obs_tensor.cpu().numpy() if isinstance(obs_tensor, torch.Tensor) else np.array(obs_tensor)
+    
+        # Build prompt
+        prompt = self.build_prompt(self.agent_name, self.agent_type, obs_np)
+    
+        try:
+            response = self.client.chat.completions.create(
+                model=self.llm_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3,
+            )
+            gpt_output = response.choices[0].message.content
+            decision = self.extract_json(gpt_output)
+        
+            if decision is None:
+                raise ValueError("Failed to parse GPT output.")
+        
+            print(f"LLM-driven {self.agent_name} response successful: {decision}")
+            return self.parse_action(self.agent_name, self.agent_type, decision, obs_np)
+    
+        except Exception as e:
+            print("Error calling GPT, fallback to heuristic:", e)
+            return self.parse_action(self.agent_name, self.agent_type, {}, obs_np)  # empty decision → fallback
+
+    def train(self, transition_dict):
+        """
+        Train the agent using collected transition data.
+
+        Parameters
+        ----------
+        transition_dict : dict
+            A dictionary containing transitions. Typically includes:
+            {
+                "obs": ...,          # current state/observation
+                "action": ...,       # action taken
+                "reward": ...,       # reward received
+                "next_obs": ...,     # next state
+                "done": ...          # termination flag
+            }
+
+        Notes
+        -----
+        - This method is intentionally left unimplemented.
+        - Users should define how to optimize the policy or value function.
+        - A common design is to use a memory module to store
+          transitions and sample mini-batches for training.
+        - Example usage:
+            1. Store transition_dict into memory.
+            2. Sample a batch from memory.
+            3. Sample few shot from memory to optimize decision-making.
+        """
+        pass
+
+    def save(self, dir_path):
+        pass

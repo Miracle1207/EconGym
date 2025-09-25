@@ -42,10 +42,13 @@ Environment:
 Trainer:
   house_alg: "bc"
   gov_alg: "ppo"
+#  gov_alg: "llm"
   firm_alg: "rule_based"
   bank_alg: "ppo"
+#  bank_alg: "llm"
   seed: 1
   epoch_length: 300
   cuda: False
 #  n_epochs: 1000
-  wandb: True
+#  wandb: True
+#  test: True

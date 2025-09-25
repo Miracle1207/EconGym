@@ -62,8 +62,7 @@ class Runner:
             wandb.init(
                 config=config_dict,
                 project="EconGym",
-                # entity="your_account",  # TODO: Replace with your W&B account or team name
-                entity="ai_tax",
+                entity="EconGym",     # TODO: Replace with your swanlab account or team name
                 name=self.file_name + "_seed=" + str(self.args.seed),
                 dir=str(self.model_path),
                 job_type="training",
@@ -130,13 +129,10 @@ class Runner:
         
             try:
                 action = policy.get_action(obs)
-            
                 # Raw action (saved into replay buffer)
                 raw_action = action
-            
                 # Processed action (executed in the environment)
                 proc_action = self._process_rl_action(policy, action, path)
-            
                 return raw_action, proc_action
         
             except KeyError as e:

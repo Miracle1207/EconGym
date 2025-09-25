@@ -35,3 +35,4 @@ Trainer:
   epoch_length: 300
   cuda: False
 #  n_epochs: 300
+#  wandb: True
