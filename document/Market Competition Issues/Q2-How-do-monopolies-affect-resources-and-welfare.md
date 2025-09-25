@@ -40,7 +40,8 @@ Select the following roles from the social role classification of the economic s
 | **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
 | **Government**  | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                 |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
 | **Firm**       | Monopoly             | Monopoly Firms set prices and wages to maximize profits under aggregate demand constraints.                        | $o_t^{\text{mono}} = ( K_t, Z_t, r_{t-1}^l )$<br>Production capital, productivity, lending rate | $a_t^{\text{mono}} = ( p_t, W_t )$<br>Price and wage decisions | $r_t^{\text{mono}} = p_t Y_t - W_t L_t - R_t K_t$<br>Profits = Revenue – costs |
-| **Bank**       | Non-Profit Platform  | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                            | No rate control                                              | No profit                                                    |
+| **Bank**       | Commercial Bank   | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund.| $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)            | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks)  |
+
 
 ---
 
@@ -56,8 +57,8 @@ The Treasury Department may implement price control policies to ensure market fa
 **Firm → Monopoly**  
 The firm sets a monopoly price, thereby impacting households and further influencing society as a whole.
 
-**Bank → Non-Profit Platform**  
-These sets ensure the efficiency of capital markets and help analyze the indirect effects of monopoly structures on the financial system.
+**Bank → Commercial Bank**  
+Within the research framework of monopoly problems, commercial bank can more realistically simulate real-world situations, reflecting the game between banks and firms.
 
 ---
 
@@ -69,8 +70,8 @@ This section provides a recommended agent configuration. Users are encouraged to
 | ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent    | Learns consumer behavior from historical data, including price sensitivity, consumption patterns, and responses to monopoly pricing.                                |
 | Government             | Rule-Based Agent | The government should be able to execute regulatory functions through predefined rules,like Seaz tax framework. |
-| Firm                 |  Rule-Based Agent                  |The firm adopts certain predetermined rules in order to maximize its own profit.                                                                          |
-| Bank| Rule-Based Agent          | Operates under the no-arbitrage principle; uses rule-based mechanisms to maintain market stability and analyze capital flows under monopoly pricing.                |
+| Firm                 |  RL Agent                  |Monopoly firms learn to obtain the optimal pricing rules in order to ensure the maximization of their own profits.                                                                         |
+| Bank| RL Agent          | As profit-oriented institutions, commercial banks need to maximize their own profits, and reinforcement learning agents serve as an efficient means of learning.               |
 
 ---
 
@@ -102,47 +103,44 @@ Environment:
       entity_args:
         params:
           type: "tax"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
-    - entity_name: 'household'
+    - entity_name: 'households'
       entity_args:
         params:
           type: 'ramsey'
           type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
           households_n: 100
           action_dim: 2
-          real_action_max: [1.0, 2512]
-          real_action_min: [-0.5, 0.0]
 
     - entity_name: 'market'
       entity_args:
         params:
           type: "monopoly"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
-          alpha: 0.25
-          Z: 10.0
+          alpha: 0.36
+          Z: 1.0
           sigma_z: 0.0038
           epsilon: 0.5
 
     - entity_name: 'bank'
       entity_args:
         params:
-          type: 'non_profit'   # [ 'non_profit', 'commercial' ]
+          type: 'commercial'   # [ 'non_profit', 'commercial' ]
           n: 1
           lending_rate: 0.0345
           deposit_rate: 0.0345
           reserve_ratio: 0.1
           base_interest_rate: 0.0345
           depreciation_rate: 0.06
-          real_action_max: [ 1.0, 0.20 ]
-          real_action_min: [ 0.0, -1e-3 ]
 
 Trainer:
   house_alg: "bc"
   gov_alg: "saez"
-  firm_alg: "rule_based"
-  bank_alg: "rule_based"
+  firm_alg: "ppo"
+  bank_alg: "ppo"
   seed: 1
   epoch_length: 300
   cuda: False
-  n_epochs: 300
+#  wandb: True
+#  n_epochs: 1000
 ```
 
 ---
