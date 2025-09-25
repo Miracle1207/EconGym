@@ -102,7 +102,7 @@ Environment:
     - entity_name: 'households'
       entity_args:
         params:
-          type: 'ramsey'
+          type: 'ramsey' #or OLG Model
           h_max: 2512
 
     - entity_name: 'market'
@@ -118,8 +118,8 @@ Environment:
 
 
 Trainer:
-  house_alg: "ppo"
-  gov_alg: "rule_based"
+  house_alg: "ppo"  #The BC Agent can also be chosen in this experiment.
+  gov_alg: "rule_based" #The PPO Agent can also be chosen in this experiment.
   firm_alg: "rule_based"
   bank_alg: "rule_based"
   seed: 1
