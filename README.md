@@ -115,10 +115,10 @@ You can either use **predefined economic tasks** (fast start), or **customize yo
 We provide ready-to-use YAML configurations under `cfg/`:
 
 ```bash
-python main.py --problem_scene "delayed_retirement"
+python main.py --problem_scene "optimal_tax"
 ```
 
-This command loads `cfg/delayed_retirement.yaml`, which specifies the simulation setup. Each `--problem_scene` matches a YAML file in `cfg/`. You can customize these YAMLs or create new ones for your own tasks.
+This command loads `cfg/optimal_tax.yaml`, which specifies the simulation setup. Each `--problem_scene` matches a YAML file in `cfg/`. You can customize these YAMLs or create new ones for your own tasks.
 
 💡 For the full list of predefined tasks and their YAML files, refer to the **User Manual** section above.
 
