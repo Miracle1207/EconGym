@@ -151,8 +151,8 @@ Trainer:
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.The following experiments have the same agent settings as this experiment, so we will give all explaination here.
   
-  * **base\_rule\_based\_ppo\_100\_OLG (blue line):** Households are modeled as **Rule\_based Agents** under the **OLG model ​**with ​**100 households**​, while the government is modeled as **Reinforcement Learning**​**​ ​**​**PPO**​**​​ Agent.​**The government is accompanied by a higher rate of technological growth.
-  * **TechGrowth\_rule\_based\_ppo\_100\_OLG (green line):** Households are modeled as **Rule\_based Agents** under the **OLG model ​**with ​**100 households**​, while the government is modeled as **Reinforcement Learning**​**​ ​**​**PPO**​**​​ Agent.​**The government has a normal growth rate.
+  * **base\_rule\_based\_ppo\_100\_OLG (blue line):** Households are modeled as **Rule\_based Agents** under the **OLG model ​**with ​**100 households**​, while the firm is modeled as **Reinforcement Learning**​**​ ​**​**PPO**​**​​ Agent.​**The government is accompanied by a higher rate of technological growth.
+  * **TechGrowth\_rule\_based\_ppo\_100\_OLG (green line):** Households are modeled as **Rule\_based Agents** under the **OLG model ​**with ​**100 households**​, while the firm is modeled as **Reinforcement Learning**​**​ ​**​**PPO**​**​​ Agent.​**The government has a normal growth rate.
 * **​ Visualized Experimental Results：**
   
 ![Market Q1 P1](../img/Market%20Q1%20P1.png)
