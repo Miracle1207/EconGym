@@ -32,7 +32,7 @@ As an example, we selected the following roles from the social role classificati
 | **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                   | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
 | **Government**  | Central Bank         | Central Bank adjusts nominal interest rates and reserve requirements, transmitting monetary policy to households and firms. |\$\$o\_t^g = (\\mathcal{A}\_{t}, \\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, \\pi\_{t-1}, g\_{t-1})\$\$ <br>Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, inflation rate, growth rate. | $a_t^{\text{cb}} = ( \phi_t, \iota_t )$<br>Reserve ratio, benchmark rate | Inflation/GDP stabilization                                  |
 | **Firm**       | Perfect Competition  | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                       | /                                                            | /                                                            | Zero (long-run)                                              |
-| **Bank**       | Commercial Banks     | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions               | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
+| **Bank**        | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                            | No rate control                                              | No profit                                |
 
 ---
 
@@ -48,8 +48,8 @@ Negative interest-rate policy is a standard monetary-policy tool set and execute
 **Firm → Perfect Competition**  
 In a perfectly competitive market, prices are determined by supply and demand. This setting helps clearly identify the transmission channels through which negative rates affect real output, labor supply, and capital investment, avoiding distortions from market power.
 
-**Bank → Commercial Banks**  
-Commercial banks **link lending behavior with policy implementation**. Modeling them explicitly allows us to simulate how negative rates prompt banks to expand credit, thereby spurring corporate investment and promoting overall economic growth.
+**Bank → Non-Profit Bank**  
+In this problem, banks need to cooperate with the central bank’s negative interest rate policy in order to fulfill the task of stimulating the economy; therefore, adopting non-profit banks is more appropriate. 
 
 ---
 
@@ -149,33 +149,9 @@ Trainer:
 * **Experimental Variables:**
   * Crisis onset in year 10 vs. a normally operating economy
   * Negative-rate policy (r = –1%) vs. Normal policy
-  * Aggregate GDP
+  * GDP Level
   * Income-inequality indicator (e.g., Gini coefficient)
     
-```Python
-# Initial setup: simulate an economic crisis
-At time T = 10, the economy enters a crisis scenario 
-Simulate an economic downturn by reducing productivity and lowering commodity prices.
-
-# Policy intervention: central bank sets negative interest rate
-Central Bank sets nominal interest rate to r = -1%
-Commercial banks respond by lowering deposit and lending rates
-
-# Policy transmission mechanism
-For each commercial bank:
-    - Lower deposit rates for households
-    - Increase lending to firms
-For each firm:
-    - Access cheaper credit
-    - Expand investment and hire more workers
-    - Anticipate future output growth
-
-# Macroeconomic feedback
-Update system-wide variables:
-    - Total investment 
-    - GDP
-    - Employment
-```
 
 * **Baselines:**
   
