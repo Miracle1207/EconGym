@@ -116,7 +116,7 @@ Environment:
 
 
 Trainer:
-  house_alg: "ppo"
+  house_alg: "ppo" #The Behavior Cloning Agent can also be chosen in this experiment.
   gov_alg: "saez"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
