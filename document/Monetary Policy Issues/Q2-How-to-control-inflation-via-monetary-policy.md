@@ -31,7 +31,7 @@ As an example, we selected the following roles from the social role classificati
 | **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                    | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
 | **Government**  | Central Bank         | Central Bank adjusts nominal interest rates and reserve requirements, transmitting monetary policy to households and firms. |\$\$o\_t^g = (\\mathcal{A}\_{t}, \\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, \\pi\_{t-1}, g\_{t-1})\$\$ <br>Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, inflation rate, growth rate. | $a_t^{\text{cb}} = ( \phi_t, \iota_t )$<br>Reserve ratio, benchmark rate | Inflation/GDP stabilization                                  |
 | **Firm**       | Perfect Competition  | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                       | /                                                                                                            | /                                                                | Zero (long-run)                |
-| **Bank**       | Commercial Banks     | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund. | $a_t^{\text{bank}} = ( r^d_t, r^l_t )$<br>Deposit, lending decisions | $r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$<br>Interest margin |
+| **Bank**       | Commercial Bank     | Commercial Bank strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund. | $a_t^{\text{bank}} = ( r^d_t, r^l_t )$<br>Deposit, lending decisions | $r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$<br>Interest margin |
 
 
 ---
@@ -47,8 +47,8 @@ The central bank designs and implements monetary policy, **directly controlling 
 **Firm → Perfect Competition**  
 A perfectly competitive market reflects **the basic mechanism of prices set by supply and demand**, helping to clearly observe how inflation‐control policies (e.g., rate increases) affect labor markets, goods prices, and investment returns. It avoids distortions from oligopoly or monopoly‐induced price rigidity, making it well suited to identify policy effects.
 
-**Bank → Commercial Banks**  
-During inflation control, commercial banks typically raise lending and deposit rates, which in turn affect firms’ financing costs and households’ saving returns. Compared with a no-arbitrage framework, commercial banks also involve microbehavior such as risk assessment, credit rationing, and asset‐liability management, enabling a more realistic simulation of credit contraction or expansion under policy shifts.
+**Bank → Commercial Bank**  
+During inflation control, commercial bank typically raise lending and deposit rates, which in turn affect firms’ financing costs and households’ saving returns. Compared with a no-arbitrage framework, commercial banks also involve microbehavior such as risk assessment, credit rationing, and asset‐liability management, enabling a more realistic simulation of credit contraction or expansion under policy shifts.
 
 ---
 
