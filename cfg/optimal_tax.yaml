@@ -19,7 +19,7 @@ Environment:
       entity_args:
         params:
           type: "perfect"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
-          alpha: 0.36    # 0.25;  0.36 in Aiyagari
+          alpha: 0.25    # 0.25;  0.36 in Aiyagari
           Z: 1.     # 10
           sigma_z: 0.0038
           epsilon: 0.5

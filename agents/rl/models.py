@@ -104,7 +104,7 @@ class mlp_net(nn.Module):
         
         sigma = torch.exp(sigma_log)  # Convert log to actual sigma value
 
-        pi = (mean, 0.1 * sigma)
+        pi = (mean, 0.05 * sigma)
 
         return state_value, pi
 
