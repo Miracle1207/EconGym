@@ -164,8 +164,8 @@ Trainer:
 * ​**Baselines**​:
 
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
-  * ​**baseline\_real\_ppo\_100\_OLG (Blue line)** : The baseline scenario where households are modeled under the OLG (Overlapping Generations) framework using Behavior Cloning (BC) strategies, while the government adopts PPO-based reinforcement learning policies. This setting does not include UBI transfers.
-  * ​**UBO\_real\_ppo\_100\_OLG (Green line)** ​: The experimental scenario where households are modeled under the OLG framework using Behavior Cloning (BC) strategies, while the government adopts PPO-based reinforcement learning policies. In this case, a Universal Basic Income (UBI) scheme is introduced, providing unconditional transfers to all households.
+  * ​**baseline\_real\_ppo\_100\_OLG (Blue line)** : The baseline scenario where households are modeled under the **OLG (Overlapping Generations) framework using Behavior Cloning (BC) Agent**, while the government adopts **PPO-based RL policies**. This setting does not include UBI transfers.
+  * ​**UBO\_real\_ppo\_100\_OLG (Green line)** ​: The experimental scenario where households are modeled under the **OLG framework using Behavior Cloning (BC) Agent**, while the government adopts **PPO-based RL policies**. In this case, a **Universal Basic Income (UBI) scheme** is introduced, providing unconditional transfers to all households.
 * **Visualized Experimental Results：**
 
 ![Fiscal Q2 P1](../img/Fiscal%20Q2%20P1.png)
@@ -187,7 +187,7 @@ Trainer:
   * Average working hours of households by income tier
 * ​**Baselines**​:
 
-  We constructed the simulated economic environment using Individuals modeled as Behavior Cloning Agents under the OLG (Overlapping Generations) framework and the Government modeled as a PPO-based RL Agent. The bar charts illustrate average household working hours under two different policy settings:
+  We constructed the simulated economic environment using **Individuals modeled as Behavior Cloning Agents under the OLG (Overlapping Generations) framework and the Government modeled as a PPO-based RL Agent**. The bar charts illustrate average household working hours under two different policy settings:
   
   * ​**Left group (baseline\_real\_ppo\_100\_OLG)** : Represents the baseline policy without Universal Basic Income (UBI).
     * Blue bar: Rich households
