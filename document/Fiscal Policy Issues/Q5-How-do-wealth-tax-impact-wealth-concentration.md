@@ -6,7 +6,7 @@
 
 Property tax is a levy on assets held by individuals or households (e.g., real estate, stocks, land), typically assessed as a percentage of net asset value. Over recent decades, many countries have seen wealth concentrate within a small elite, exacerbating inequality, dampening aggregate consumption, and weakening economic dynamism. Because it targets accumulated wealth directly, a well-designed property tax is often viewed as a tool to break intergenerational wealth perpetuation and curb extreme concentration.
 
-### 1.2 Controversial Background on Property Tax
+### 1.2 Controversial Background on Wealth Tax
 
 Economic theory suggests a moderate property tax can slow the “Matthew effect” (“the rich get richer”). However, implementation raises concerns: it may trigger capital flight and reduce saving, while imposing burdensome costs on the middle class. Thus, designing and evaluating property-tax regimes requires dynamic simulation and institutional experimentation.
 
@@ -156,17 +156,17 @@ Trainer:
   
   Below, we provide explanations of the experimental settings corresponding to each bar group in the visualization to help readers better understand the results.
   
-  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Left group):** Households are modeled using the Ramsey Model with Behavior Cloning (BC) Agents, while the government adopts a ​**Saez rule-based tax policy**​. **No wealth tax** is imposed, serving as the baseline scenario.
+  * **0%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Left group):** Households are modeled using the **Ramsey Model with Behavior Cloning (BC) Agents**, while the government adopts a ​**Saez rule-based tax policy**​. **No wealth tax** is imposed, serving as the baseline scenario.
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households
     * Red bar: Overall average
-  * **5%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Middle group):** Households are modeled using the Ramsey Model with BC Agents, while the government applies a ​**Saez rule-based tax system**​. A **5% wealth tax** is imposed on household assets.
+  * **5%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Middle group):** Households are modeled using the **Ramsey Model with BC Agents**, while the government applies a ​**Saez rule-based tax system**​. A **5% wealth tax** is imposed on household assets.
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households
     * Red bar: Overall average
-  * **3%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Right group):** Households follow the Ramsey Model with BC Agents, and the government adopts the ​**Saez rule-based tax policy**​. A **3% wealth tax** is applied to household assets.
+  * **3%\_wealth\_tax\_ramsey\_100\_bc\_tax\_saez (Right group):** Households follow the **Ramsey Model with BC Agents**, and the government adopts the ​**Saez rule-based tax policy**​. A **3% wealth tax** is applied to household assets.
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households

@@ -36,7 +36,7 @@ As an example, we selected the following roles from the social role classificati
 | **Government(Tax)**          | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                         |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
 | **Government(Central Bank)** | Central Bank         | Central Bank adjusts nominal interest rates and reserve requirements, transmitting monetary policy to households and firms. |\$\$o\_t^g = (\\mathcal{A}\_{t}, \\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, \\pi\_{t-1}, g\_{t-1})\$\$ <br>Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, inflation rate, growth rate. | $a_t^{\text{cb}} = ( \phi_t, \iota_t )$<br>Reserve ratio, benchmark rate | Inflation/GDP stabilization                                  |
 | **Firm**                     | Perfect Competition  | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                       | /                                                                                                            | /                                                                                    | Zero (long-run)                                     |
-| **Bank**                     | Commercial Banks     | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund. | $a_t^{\text{bank}} = ( r^d_t, r^l_t )$<br>Deposit, lending decisions | $r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$<br>Interest margin |
+| **Bank**                     | Commercial Bank     | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund. | $a_t^{\text{bank}} = ( r^d_t, r^l_t )$<br>Deposit, lending decisions | $r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$<br>Interest margin |
 
 
 
@@ -48,12 +48,13 @@ As an example, we selected the following roles from the social role classificati
 Households optimize their labor supply, savings, and consumption decisions based on life-cycle optimization principles. As the microfoundation of policy transmission, their behaviors provide crucial feedback to both fiscal and monetary policies.
 
 **Government → Fiscal Authority & Central Bank**  
-**Fiscal Authority :** Responsible for designing tax and spending policies, adjusting aggregate demand and income distribution, and managing public debt to ensure fiscal sustainability. Its decisions directly affect households’ disposable income and government funding allocations, making it a key instrument for influencing growth and equity.**Central Bank:** Controls inflation, stabilizes prices, and maintains financial-system liquidity by adjusting interest rates and money supply. Its policies have broad but indirect impacts on consumption, investment, and credit behavior, positioning it as a central actor in macroeconomic stabilization.
+**Fiscal Authority :** Responsible for designing tax and spending policies, adjusting aggregate demand and income distribution, and managing public debt to ensure fiscal sustainability. Its decisions directly affect households’ disposable income and government funding allocations, making it a key instrument for influencing growth and equity.
+**Central Bank:** Controls inflation, stabilizes prices, and maintains financial-system liquidity by adjusting interest rates and money supply. Its policies have broad but indirect impacts on consumption, investment, and credit behavior, positioning it as a central actor in macroeconomic stabilization.
 
 **Firm → Perfect Competition**  
 Wages and goods prices are determined by supply and demand, acting as the intermediary mechanism through which fiscal and monetary policies influence household and firm behavior.
 
-**Bank → Commercial Banks**  
+**Bank → Commercial Bank**  
 Simulate the formation of deposit and lending rates, reflecting how central-bank policies transmit to investment, interest rates, and liquidity.
 
 ---
@@ -346,9 +347,9 @@ Trainer:                                # Store parameters related to policy tra
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * **​OLG\_tax(blue line):​**The households and the goverment modeled as ​**RL-Agent**​.The Goverment represent **Treasury Department only.**
-  * **​OLG\_CenBank(green line):​**The households and the goverment modeled as ​**RL-Agent**​.The Goverment represent **Central Bank**​**​ only.**
-  * **​OLG\_tax\_CenBank(yellow line):​**The households and the goverment modeled as ​**RL-Agent**​.The Goverment represent both **the Treasury Department and The ​**​​**Central Bank.**
+  * **​OLG\_tax(blue line):​**The households use the **Behavior Cloning Agent** and the goverment modeled as ​**RL-Agent**​.The Goverment represent **Treasury Department only.**
+  * **​OLG\_CenBank(green line):​**The households use the **Behavior Cloning Agent** and the goverment modeled as ​**RL-Agent**​.The Goverment represent **Central Bank**​**​ only.**
+  * **​OLG\_tax\_CenBank(yellow line):​**The households use the **Behavior Cloning Agent** and the goverment modeled as ​**RL-Agent**​.The Goverment represent both **the Treasury Department and The ​**​​**Central Bank.**
 
 ![Monetary Q5 P1](../img/Moneraty%20Q5%20P1.png)
 

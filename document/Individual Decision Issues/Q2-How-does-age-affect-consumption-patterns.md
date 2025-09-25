@@ -38,7 +38,7 @@ Population‐structure shifts are a critical determinant of both macroeconomic o
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
 
-| Social Role | Selected Type       | Role Description                                             | Observation                                                  | Action                                                       | Reward                                   |
+| Social Role | Selected Type       | Role Description                                                        | Observation                                                  | Action                                                       | Reward                                   |
 | ----------- | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------- |
 | **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
 | **Firm**        | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses. | /                                                            | /                                                            | Zero (long-run)                          |
@@ -141,38 +141,32 @@ Trainer:
 
 * **Experiment Description:**
   
-  Build benchmark models of consumption propensity for each age group based on statistical survey data, and record their consumption outcomes when run on the simulated economic platform.
+  Build benchmark models of consumption propensity for each age group based on statistical survey data, and record their consumption outcomes when run on the simulated economic platform.Compare the differences between the rule-based government  and the government using the PPO algorithm。
 * **Experimental Variables:**
-  
-  * Four age groups: Youth (18–30), Early Middle Age (31–45), Late Middle Age (46–65), Senior (> 65)
-  * Each group’s average and marginal propensity to consume
+
+  * Government agent: Rule-Based Agent vs. PPO Agent
+  * Rich,Middle-class,Poor and Overall people consumption level
 * **Baselines:**
   
   Below, we provide explanations of the experimental settings corresponding to each group of bars in the visualization to help readers better understand the results. The bar charts show household consumption distributions under different tax policies at year 50.
-  
-  * **​Left panel (ppo\_rule\_based\_100\_ramsey):​**Households are modeled as **PPO**​**​ Agent,** and the government is a **Rule-based Agent** following a simple fiscal rule.Households operate under the **Ramsey Model** with 100 total households.
-    * Blue bar: Rich households
-    * Green bar: Middle-class households
-    * Yellow bar: Poor households
-    * Red bar: Overall average
-  * **​Middle panel (ppo\_saez\_100\_ramsey):​**Households are modeled as **PPO**​​**​ Agent**​, and the government is a **Rule-based Agent** implementing the **Saez tax formula** from optimal taxation theory.Households operate under the **Ramsey Model** with 100 total households.
-    * Blue bar: Rich households
-    * Green bar: Middle-class households
-    * Yellow bar: Poor households
-    * Red bar: Overall average
-  * **​Right panel (ppo\_us\_federal\_100\_ramsey):​**Households are modeled as **PPO**​​**​ Agent**​, and the government is a **Rule-based Agent** applying the **U.S. federal tax system** as a real-data baseline.Households operate under the **Ramsey Model** with 100 total households.
-    * Blue bar: Rich households
-    * Green bar: Middle-class households
-    * Yellow bar: Poor households
-    * Red bar: Overall average
+  *   ​**age\_consumption\_100\_house\_bc\_gov\_rule\_firm\_rule\_bank\_rule(left panel)**​:Households are modeled as **BC Agent** with ​**100 households**​,while the government adopts the ​**Rule-Based Agent**​.Company and bank are modeled as ​**Rule-Based Agent**​.
+      * Blue bar: Rich households
+      * Green bar: Middle-class households
+      * Yellow bar: Poor households
+      * Red bar: Overall average
+  * ​**age\_consumption\_100\_house\_bc\_gov\_ppo\_firm\_rule\_bank\_rule(right panel)**​:Households are modeled as **BC Agent** with ​**100 households**​,while the government adopts the **PPO**​​**​ RL Agent**​.Company and bank are modeled as ​**Rule-Based Agent**​.
+      * Blue bar: Rich households
+      * Green bar: Middle-class households
+      * Yellow bar: Poor households
+      * Red bar: Overall average
+
 
 
 * **​ Visualized Experimental Results：**
 
-![Individual Q3 P1](../img/Individual%20Q3%20P1.png)
+![Individual Q3 P1+](../img/Individual%20Q3%20P1+.png)
 
-**Figure 1:** Compared to the baseline scenario (left panel), the simulated U.S. consumption patterns under age‐group–specific MPC settings show higher consumption by the middle class than in the baseline.
+**Figure 1:** Comparison of household consumption at year t = 31 under two simulation rules. Compared with a government using a Rule-Based Agent, a government adopting an RL Agent achieves higher per capita consumption, reflecting a better overall consumption level. At the same time, the lower consumption of wealthy groups indicates a more equal consumption pattern.
 
-* As age increases, the marginal propensity to consume (MPC) of adult cohorts exhibits a general downward trend.
-* The age‐stratified simulation environment better stimulates consumption among the middle‐class cohort. Incorporating age layering alongside the platform’s existing income stratification enables a more accurate characterization of household groups and yields a more complete model.
+* Incorporating age layering alongside the platform’s existing income stratification enables a more accurate characterization of household groups and yields a more complete model.
 

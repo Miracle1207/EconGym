@@ -34,7 +34,7 @@ As an example, the following table shows the economic roles most relevant to the
 | Social Role | Selected Type       | Role Description                                             | Observation                                                  | Action                                                       | Reward                                   |
 | ----------- | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------- |
 | **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
-| **Government**  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
+| **Government**  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | \$\$o\_t^g = ( F\_{t-1}, N\_{t}, N^{old}\_{t}, \\text{age}^r\_{t-1}, \\tau^p\_{t-1}, B\_{t-1}, Y\_{t-1}) \$\$ <br>Pension fund, current population, old individuals number, last retirement age, last contribution rate, debt, GDP | $a_t^{\text{pension}} = ( \text{age}^r_t, \tau^p_t, k )$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                                  |
 | **Firm**        | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses. | /                                                            | /                                                            | Zero (long-run)                          |
 | **Bank**        | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                            | No rate control                                              | No profit                                |
 
@@ -152,12 +152,12 @@ Trainer:
 
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * ​**rule\_based\_rule\_based\_1000\_OLG\_60.0 (Blue line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 1000 households.
-  * ​**rule\_based\_rule\_based\_1000\_OLG\_65.0 (Light green line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 1000 households.
-  * ​**rule\_based\_rule\_based\_1000\_OLG\_70.0 (Yellow line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 1000 households.
-  * ​**rule\_based\_rule\_based\_100\_OLG\_60.0 (Red line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 100 households.
-  * ​**rule\_based\_rule\_based\_100\_OLG\_65.0 (Cyan line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 100 households.
-  * ​**rule\_based\_rule\_based\_100\_OLG\_70.0 (Dark green line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 100 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_60.0 (Blue line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 1000 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_65.0 (Light green line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 1000 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_70.0 (Yellow line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 1000 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_60.0 (Red line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 100 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_65.0 (Cyan line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 100 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_70.0 (Dark green line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 100 households.
 
 * **Visualized Experimental Results：**
 
@@ -169,7 +169,7 @@ Trainer:
 
 ---
 
-### **Experiment 2: Training Curves for Pension Problems with Government ​**​**RL**
+### **Experiment 2: Training Curves for Pension Problems with RL-Agent Government ​**
 
 * **Experiment Description:**
 

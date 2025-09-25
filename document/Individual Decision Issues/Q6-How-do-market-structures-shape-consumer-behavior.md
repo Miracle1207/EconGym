@@ -48,7 +48,7 @@ As an example, we selected the following roles from the social role classificati
 |                | **Monopoly**                 |	Monopoly Firms set prices and wages to maximize profits under aggregate demand constraints.| $o_t^{\text{mono}} = ( K_t, Z_t, r_{t-1}^l )$<br>Production capital, productivity, lending rate | $a_t^{\text{mono}} = ( p_t, W_t )$<br>Price and wage decisions | $r_t^{\text{mono}} = p_t Y_t - W_t L_t - R_t K_t$<br>Profits = Revenue – costs |
 |                | **Oligopoly**                |Oligopoly Firms engage in strategic competition, anticipating household responses and rival actions. | $o_t^{\text{olig}} = ( K_t^j,  Z_t^j, r_{t-1}^l)$<br>Production capital, productivity, lending rate | $a_t^{\text{olig}} = ( p_t^j, W_t^j )$<br>Price and wage decisions for firm $j$ | $r_t^{\text{olig}} = p_t^j y_t^j - W_t^j L_t^j - R_t K_t^j$<br>Profits = Revenue – costs for firm $j$ |
 |                | **Monopolistic Competition** |Monopolistic Competitors offer differentiated products with CES demand and endogenous entry, supporting studies of consumer preference and market variety. | $o_t^{\text{mono-comp}} = ( K_t^j,  Z_t^j, r_{t-1}^l )$<br> Production capital, productivity, lending rate. Here, $j$ denotes the firm index. | $a_t^{\text{mono-comp}} = ( p_t^j, W_t^j )$<br>Price and wage decisions for firm $j$ | $r_t^{\text{mono-comp}} = p_t^j y_t^j - W_t^j L_t^j - R_t K_t^j$<br>Profits = Revenue – costs for firm $j$ |
-| **Bank**       | Commercial Banks/Non-Profit Platform    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.While Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund.| $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)/No rate control(Non-Profit Platform)              | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks) / Zero (Non-Profit Platform)  |
+| **Bank**       | **Non-Profit Platform** | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
 ---
 
@@ -67,7 +67,7 @@ We consider four market structures:
 **Oligopoly:** a few firms compete strategically.
 **Monopolistic Competition:** many firms with differentiated products and some pricing power.
 
-**Bank → No-Arbitrage Platform**  
+**Bank → Non-Profit Platform**  
 We abstract from profit-seeking bank behavior and instead focus on how capital markets adjust to technological and wage shocks under no-arbitrage conditions.
 
 ---
@@ -157,7 +157,7 @@ Trainer:
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * **(market_type)\_ramsey\_100\_bc\_pension\_data\_based:** Households are modeled as **Behavior Cloning Agents** operating under the **Ramsey model** with **100** total households, while the government is represented as a**​ Rule-Based Agent** applying pension policies based on empirical data, and the overall market structure follows a ​**selected type**​.**(In the figure,from left to right are Monopoly, Monopolistic Competition, Perfect Competition, and ​**​**Oligopoly**​**​ markets----with all other agent settings kept unchanged)**
+  * **(market_type)\_ramsey\_100\_bc\_pension\_data\_based:** Households are modeled as **Behavior Cloning Agents** operating under the **Ramsey model** with **100** total households, while the government is represented as a**​ Rule-Based Agent** applying pension policies based on empirical data, and the overall market structure follows a ​**selected type**​.**(In the figure,from left to right are Monopolistic Competition Market , Oligopoly markets , Perfect Competition Market, Monopoly Market​----with all other agent settings kept unchanged)**
   * **Blue bars:** Represent the average wealth of ​**rich households**​.
   * **Green bars:** Represent the average wealth of ​**middle-class households**​.
   * **Yellow bars:** Represent the average wealth of ​**poor households**​.
@@ -165,11 +165,9 @@ Trainer:
 
 ![Individual Q6 P1](../img/Individual%20Q6%20P1.png)
 
-**Figure 1:** The impact of different market structures on household wealth. From left to right are Monopoly, Monopolistic Competition, Perfect Competition, and Oligopoly markets. Different colored bars represent households from different income groups. At year 50, households in the Monopolistic Competition market show significantly higher average wealth, especially among the rich group. In contrast, households in the Monopoly market have the lowest average wealth.
-
+**Figure 1:** The impact of different market structures on household wealth at year 50. From left to right are Monopolistic Competition Market , Oligopoly markets , Perfect Competition Market, Monopoly Market​. In the Monopolistic Competition Market, households have the lowest average wealth level, while under Oligopoly markets, household average wealth is higher. In Perfectly Competitive and Monopoly markets, household average wealth levels are similar; however, the Monopoly market shows a significantly more unequal distribution of wealth, with higher wealth among the rich and lower overall household average wealth. Moreover, in Oligopoly markets, the average wealth of the wealthy far surpasses that in other market types.
 ![Individual Q6 P2](../img/Individual%20Q6%20P2.png)
 
-**Figure 2:** The impact of different market structures on household utility. From left to right are Monopoly, Monopolistic Competition, Perfect Competition, and Oligopoly markets. Different colored bars represent households from different income groups. At year 50, household utility is highest in the Monopolistic Competition market, though the difference compared to other market structures is relatively small.
+**Figure 2:** The impact of different market structures on household utility at year 50. From left to right are Monopolistic Competition Market , Oligopoly markets , Perfect Competition Market, Monopoly Market​. Different colored bars represent households from different income groups.In the Monopolistic Competition Market, households have the lowest average wealth level. Compared to the large disparities in household wealth, the differences in household utility across the four market types are relatively small. Under Oligopoly markets, household average utility is the highest, whereas in Monopoly markets, household average utility is the lowest. Although the differences in household utility across different wealth groups are relatively small, the wealthy exhibit noticeably higher average household utility.
 
-* Household wealth varies significantly across different market structures, whereas differences in household utility are less pronounced. Overall, the monopolistic competition market achieves the highest average household wealth as well as the highest household utility.
-
+* Household wealth varies significantly across different market structures, whereas differences in household utility are less pronounced. Overall, the Oligopoly markets achieves the highest average household wealth as well as the highest household utility.

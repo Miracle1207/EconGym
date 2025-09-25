@@ -157,7 +157,7 @@ Trainer:
   * **rule\_based\_rule\_based\_1000\_personal\_pension\_0.2 (Yellow line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **1000 households** and a tax-exemption level of 20%.
   * **rule\_based\_rule\_based\_100\_personal\_pension\_0.15 (Red line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 15%.
   * **​rule\_based\_rule\_based\_100\_personal\_pension\_0.1 (​**​**Cyan**​**​ line):** Both households and the government are modeled as ​**Rule-Based Agents**​, with **100 households** and a tax-exemption level of 10%.
-  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.2 (Dark green line):** Both households and the government are modeled as R​**ule-Based Agents**​, with **100 households** and a tax-exemption level of 20%.
+  * **rule\_based\_rule\_based\_100\_personal\_pension\_0.2 (Dark green line):** Both households and the government are modeled as **Rule-Based Agents**​, with **100 households** and a tax-exemption level of 20%.
 
 ![Pension Q3 P1](../img/Pension%20Q3%20P1.png)
   
@@ -178,12 +178,12 @@ Trainer:
 * **Visualized Experimental Results：**
 ![Pension Q3 P2](../img/Pension%20Q3%20P2.png)
   
-  **Figure 2:** Bar charts showing income distributions by age group (left) and income bracket (right) under different exemption levels. Lower exemptions lead to larger income declines.
+  **Figure 2:** Bar charts showing income distributions by age group (left) and income bracket (right) under different exemption levels. Lower exemptions (the green bar) lead to larger income declines.
 * Generous tax incentives for personal pension contributions are associated with higher long-term household incomes: by increasing households’ willingness to participate in pension schemes, these exemptions channel savings into banks and financial markets, which in turn support greater income growth over time.
 
 ---
 
-### **Experiment 3: Training Curves for Pension Problems with Government ​**​**RL**
+### Experiment 3: Training Curves for Pension Problems with RL-Agent Government 
 
 * **Experiment Description:**
 

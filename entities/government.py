@@ -55,7 +55,7 @@ class Government(BaseEntity):
     def get_action(self, actions, firm_n):
 
         policy_actions = actions[:self.policy_action_len]
-        Gt_prob_ratios = np.ones(firm_n)/firm_n
+        Gt_prob_ratios = np.ones(firm_n) / firm_n
         if self.type == "pension":
             # self.retire_age, self.contribution_rate, self.pension_growth_rate = policy_actions
             self.retire_age, self.contribution_rate = policy_actions
@@ -76,37 +76,38 @@ class Government(BaseEntity):
         else:
             self.Gt_prob_j = self.Gt_prob
 
-
     def step(self, society):
         self.old_per_gdp = copy.copy(self.per_household_gdp)
         self.old_GDP = copy.copy(self.GDP)
         self.Bt = copy.copy(self.Bt_next)
-        
+
         self.tax_step(society)
         if self.type == "pension" and ("OLG" in society.households.type):
             self.pension_step(society)
 
-
     def tax_step(self, society):
         """Calculate government metrics such as taxes, investment, and GDP."""
         households = society.households
-        self.tax_array = (households.income_tax + households.asset_tax + np.dot(households.final_consumption, society.market.price) * society.consumption_tax_rate) + households.estate_tax
+        self.tax_array = (households.income_tax + households.asset_tax + np.dot(households.final_consumption,
+                                                                                society.market.price) * society.consumption_tax_rate) + households.estate_tax
         self.gov_spending = self.Gt_prob_j * society.market.Yt_j
-        self.Bt_next = ((1 + society.bank.base_interest_rate) * self.Bt + np.sum(self.gov_spending * society.market.price) - np.sum(self.tax_array))
+        # BUI is the amount of money distributed.
+        if hasattr(households, 'BUI'):
+            self.gov_spending += households.households_n * households.BUI
+        self.Bt_next = ((1 + society.bank.base_interest_rate) * self.Bt + np.sum(
+            self.gov_spending * society.market.price) - np.sum(self.tax_array))
 
         self.GDP = np.sum(society.market.price * society.market.Yt_j)
         self.per_household_gdp = self.GDP / max(households.households_n, 1e-8)
-        
 
     def pension_step(self, society):
         """Update the pension fund for all households."""
         self.current_net_households_pension = society.households.pension.sum()
         self.pension_fund = (1 + self.pension_growth_rate) * self.pension_fund - self.current_net_households_pension
 
-
     def calculate_pension(self, households):
         """Calculate the pension benefits for a given household."""
-        pension = -households.income * ~households.is_old * self.contribution_rate   # <0 : pension contribute from young individuals
+        pension = -households.income * ~households.is_old * self.contribution_rate  # <0 : pension contribute from young individuals
 
         income_mean = np.nanmean(households.income)
 
@@ -171,7 +172,7 @@ class Government(BaseEntity):
             return taxes_paid
 
         income_tax = income_tax_function(income)
-        
+
         _, asset_tax = self.tax_function(income, asset)
         return income_tax, asset_tax
 
@@ -199,8 +200,8 @@ class Government(BaseEntity):
         x = np.asarray(x, dtype=np.float64)
         x = np.clip(x, -threshold, threshold)
         return 1 / (1 + np.exp(-x))
-    
-    def get_reward(self,  society, gov_goal=None):
+
+    def get_reward(self, society, gov_goal=None):
         """
         Compute the government's reward based on its goal.
 
@@ -222,7 +223,7 @@ class Government(BaseEntity):
         gov_goal = gov_goal or self.gov_task
         # Central bank uses its own reward
         if self.type == "central_bank":
-            reward = self.get_reward_central(society.inflation_rate, self.growth_rate) # \in (0,1)
+            reward = self.get_reward_central(society.inflation_rate, self.growth_rate)  # \in (0,1)
             return np.array([reward])
 
         if gov_goal == "gdp":
@@ -230,13 +231,13 @@ class Government(BaseEntity):
             # reward = self.softsign(log_gdp_growth / SCALE["gdp_growth"])
             reward = self.safe_sigmoid(log_gdp_growth / SCALE["gdp_growth"])
             return np.array([reward])  # \in (0,1)
-    
+
         elif gov_goal == "gini":
             # Wealth Gini improvement
             before_tax_wealth_gini = society.gini_coef(society.households.at)
             after_tax_wealth_gini = society.gini_coef(society.households.post_asset)
             impr_w = before_tax_wealth_gini - after_tax_wealth_gini
-        
+
             # Income Gini improvement
             before_tax_income_gini = society.gini_coef(society.households.income)
             after_tax_income_gini = society.gini_coef(society.households.post_income)
@@ -244,31 +245,30 @@ class Government(BaseEntity):
             # return (delta_income_gini + delta_wealth_gini) * 100
             reward = self.safe_sigmoid((impr_w + impr_i) / (2 * SCALE["gini_scale"]))  # \in (0,1)
             return np.array([reward])
-    
+
         elif gov_goal == "social_welfare":
             # Sum of household utilities (social welfare)
             social_welfare = np.sum(society.households.get_reward())
             return np.array([social_welfare])
-    
+
         elif gov_goal == "mean_welfare":
             # When population changes (OLG), mean welfare ≠ social welfare.
             # Mean welfare better reflects policy effects without population-size confounds.
             mean_welfare = np.mean(society.households.get_reward())
             return np.array([mean_welfare])
-    
+
         elif gov_goal == "gdp_gini":
             # mixed goal
             gdp_rew = self.get_reward(society, gov_goal='gdp')
             gini_rew = self.get_reward(society, gov_goal='gini')
-            return (gdp_rew + gini_rew)/2  # \in (0,1)
-    
+            return (gdp_rew + gini_rew) / 2  # \in (0,1)
+
         elif gov_goal == "pension_gap":
             # pension_surplus = sum(-self.calculate_pension(society.households))
             return self.get_pension_reward(self.pension_fund, society.households.households_n)
-    
+
         else:
             raise ValueError("Invalid government goal specified.")
-
 
     def get_pension_reward(self, pension_surplus, households_n, k=2, center=1e6):
         """
@@ -288,29 +288,28 @@ class Government(BaseEntity):
         k : float, steepness of the curve
         center : float, center of rapid growth region (default=1e6)
         """
-    
+
         # Log transformation for diminishing returns and penalty for extreme surpluses
         per_household_pension_surplus = pension_surplus / max(households_n, 1e-8)
         pension_surplus = max(0, per_household_pension_surplus)
         pension_growth = np.log(1 + pension_surplus)
         log_center = np.log(center)
-    
+
         # Normalize the reward using tanh
         normalized_reward = self.safe_sigmoid(k * (pension_growth - log_center))
-    
+
         return np.array([normalized_reward])
 
-
     def get_reward_central(self,
-            actual_inflation,
-            actual_growth,
-            target_inflation=0.02,
-            target_growth=0.05,
-            weight_inflation=120.0,  # penalty weight for inflation deviations
-            weight_growth_low=80.0,  # penalty weight when growth < target
-            weight_growth_high=20.0,  # penalty weight when growth > target
-            smoothness=0.01  # smoothing parameter for differentiability
-    ):
+                           actual_inflation,
+                           actual_growth,
+                           target_inflation=0.02,
+                           target_growth=0.05,
+                           weight_inflation=120.0,  # penalty weight for inflation deviations
+                           weight_growth_low=80.0,  # penalty weight when growth < target
+                           weight_growth_high=20.0,  # penalty weight when growth > target
+                           smoothness=0.01  # smoothing parameter for differentiability
+                           ):
         """
         Central bank reward function (smooth & asymmetric).
 
@@ -344,29 +343,29 @@ class Government(BaseEntity):
             A smooth, bounded reward in (0, 1]. Higher values indicate conditions closer
             to central bank objectives.
         """
-    
+
         # Stable softplus: softplus(x) = log(1 + exp(x))
         def softplus(x):
             return np.log1p(np.exp(-np.abs(x))) + np.maximum(x, 0.0)
-    
+
         # Inflation deviation (symmetric quadratic penalty)
         inflation_gap = actual_inflation - target_inflation
         loss_inflation = weight_inflation * (inflation_gap ** 2)
-    
+
         # Growth deviation
         growth_gap = actual_growth - target_growth
-    
+
         # Smooth decomposition into below-target and above-target parts
         below_target = softplus(-growth_gap / smoothness) * smoothness  # >0 if growth < target
         above_target = softplus(growth_gap / smoothness) * smoothness  # >0 if growth > target
-    
+
         # Asymmetric growth penalties
         loss_growth = weight_growth_low * (below_target ** 2) + weight_growth_high * (above_target ** 2)
-    
+
         # Total loss and reward
         total_loss = loss_inflation + loss_growth
         reward = np.exp(-total_loss)
-    
+
         return reward
 
     def is_terminal(self):

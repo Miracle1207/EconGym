@@ -148,17 +148,17 @@ Trainer:
 * **Baselines:**
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.The bar charts show household wealth distributions under different tax policies.
-  * **Left group (optimal\_tax\_ramsey\_100\_bc\_tax\_saez):** Households are modeled under the Ramsey Model with Behavior Cloning Agents, while the government adopts the Saez rule-based tax formula to determine optimal taxation.
+  * **Left group (optimal\_tax\_ramsey\_100\_bc\_tax\_saez):** Households are modeled under the **Ramsey Model** with **Behavior Cloning Agents**, while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households
     * Red bar: Overall average
-  * **Middle group (optimal\_tax\_ramsey\_100\_bc\_tax\_ddpg):** Households follow the Ramsey Model with Behavior Cloning Agents, and the government employs a DDPG-based RL algorithm to dynamically adjust tax rates over time.
+  * **Middle group (optimal\_tax\_ramsey\_100\_bc\_tax\_ddpg):** Households follow the **Ramsey Model** with **Behavior Cloning Agents**, and the government employs a **DDPG-based RL algorithm** to dynamically adjust tax rates over time.
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households
     * Red bar: Overall average
-  * **Right group (optimal\_tax\_ramsey\_100\_bc\_tax\_us\_federal):** Households are modeled with the Ramsey Model and Behavior Cloning Agents, while the government applies the U.S. federal tax system as the benchmark baseline.
+  * **Right group (optimal\_tax\_ramsey\_100\_bc\_tax\_us\_federal):** Households are modeled with the **Ramsey Model** and **Behavior Cloning Agents**, while the government applies **the U.S. federal tax system** as the benchmark baseline.
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households

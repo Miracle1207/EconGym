@@ -136,7 +136,7 @@ Trainer:
   Construct a monopolistic competition market in which firms use reinforcement learning to adjust product prices and variety in order to maximize profits. Compare different combinations of price levels and product diversity, and measure their effects on consumer utility.
 * **Experimental Variables:**
   
-  * A consumer utility function consistent with economic theory, where **epsilon** represents the elasticity of substitution between goods.
+  * A consumer utility function consistent with economic theory, **where epsilon represents the elasticity of substitution between goods**.
   * Number and identity of firms in the monopolistic competition market
   * Product prices and range of product varieties
   * Household utility in the simulated economy (stratified by age and income; used as the reward function)
@@ -145,11 +145,11 @@ Trainer:
 
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   * **Groups description:**
-    * ​**mp\_f2\_e4 (Light blue line)**​: A monopolistic competition market with ​**2 firms**​, households modeled as ​**Ramsey Model and Behavior Cloning Agent**​, government modeled as a ​**rule-based agent**​, elasticity of substitution parameter ​**ε=4**​.
-    * ​**mp\_f4\_e4 (Red line)**​: A monopolistic competition market with ​**4 firm**​,the other settings are the same.
-    * ​**mp\_f6\_e4 (Dark blue line)**​: A monopolistic competition market with ​**6 firms**​, the other settings are the same.
-    * ​**mp\_f8\_e4 (Yellow line)**​: A monopolistic competition market with ​**8 firms**​, the other settings are the same.
-    * ​**mp\_f10\_e4 (Green line)**​: A monopolistic competition market with ​**10 firms**​, the other settings are the same.
+    * ​**mp\_f2\_e4 **​: A monopolistic competition market with ​**2 firms**​, households modeled as ​**Ramsey Model and Behavior Cloning Agent**​, government modeled as a ​**rule-based agent**​, elasticity of substitution parameter ​**ε=4**​.
+    * ​**mp\_f4\_e4 **​: A monopolistic competition market with ​**4 firm**​,the other settings are the same.
+    * ​**mp\_f6\_e4 **​: A monopolistic competition market with ​**6 firms**​, the other settings are the same.
+    * ​**mp\_f8\_e4 **​: A monopolistic competition market with ​**8 firms**​, the other settings are the same.
+    * ​**mp\_f10\_e4 **​: A monopolistic competition market with ​**10 firms**​, the other settings are the same.
   * **Bar description:**
     * **Blue bar:** Rich households
     * **Green bar:** Middle-class households
@@ -166,12 +166,13 @@ Trainer:
 * **Baselines:**
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
-  
-  * ​**mp\_f2\_e4 **​: A monopolistic competition market with ​**2 firms**​, households modeled as ​**Ramsey Model and Behavior Cloning Agent**​, government modeled as a ​**rule-based agent**​, elasticity of substitution parameter ​**ε=4**​.
-  * ​**mp\_f4\_e4 **​: A monopolistic competition market with ​**4 firm**​,the other settings are the same.
-  * ​**mp\_f6\_e4 **​: A monopolistic competition market with ​**6 firms**​, the other settings are the same.
-  * ​**mp\_f8\_e4 **​: A monopolistic competition market with ​**8 firms**​, the other settings are the same.
-  * ​**mp\_f10\_e4 **​: A monopolistic competition market with ​**10 firms**​, the other settings are the same.
+
+    * ​**mp\_f2\_e4 (Light blue line)**​: A monopolistic competition market with ​**2 firms**​, households modeled as ​**Ramsey Model and Behavior Cloning Agent**​, government modeled as a ​**rule-based agent**​, elasticity of substitution parameter ​**ε=4**​.
+    * ​**mp\_f4\_e4 (Red line)**​: A monopolistic competition market with ​**4 firm**​,the other settings are the same.
+    * ​**mp\_f6\_e4 (Dark blue line)**​: A monopolistic competition market with ​**6 firms**​, the other settings are the same.
+    * ​**mp\_f8\_e4 (Yellow line)**​: A monopolistic competition market with ​**8 firms**​, the other settings are the same.
+    * ​**mp\_f10\_e4 (Green line)**​: A monopolistic competition market with ​**10 firms**​, the other settings are the same.
+
 
 ![Market Q4 P3](../img/Market%20Q4%20P3.png)
 

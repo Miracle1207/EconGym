@@ -37,15 +37,15 @@ As an example, we selected the following roles from the social role classificati
 | Social Role | Selected Type       | Role Description                                                                                               | Observation                                                                                               | Action                                                                                 | Reward                                   |
 | ----------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
 | **Individual**  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.         | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
-| **Government**  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.            |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
+ | **Government**  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.            |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.           | /                                                                                                         | /                                                                                    | Zero (long-run)                          |
 | **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                         | No rate control                                                                      | No profit                                |
 
 
 ### Rationale for Selected Roles
 
-**Individual → Ramsey Model/OLG Model**  
-**Ramsey Model and OLG Model are both suitable for this study.** The Ramsey Model analyzes aggregate macroeconomic responses from representative households’ optimal intertemporal decisions, ideal for studying long-term equilibrium trends. The OLG Model captures heterogeneity across age groups in income, consumption, and tax burdens, enabling analysis of the intergenerational fairness effects of consumption taxes.
+**Individual → Ramsey Model**  
+ Ramsey Model.The Ramsey Model analyzes aggregate macroeconomic responses from representative households’ optimal intertemporal decisions, ideal for studying long-term equilibrium trends,while the OLG Model captures heterogeneity across age groups in income, consumption, and tax burdens, enabling analysis of the intergenerational fairness effects of consumption taxes.
 
 **Government → Fiscal Authority**  
 The Tax Policy Department directly formulates and implements consumption tax policies, fully simulating tax collection, income redistribution, and fiscal expenditure responses. Compared with pension and central bank departments, the Treasury more accurately reflects the impact of consumption tax on tax structures, government budgets, and social equity.
@@ -55,7 +55,7 @@ Pension and monetary policy are not core variables in this study and thus are no
 Selecting perfectly competitive markets helps eliminate distortions, making the impact of consumption tax policies on supply-demand dynamics, pricing, and distribution clearer.
 Monopolistic markets have non-market-determined prices and complex corporate strategies, potentially obscuring the economic effects of consumption taxes and reducing experimental clarity.
 
-**Bank→ No-Arbitrage Platform**  
+**Bank→ Non-Profit Platform**  
 No-Arbitrage Platform are more suitable for analyzing long-term wealth accumulation and asset allocation responses, without active participation in credit expansion. They clearly reflect savings and investment behavior under policy changes.
 Commercial banks involve complex behaviors like lending, interest spreads, and financial risks, less suited for focused macroeconomic policy analysis.
 
@@ -106,7 +106,7 @@ Environment:
     - entity_name: 'households'
       entity_args:
         params:
-          type: 'ramsey'
+          type: 'ramsey' #The OLG Model can also be chosen in this experiment.
           type_list: [ 'ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest' ]
           households_n: 100
           action_dim: 2
@@ -162,9 +162,9 @@ Trainer:
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue line):** Households are modeled using the OLG model with Behavior Cloning Agents following Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 0%.
-  * ​**consumption\_tax\_7%\_bc\_saez\_100\_OLG (Light green line):** Households are modeled using the OLG model with Behavior Cloning Agents following Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 7%.
-  * ​**consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow line)​:** Households are modeled using the OLG model with Behavior Cloning Agents following Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 9%.
+  * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue line):** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 0%**.
+  * ​**consumption\_tax\_7%\_bc\_saez\_100\_OLG (Light green line):** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 7%**.
+  * ​**consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow line)​:** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 9%**.
 * **Visualized Experimental Results:**
 
 ![Fiscal Q3 P1](../img/Fiscal%20Q3%20P1.png)
@@ -199,9 +199,9 @@ Trainer:
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
   * **Agent Settings:**
-    * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue bars):** Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 0%.
-    * **consumption\_tax\_7%\_bc\_saez\_100\_OLG (Green bars): ​**Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 7%.
-    * **consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow bars): ​**Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 9%.
+    * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue bar):** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 0%**.
+    * ​**consumption\_tax\_7%\_bc\_saez\_100\_OLG (Green bar):** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 7%**.
+    * ​**consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow bar)​:** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 9%**.
   * **Panel Interpretation:**
     * **Left panel:** Different bar colors represent household wealth by **age cohorts** (e.g., <24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
     * **Right panel:** Different bar colors represent household wealth by **income/wealth classes** (rich, middle, poor, and mean).

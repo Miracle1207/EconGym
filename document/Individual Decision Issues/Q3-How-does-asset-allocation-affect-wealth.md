@@ -30,7 +30,9 @@ As an example, we selected the following roles from the social role classificati
 | ----------- | ------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | **Individual**  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.              | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.               | /                                                                                                            | /                                                                                      | Zero (long-run)                                     |
-| **Bank**       | Commercial Banks/Non-Profit Platform    | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.While Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund.| $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)/No rate control(Non-Profit Platform)              | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks) / Zero (Non-Profit Platform)  |
+| **Bank**       | Commercial Bank   | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund.| $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)            | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks)  |
+| **Bank**        | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                            | No rate control                                              | No profit                                |
+
 
 ---
 
@@ -45,10 +47,10 @@ In this experiment, we focus on the interaction between households and financial
 **Firm → Perfect Competition**  
 A perfectly competitive market provides a baseline backdrop for both economic growth and investment returns. Firm profits influence market yields, and this setting realistically simulates overall growth rates and capital returns, underpinning the valuation of high-risk investments.
 
-**Bank → Commercial Banks / Non-Profit Platform**  
+**Bank → Commercial Bank / Non-Profit Platform**  
 **Commercial Banks:** Act as the core conduit for savings, offering stable returns and liquidity guarantees. Changes in bank deposit rates directly influence asset-allocation decisions.
 
-**No-Arbitrage Platform:** Represent high-risk investment channels in the market, modeling the uncertain returns of volatile assets. They determine the potential returns and volatility faced by investors in the risk-taking segment.
+**Non-Profit Platform:** Represent high-risk investment channels in the market, modeling the uncertain returns of volatile assets. They determine the potential returns and volatility faced by investors in the risk-taking segment.
 
 ---
 
@@ -97,7 +99,7 @@ Environment:
     - entity_name: 'households'
       entity_args:
         params:
-          type: 'ramsey_risk_invest'
+          type: 'ramsey_risk_invest' #The OLG Model can also be chosen in this experiment.
 
     - entity_name: 'market'
       entity_args:
@@ -112,7 +114,7 @@ Environment:
 
 
 Trainer:
-  house_alg: "ppo"
+  house_alg: "ppo" #The Behavior Cloning Agent can also be chosen in this experiment.
   gov_alg: "saez"
   firm_alg: "rule_based"
   bank_alg: "rule_based"
