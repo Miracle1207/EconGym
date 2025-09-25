@@ -159,16 +159,16 @@ Trainer:
   * UBI amount (UBI = 0 or UBI = 50% of the base wage)
   * Income inequality (measured by the Gini coefficient of income)
 
-
-
 * ​**Baselines**​:
 
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
-  * ​**baseline\_real\_ppo\_100\_OLG (Blue line)** : The baseline scenario where households are modeled under the **OLG (Overlapping Generations) framework using Behavior Cloning (BC) Agent**, while the government adopts **PPO-based RL policies**. This setting does not include UBI transfers.
-  * ​**UBO\_real\_ppo\_100\_OLG (Green line)** ​: The experimental scenario where households are modeled under the **OLG framework using Behavior Cloning (BC) Agent**, while the government adopts **PPO-based RL policies**. In this case, a **Universal Basic Income (UBI) scheme** is introduced, providing unconditional transfers to all households.
+  
+  * **benchmark\_100\_house\_bc\_gov\_rule\_firm\_rule\_bank\_rule (Blue line)** : Households are modeled as **BC Agent ​**with​**​ 100 households**​,while the government adopts the ​**Rule-Based Agent**​.Company and bank are modeled as ​**Rule-Based Agent**​.**Without ​**​**UBI**​**​ in the environment, as the benchmark situation.**
+  * ​**universal\_basic\_income\_benchmark\_100\_house\_bc\_gov\_rule\_firm\_rule\_bank\_rule (Green line) ​**​: Households are modeled as **BC Agent ​**with​**​ 100 households**​,while the government adopts the ​**Rule-Based Agent**​.Company and bank are modeled as ​**Rule-Based Agent**​.**With ​**​**UBI**​**​ introduced into the environment, a higher level of welfare is reflected.**
+    
 * **Visualized Experimental Results：**
 
-![Fiscal Q2 P1](../img/Fiscal%20Q2%20P1.png)
+![Fiscal Q2 P1+](../img/Fiscal%20Q2%20P1+.png)
 
 **Figure 1: ​**In the simulation with UBI, the income Gini coefficient is lower than in the economy without UBI, indicating that the UBI policy reduces wealth inequality.
 
@@ -187,24 +187,23 @@ Trainer:
   * Average working hours of households by income tier
 * ​**Baselines**​:
 
-  We constructed the simulated economic environment using **Individuals modeled as Behavior Cloning Agents under the OLG (Overlapping Generations) framework and the Government modeled as a PPO-based RL Agent**. The bar charts illustrate average household working hours under two different policy settings:
+  We constructed the simulated economic environment using ​**Individuals modeled as Behavior Cloning Agents under the OLG (Overlapping Generations) framework and the Government modeled as a PPO-based RL Agent**​. The bar charts illustrate average household working hours under two different policy settings:
   
-  * ​**Left group (baseline\_real\_ppo\_100\_OLG)** : Represents the baseline policy without Universal Basic Income (UBI).
+  * **Left group (benchmark\_100\_house\_bc\_gov\_rule\_firm\_rule\_bank\_rule)** : Represents the baseline policy without Universal Basic Income (UBI).
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households
     * Red bar: Overall average
-  * ​**Right group (UBO\_real\_ppo\_100\_OLG)** : Represents the Universal Basic Income (UBI) policy, where households receive unconditional transfers.
+  * **Right group (universal\_basic\_income\_benchmark\_100\_house\_bc\_gov\_rule\_firm\_rule\_bank\_rule)** : Represents the Universal Basic Income (UBI) policy, where households receive unconditional transfers.
     * Blue bar: Rich households
     * Green bar: Middle-class households
     * Yellow bar: Poor households
     * Red bar: Overall average
 * **Visualized Experimental Results：**
 
-![Fiscal Q2 P2](../img/Fiscal%20Q2%20P2.png)
+![Fiscal Q2 P2+](../img/Fiscal%20Q2%20P2+.png)
 
-**Figure 2: ​**Implementing the UBI policy reduces labor hours across all income brackets.
+**Figure 2: ​**When society adopts Universal Basic Income, the average working hours are slightly higher than in an economy without UBI. Moreover, the average working hours of wealthy households increase, while those of poor households decrease.
 
-* Implementing the UBI policy significantly reduces working hours across all income groups. Note that in our simulation of 100 households, the top 10% income cohort is small, so some high-income households opt out of labor entirely.
-
+* The impact of Universal Basic Income on household working hours is relatively small, but the increase in labor among wealthy groups is significant. Under UBI, wealthy groups may need to work longer hours in order to achieve high inco
 
