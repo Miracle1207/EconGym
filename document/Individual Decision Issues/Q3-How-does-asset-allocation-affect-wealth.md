@@ -50,7 +50,7 @@ A perfectly competitive market provides a baseline backdrop for both economic gr
 **Bank → Commercial Banks / Non-Profit Platform**  
 **Commercial Banks:** Act as the core conduit for savings, offering stable returns and liquidity guarantees. Changes in bank deposit rates directly influence asset-allocation decisions.
 
-**No-Arbitrage Platform:** Represent high-risk investment channels in the market, modeling the uncertain returns of volatile assets. They determine the potential returns and volatility faced by investors in the risk-taking segment.
+**Non-Profit Platform:** Represent high-risk investment channels in the market, modeling the uncertain returns of volatile assets. They determine the potential returns and volatility faced by investors in the risk-taking segment.
 
 ---
 
