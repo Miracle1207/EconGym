@@ -44,8 +44,8 @@ As an example, we selected the following roles from the social role classificati
 
 ### Rationale for Selected Roles
 
-**Individual → Ramsey Model/OLG Model**  
-**Ramsey Model and OLG Model are both suitable for this study.** The Ramsey Model analyzes aggregate macroeconomic responses from representative households’ optimal intertemporal decisions, ideal for studying long-term equilibrium trends. The OLG Model captures heterogeneity across age groups in income, consumption, and tax burdens, enabling analysis of the intergenerational fairness effects of consumption taxes.
+**Individual → Ramsey Model**  
+**Ramsey Model are suitable for this study.** The Ramsey Model analyzes aggregate macroeconomic responses from representative households’ optimal intertemporal decisions, ideal for studying long-term equilibrium trends,while the OLG Model captures heterogeneity across age groups in income, consumption, and tax burdens, enabling analysis of the intergenerational fairness effects of consumption taxes.
 
 **Government → Fiscal Authority**  
 The Tax Policy Department directly formulates and implements consumption tax policies, fully simulating tax collection, income redistribution, and fiscal expenditure responses. Compared with pension and central bank departments, the Treasury more accurately reflects the impact of consumption tax on tax structures, government budgets, and social equity.
@@ -162,9 +162,9 @@ Trainer:
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue line):** Households are modeled using the OLG model with Behavior Cloning Agents following Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 0%.
-  * ​**consumption\_tax\_7%\_bc\_saez\_100\_OLG (Light green line):** Households are modeled using the OLG model with Behavior Cloning Agents following Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 7%.
-  * ​**consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow line)​:** Households are modeled using the OLG model with Behavior Cloning Agents following Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 9%.
+  * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue line):** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 0%**.
+  * ​**consumption\_tax\_7%\_bc\_saez\_100\_OLG (Light green line):** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 7%**.
+  * ​**consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow line)​:** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 9%**.
 * **Visualized Experimental Results:**
 
 ![Fiscal Q3 P1](../img/Fiscal%20Q3%20P1.png)
@@ -199,9 +199,9 @@ Trainer:
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
   * **Agent Settings:**
-    * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue bars):** Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 0%.
-    * **consumption\_tax\_7%\_bc\_saez\_100\_OLG (Green bars): ​**Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 7%.
-    * **consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow bars): ​**Households are modeled using the OLG model with Behavior Cloning Agents under Saez’s rule-based taxation framework, with 100 households and a consumption tax rate of 9%.
+    * **consumption\_tax\_0%\_bc\_saez\_100\_OLG (Blue bar):** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 0%**.
+    * ​**consumption\_tax\_7%\_bc\_saez\_100\_OLG (Green bar):** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 7%**.
+    * ​**consumption\_tax\_9%\_bc\_saez\_100\_OLG (Yellow bar)​:** Households are modeled using the OLG model with **Behavior Cloning Agents** following **Saez’s rule-based taxation framework**, with **100 households** and a **consumption tax rate of 9%**.
   * **Panel Interpretation:**
     * **Left panel:** Different bar colors represent household wealth by **age cohorts** (e.g., <24, 25–34, 35–44, 45–54, 55–64, 65–74, 75–84, 85+, total).
     * **Right panel:** Different bar colors represent household wealth by **income/wealth classes** (rich, middle, poor, and mean).
