@@ -158,9 +158,9 @@ Trainer:
   * GDP impact
 * **Baselines:**
   
-  We constructed the simulated economic environment using Individuals modeled as **Behavior Cloning (BC) Agents** with the **OLG framework** and the ​Government modeled as different strategies  (​**DDPG, ​PPO**)​. The bar charts illustrate household pension distributions under alternative household–government policy combinations:
+  We constructed the simulated economic environment using Individuals modeled as **Behavior Cloning (BC) Agents** with the **OLG framework** and the ​Government modeled as different **RL Agent (​DDPG, ​PPO**)​. The bar charts illustrate household pension distributions under alternative household–government policy combinations:
   
-  * **Policy settings (groups of bars):**
+  * **Policy settings (groups of bars , from left to right):**
     * ​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the DDPG algorithm.
     * ​**pension\_gap\_OLG\_1000\_bc\_pension\_ppo**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the PPO algorithm.
     * ​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is implemented as a Rule-Based Agent.
@@ -178,10 +178,10 @@ Trainer:
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg​(the blue line)**: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the DDPG algorithm.
-  * **pension\_gap\_OLG\_1000\_bc\_pension\_ppo​(the green line)**: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the PPO algorithm.
-  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based(the yellow line)**: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is implemented as a Rule-Based Agent.
-  * ​**pension\_gap\_OLG\_1000\_ppo\_pension\_ppo(the red line)**: Households are modeled as RL Agents (PPO) , using the OLG model with 1000 households, and the government is also trained using the PPO algorithm.
+  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg​(the blue line)**: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with **1000 households**, while the government is trained using the **DDPG algorithm**.
+  * **pension\_gap\_OLG\_1000\_bc\_pension\_ppo​(the green line)**: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with **1000 households**, while the government is trained using the **PPO algorithm**.
+  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based(the yellow line)**: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with **1000 households**, while the government is implemented as a **Rule-Based Agent**.
+  * ​**pension\_gap\_OLG\_1000\_ppo\_pension\_ppo(the red line)**: Households are modeled as **RL Agents (PPO)** , using the OLG model with **1000 households**, and the government is also trained using the **PPO algorithm**.
 
 ![Pension Q4 P2](../img/PensionQ4P2.png)
 
