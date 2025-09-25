@@ -152,12 +152,12 @@ Trainer:
 
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * ​**rule\_based\_rule\_based\_1000\_OLG\_60.0 (Blue line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 1000 households.
-  * ​**rule\_based\_rule\_based\_1000\_OLG\_65.0 (Light green line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 1000 households.
-  * ​**rule\_based\_rule\_based\_1000\_OLG\_70.0 (Yellow line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 1000 households.
-  * ​**rule\_based\_rule\_based\_100\_OLG\_60.0 (Red line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 100 households.
-  * ​**rule\_based\_rule\_based\_100\_OLG\_65.0 (Cyan line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 100 households.
-  * ​**rule\_based\_rule\_based\_100\_OLG\_70.0 (Dark green line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 100 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_60.0 (Blue line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 1000 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_65.0 (Light green line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 1000 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_70.0 (Yellow line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 1000 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_60.0 (Red line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 100 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_65.0 (Cyan line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 100 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_70.0 (Dark green line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 100 households.
 
 * **Visualized Experimental Results：**
 
@@ -169,7 +169,7 @@ Trainer:
 
 ---
 
-### **Experiment 2: Training Curves for Pension Problems with Government ​**​**RL**
+### **Experiment 2: Training Curves for Pension Problems with RL-Agent Government ​**
 
 * **Experiment Description:**
 
