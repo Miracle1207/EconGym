@@ -52,11 +52,11 @@ Front‐loading and overdraft consumption are fundamentally **intertemporal deci
 **Government → Not Applicable**  
 This study focuses on **endogenous mechanisms by which individual borrowing behaviors (front‐loading/overdraft) affect aggregate demand, financial‐system stability, and wealth‐accumulation paths.** To avoid confounding policy interventions, no active government agent is included—no fiscal subsidies, tax incentives, or regulatory constraints—so that government only provides a passive backdrop.
 
-**Bank → Commercial Banks**  
-Commercial banks are the primary intermediaries for consumer credit, determining loan accessibility, costs, and terms. Through credit assessment, interest‐rate setting, and lending‐limit policies, they shape the feasible boundary of front‐loading consumption. In contrast, arbitrage‐free intermediaries focus on capital‐market efficiency and are less relevant to consumer‐credit behaviors.
-
 **Firm → Perfect Competition**  
 Front‐loading and overdraft consumption directly alter demand for goods and services, impacting production and prices. A perfectly competitive market model accurately **reflects firms’ responses to demand shifts and the transmission of borrowing effects through price mechanisms**. Monopoly or oligopoly structures may distort price responses, hindering precise assessment of front‐loading consumption’s true impact, and are therefore not appropriate for this study.
+
+**Bank → Commercial Banks**  
+Commercial banks are the primary intermediaries for consumer credit, determining loan accessibility, costs, and terms. Through credit assessment, interest‐rate setting, and lending‐limit policies, they shape the feasible boundary of front‐loading consumption. In contrast, arbitrage‐free intermediaries focus on capital‐market efficiency and are less relevant to consumer‐credit behaviors.
 
 ---
 
