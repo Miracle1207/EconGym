@@ -41,16 +41,16 @@ As an example, we selected the following roles from the social role classificati
 ### Rationale for Selected Roles
 
 **Individual  → Overlapping Generations (OLG) Model**  
-An individual's **age** is a key determinant of work duration, consumption behavior, and health status. Under the ​**Overlapping Generations (OLG) model**​, individuals at different age stages (young labor force, middle-aged labor force, retirees) have distinct preferences and constraints, allowing for a more precise analysis of the long-term effects of excessive work hours on personal welfare. For instance, younger individuals may be inclined to work overtime to accumulate wealth, while middle-aged individuals may focus more on the balance between work and family. Retirees, on the other hand, are influenced by previous savings and government pension policies.
+An individual's age is a key determinant of work duration, consumption behavior, and health status. Under the ​Overlapping Generations (OLG) model​, individuals at different age stages (young labor force, middle-aged labor force, retirees) have distinct preferences and constraints, allowing for a more precise analysis of the long-term effects of excessive work hours on personal welfare. For instance, younger individuals may be inclined to work overtime to accumulate wealth, while middle-aged individuals may focus more on the balance between work and family. Retirees, on the other hand, are influenced by previous savings and government pension policies.
 
 **Government→ No Specific Role**  
 This study focuses on the behavioral responses of households and firms to increased working hours, without introducing government-driven policy adjustments. The aim is to isolate the effects of extended work schedules (such as the "996" model) on the economy and individual welfare. Government interventions like taxation, regulation, or welfare policies are intentionally excluded to ensure that the outcomes reflect endogenous behavioral and market responses alone.
 
 **Firm  → Perfect Competition**  
-Firms in the market primarily seek ​**profit maximization**​, and thus they may adopt the **"996" model** to boost short-term productivity. However, excessively long working hours may lead to a decline in ​**labor productivity**​, hinder **innovation** capabilities, and potentially cause an imbalance in the labor market's supply and demand. Companies need to strike a balance between work hours and production efficiency, while also considering **worker welfare** and ​**talent attraction**​.
+Firms in the market primarily seek ​profit maximization, and thus they may adopt the "996" model to boost short-term productivity. However, excessively long working hours may lead to a decline in ​labor productivity​, hinder innovation capabilities, and potentially cause an imbalance in the labor market's supply and demand. Companies need to strike a balance between work hours and production efficiency, while also considering worker welfare and ​talent attraction.
 
 **Bank → Non-Profit Platform**  
-The primary role of **financial institutions** is to provide ​**loans**​, ​**investment opportunities**​, and ​**asset management**​. Long working hours may influence **workers' consumption** and ​**savings decisions**​. For example, excessive working hours may suppress consumption, leading to an increase in ​**household savings rates**​, which in turn can impact the ​**capital markets**​.
+The primary role of financial institutions is to provide ​loans, ​investment opportunities​, and ​asset management​. Long working hours may influence workers' consumption and ​savings decisions​. For example, excessive working hours may suppress consumption, leading to an increase in ​household savings rates, which in turn can impact the ​capital markets​.
 
 ---
 
