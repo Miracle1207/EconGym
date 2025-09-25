@@ -34,7 +34,7 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
 | ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
-| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $$\lambda_t^i = 0$$                               |$r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)<br/>OLG includes pension if retired |
+| **Individual**  | Ramsey Model        | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.         | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
 | **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
@@ -43,17 +43,17 @@ As an example, we selected the following roles from the social role classificati
 
 ### Rationale for Selected Roles
 
-**Individual → Overlapping Generations (OLG) Model**  
-The Overlapping Generations framework simulates ​**age‑specific labor and consumption choices**​. Preferences for work–life balance vary across the life cycle—young workers may ​**strive for career growth**​, whereas middle‑aged and older cohorts prioritize ​**health and family time**​.
+**Individual → Ramsey Model**  
+In the Ramsey model, individuals’ choices in balancing life and work are more universal and rational, and the experiment aims to replicate consumption and labor decisions under the most rational circumstances.
 
 **Government → Any Type**  
 In the work–life balance experiments, the government must coordinate across multiple departments, for example: the Ministry of Labor enforces maximum working‐hour limits; the pension authority calibrates relevant pension regulations; and the tax authority adapts fiscal rules to the evolving social environment.
 
 **Firm → Perfect Competition**  
-Firms compete for talent through ​**wages and flexible work policies**​. Workers choose environments that best match their balance preferences, forcing companies to adapt HR strategies.
+Firms compete for talent through ​wages and flexible work policies. Workers choose environments that best match their balance preferences, forcing companies to adapt HR strategies.
 
-**Bank →Non-Profit Platform   
-Provide ​life‑cycle financial products**​—retirement accounts, health insurance, liquidity support. As work–life patterns shift, so do saving needs and demand for these services.
+**Bank →Non-Profit Platform**   
+Provide ​life‑cycle financial products—retirement accounts, health insurance, liquidity support. As work–life patterns shift, so do saving needs and demand for these services.
 
 ---
 
@@ -69,24 +69,64 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 ---
 
-## **4. Running the Experiment**
 
-### **4.1 Quick Start**
+## 4. Running the Experiment
+
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "work_life_well_being"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/work_life_well_being.yaml`, which defines the setup for the "work_life_well_being" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `work_life_well_being.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "work_life_well_being"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension" # central_bank gov
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'ramsey'
+          h_max: 2512
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   # ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'
+
+
+Trainer:
+  house_alg: "ppo"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+```
 ---
 
 ## **​5.​**​**Illustrative Experiment**

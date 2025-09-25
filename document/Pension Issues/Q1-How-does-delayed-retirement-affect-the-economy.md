@@ -33,8 +33,8 @@ As an example, the following table shows the economic roles most relevant to the
 
 | Social Role | Selected Type       | Role Description                                             | Observation                                                  | Action                                                       | Reward                                   |
 | ----------- | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------- |
-| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i, \text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: distributional statistics | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br/>Asset allocation, labor, investment, old agents $\lambda_t^i = 0$ | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility) |
-| **Government**  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | $o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$<br/>Public debt, wage, price level, inflation, GDP, income dist. | $a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$<br/>Retirement age, contribution rate, growth rate | Pension fund sustainability              |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
+| **Government**  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | \$\$o\_t^g = ( F\_{t-1}, N\_{t}, N^{old}\_{t}, \\text{age}^r\_{t-1}, \\tau^p\_{t-1}, B\_{t-1}, Y\_{t-1}) \$\$ <br>Pension fund, current population, old individuals number, last retirement age, last contribution rate, debt, GDP | $a_t^{\text{pension}} = ( \text{age}^r_t, \tau^p_t, k )$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                                  |
 | **Firm**        | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses. | /                                                            | /                                                            | Zero (long-run)                          |
 | **Bank**        | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                            | No rate control                                              | No profit                                |
 
@@ -62,12 +62,13 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
-| Individual    | Behavior Cloning Agent | To study policy effects, individuals are trained to mimic realistic human responses. We adopt **behavior cloning** using real-world data (e.g., SCF 2022) to train individual policies. |
-| Government    | Rule-Based Agent       | Since delayed retirement is defined by statutory retirement age, this can be directly configured in EconGym as a rule-based policy. |
+| Individual    | Behavior Cloning Agent   | Imitates real-world behavior by training on empirical data. Enables realistic micro-level behavior. |
+| Government    | RL Agent       | Learns through trial-and-error to optimize long-term cumulative rewards. Well-suited for solving dynamic decision-making problems.  |
 | Firm          | Rule-Based Agent       | Perfect competition implies market clearing and first-order optimality conditions, consistent with rule-based methods. |
 | Bank          | Rule-Based Agent       | Non-Profit Platforms have no interest-rate control authority, and thus can be modeled as rule-based intermediaries. |
 
 
+---
 
 ## 4. Running the Experiment
 
@@ -130,12 +131,13 @@ Trainer:
   n_epochs: 1000  # Number of training epochs
   test: False  # Flag to indicate if this is a test run
 ```
+---
 
 
 
 ## 5.​Illustrative Experiments
 
-### Experiment: Impact of Different Retirement Ages on Economic Growth
+### Experiment 1: Impact of Different Retirement Ages on Economic Growth
 
 * **Experiment Description:**
   
@@ -150,12 +152,12 @@ Trainer:
 
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * ​**rule\_based\_rule\_based\_1000\_OLG\_60.0 (Blue line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 1000 households.
-  * ​**rule\_based\_rule\_based\_1000\_OLG\_65.0 (Light green line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 1000 households.
-  * ​**rule\_based\_rule\_based\_1000\_OLG\_70.0 (Yellow line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 1000 households.
-  * ​**rule\_based\_rule\_based\_100\_OLG\_60.0 (Red line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 100 households.
-  * ​**rule\_based\_rule\_based\_100\_OLG\_65.0 (Cyan line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 100 households.
-  * ​**rule\_based\_rule\_based\_100\_OLG\_70.0 (Dark green line)**​: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 100 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_60.0 (Blue line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 1000 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_65.0 (Light green line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 1000 households.
+  * ​**rule\_based\_rule\_based\_1000\_OLG\_70.0 (Yellow line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 1000 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_60.0 (Red line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 60 and 100 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_65.0 (Cyan line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 65 and 100 households.
+  * ​**rule\_based\_rule\_based\_100\_OLG\_70.0 (Dark green line)**: Both households and the government are modeled as ​**Rule-Based Agents**​, with a retirement age of 70 and 100 households.
 
 * **Visualized Experimental Results：**
 
@@ -164,5 +166,29 @@ Trainer:
 **Figure 1:** The experiment observes that economies with earlier retirement ages exhibit higher aggregate GDP, although this difference is less evident when the household count is 100.
 
 * Delaying retirement does not raise aggregate output in the long run. One reason may be that extended working years reduce households’ time and willingness to consume, interrupting their life-cycle consumption and saving plans.
+
+---
+
+### **Experiment 2: Training Curves for Pension Problems with RL-Agent Government ​**
+
+* **Experiment Description:**
+
+    In certain pension-related problems, the government is trained using the PPO reinforcement learning algorithm, and we observe the relevant economic variables of households and the government.
+* **Experimental Variables:**
+  
+  * Gov\_reward
+  * Pension\_gov\_reward
+  * Years
+  * House\_work\_hours
+  * House\_age
+  * House\_pension
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  * ​**pension\_gap\_1000\_house\_bc\_gov\_ppo\_firm\_rule\_bank\_rule\_seed=1**​: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with ​**1000 households**​, while the government is trained using the **PPO**​​**​ algorithm**​.Bank and firm are modeled as **Rule-Based Agent.**
+
+![Pension Q1 PP](../img/Pension%20Q1%20PP.png)
+
+Figure 2: After the government is trained with a PPO Agent, both household working hours and wages show a significant long-term increase. The duration of the simulated economy extends as the number of steps increases. In addition, government rewards rise steadily with training steps.
 
 

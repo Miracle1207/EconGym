@@ -28,11 +28,10 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type        | Role Description                                                                                                             | Observation                                                                                                  | Action                                                             | Reward                         |
 | ----------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------ |
-| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                    | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility) |
-| **Government**  | Central Bank         | Central Bank adjusts nominal interest rates and reserve requirements, transmitting monetary policy to households and firms. | $o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$<br>Public debt, wage, price level, inflation, GDP, income dist.                                                                                            | $$a_t^{\text{cb}} = \{ \phi_t, \iota_t \}$$<br>Reserve ratio, benchmark rate           | Inflation/GDP stabilization    |
+| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.                    | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
+| **Government**  | Central Bank         | Central Bank adjusts nominal interest rates and reserve requirements, transmitting monetary policy to households and firms.  |\$\$o\_t^g = (\\mathcal{A}\_{t}, \\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, \\pi\_{t-1}, g\_{t-1})\$\$ <br>Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, inflation rate, growth rate. | $a_t^{\text{cb}} = ( \phi_t, \iota_t )$<br>Reserve ratio, benchmark rate | Inflation/GDP stabilization                                  |
 | **Firm**       | Perfect Competition  | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                       | /                                                                                                            | /                                                                | Zero (long-run)                |
-| **Bank**       | Commercial Banks     | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $$o_t^{\text{bank}} = \{ \iota_t, \phi_t, A_{t-1}, K_{t-1}, B_{t-1} \}$$<br>Benchmark rate, reserve ratio, deposits, loans, debts | $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions               | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin |
-
+| **Bank**       | Commercial Bank     | Commercial Bank strategically set deposit and lending rates to maximize profits, subject to central bank constraints.      | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund. | $a_t^{\text{bank}} = ( r^d_t, r^l_t )$<br>Deposit, lending decisions | $r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$<br>Interest margin |
 
 ---
 
@@ -47,8 +46,8 @@ Within the QE framework, the central bank is the sole policy implementer, respon
 **Firm → Perfect Competition**  
 In a perfectly competitive market, price, capital, and labor allocations respond directly to policy shocks, facilitating analysis of QE’s transmission to real economic activity (e.g., investment, output, wages). Its transparent structure also aids in measuring how financial‐variable changes pass through to the real economy.
 
-**Bank → Commercial Banks**  
-Commercial banks are the core nodes in QE’s transmission mechanism: their funding sources, lending behavior, and rate‐setting directly affect credit supply. After asset purchases depress long‐term rates, banks act as intermediaries to expand lending and adjust risk preferences, thereby altering corporate financing capacity and household consumption choices—making them the critical bridge between central‐bank policy and microeconomic responses.
+**Bank → Commercial Bank**  
+Commercial bank are the core nodes in QE’s transmission mechanism: their funding sources, lending behavior, and rate‐setting directly affect credit supply. After asset purchases depress long‐term rates, banks act as intermediaries to expand lending and adjust risk preferences, thereby altering corporate financing capacity and household consumption choices—making them the critical bridge between central‐bank policy and microeconomic responses.
 
 ---
 
@@ -65,24 +64,71 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 ---
 
-## **4. Running the Experiment**
+## 4. Running the Experiment
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "QE"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/QE.yaml`, which defines the setup for the "QE" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `QE.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "QE"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "central_bank"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'ramsey'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 100
+          action_dim: 2
+
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
+          sigma_z: 0.0038
+          epsilon: 0.5
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'commercial'   # [ 'non_profit', 'commercial' ]
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+```
 ---
 
 ## **​5.​**​**Illustrative Experiment**
@@ -94,7 +140,7 @@ Each simulation scene has its own parameter file that describes how it differs f
   Study the effect of a quantitative-easing policy on an economy’s GDP growth rate.
 * **Experimental Variables:**
   
-  * Quantitative Easing vs. Standard monetary policy
+  * Quantitative Easing vs. Standard monetary policy vs. cutting lending-deposit interest-rate spread
   * Transmission intensity represented by an increase in government-bond purchases or a reduction in the lending-deposit interest-rate spread
   * Long-term GDP levels across different simulated economies
 
@@ -123,16 +169,16 @@ Track both short-term and long-term effects of QE policy
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * **bc\_rule\_based\_100\_ramsey\_int\_margin\_0.03 (blue line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a ​**Rule-Based Agent**​,with reduces the lending–deposit interest-rate margin to 0.03.
-  * **bc\_rule\_based\_100\_ramsey (yellow line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a ​**Rule-Based Agent**​.
-  * **bc\_rule\_based\_100\_ramsey\_gt\_0.15 (red line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a **​Rule-Based Agent,​**with the extra goverment purchase volume set to 15% of GDP.
+  * **bc\_rule\_based\_100\_ramsey\_int\_margin\_0.03 (blue line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a ​**Rule-Based Agent**​,with **reduces the lending–deposit interest-rate margin to 0.03**.
+  * **bc\_rule\_based\_100\_ramsey (yellow line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a ​**Rule-Based Agent**​.**Baseline scenario.**
+  * **bc\_rule\_based\_100\_ramsey\_gt\_0.15 (red line):** Households are modeled as **Behavior Cloning Agents** under the **Ramsey model ​**with ​**100 households**​, while the government is a **​Rule-Based Agent,​** **with the extra goverment purchase volume set to 15% of GDP**.
 * **Visualized Experimental Results：**
 
 ![Monetary Q3 P1](../img/Monetary%20Q3%20P1.png)
 
 ![Monetary Q3 P2](../img/Monetary%20Q3%20P2.png)
 
-**Figure 1 & Figure 2:** Increasing government-bond purchases (red line) or narrowing the bank lending–deposit spread (blue line) represent different transmission channels of quantitative easing. Both implementations of QE produce clear GDP gains in the simulated economy, in both the short run (Year < 20) and the medium-to-long run (Years 20–80).
+**Figure 1 & Figure 2:** Increasing government-bond purchases or narrowing the bank lending–deposit spread represent different transmission channels of quantitative easing. Both implementations of QE produce clear GDP gains in the simulated economy, in both the short run (Year < 20) and the medium-to-long run (Years 20–80).
 
 * Quantitative easing is an effective tool for stimulating economic growth. Modeling QE via increased bond purchases yields a higher aggregate GDP in the simulation.
 

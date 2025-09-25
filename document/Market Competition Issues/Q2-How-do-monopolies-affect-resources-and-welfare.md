@@ -37,27 +37,28 @@ Select the following roles from the social role classification of the economic s
 
 | Social Role | Selected Type        | Role Description                                                                                                    | Observation                                                                                                  | Action                                                                                 | Reward                                              |
 | ----------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $$o_t^i = (a_t^i, e_t^i)$$<br>Private: assets, education<br>Global: distributional statistics                | $$a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$$<br>Asset allocation, labor, investment | $$r_t^i = U(c_t^i, h_t^i)$$ (CRRA utility)          |
-| **Government**  | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                 | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist. | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending          | GDP growth, equality, welfare                       |
-| **Firm**       | Monopoly             | Monopoly Firms set prices and wages to maximize profits under aggregate demand constraints.                        | $$o_t^{\text{mono}} = \{ K_t, L_{t}, Z_t, p_{t-1}, W_{t-1} \}$$<br>Capital, labor, productivity, last price/wage | $$a_t^{\text{mono}} = \{ p_t, W_t \}$$<br>Price and wage decisions                     | $$r_t^{\text{mono}} = p_t Y_t - W_t L_t - R_t K_t$$<br>Profits = Revenue – costs |
-| **Bank**       | Non-Profit Platform  | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives. | /                                                                                                            | No rate control                                                                         | No profit                                           |
+| **Individual**  | Ramsey Model         | Ramsey agents are infinitely-lived households facing idiosyncratic income shocks and incomplete markets.           | $o_t^i = (a_t^i, e_t^i)$<br>Private: assets, education<br>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)                     |
+| **Government**  | Fiscal Authority     | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                 |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
+| **Firm**       | Monopoly             | Monopoly Firms set prices and wages to maximize profits under aggregate demand constraints.                        | $o_t^{\text{mono}} = ( K_t, Z_t, r_{t-1}^l )$<br>Production capital, productivity, lending rate | $a_t^{\text{mono}} = ( p_t, W_t )$<br>Price and wage decisions | $r_t^{\text{mono}} = p_t Y_t - W_t L_t - R_t K_t$<br>Profits = Revenue – costs |
+| **Bank**       | Commercial Bank   | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund.| $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)            | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks)  |
+
 
 ---
 
 ### Rationale for Selected Roles
 
 **Individual →Ramsey Model**  
-**​ Ramsey Model** is used to capture how price changes in a monopoly market influence household consumption decisions, focusing on differences across individuals rather than across age groups.
+Ramsey Model is used to capture how price changes in a monopoly market influence household consumption decisions, focusing on differences across individuals rather than across age groups.
 Although the Overlapping Generations (OLG) model accounts for intergenerational decision-making—e.g., younger individuals tend to save more for the future—the focus here is not on age-specific behavior, but rather on heterogeneity unrelated to the life stage.
 
 **Government → Fiscal Authority**  
 The Treasury Department may implement price control policies to ensure market fairness and balance social welfare under monopolistic conditions.
 
 **Firm → Monopoly**  
-The model studies how monopolistic pricing behavior influences market competition and broader socioeconomic outcomes.
+The firm sets a monopoly price, thereby impacting households and further influencing society as a whole.
 
-**Bank → Non-Profit Platform**  
-These sets ensure the efficiency of capital markets and help analyze the indirect effects of monopoly structures on the financial system.
+**Bank → Commercial Bank**  
+Within the research framework of monopoly problems, commercial bank can more realistically simulate real-world situations, reflecting the game between banks and firms.
 
 ---
 
@@ -68,41 +69,84 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent    | Learns consumer behavior from historical data, including price sensitivity, consumption patterns, and responses to monopoly pricing.                                |
-| Government             | Rule-Based Agent/RL Agent | The government should be able to execute regulatory functions through predefined rules, or interact with the market to implement more targeted regulatory policies. |
-| Firm                 | RL Agent                  | Possesses pricing power and typically sets prices based on a profit-maximization strategy.                                                                          |
-| Bank| Rule-Based Agent          | Operates under the no-arbitrage principle; uses rule-based mechanisms to maintain market stability and analyze capital flows under monopoly pricing.                |
+| Government             | Rule-Based Agent | The government should be able to execute regulatory functions through predefined rules,like Seaz tax framework. |
+| Firm                 |  RL Agent                  |Monopoly firms learn to obtain the optimal pricing rules in order to ensure the maximization of their own profits.                                                                         |
+| Bank| RL Agent          | As profit-oriented institutions, commercial banks need to maximize their own profits, and reinforcement learning agents serve as an efficient means of learning.               |
 
 ---
-## **4. Running the Experiment**
 
-### **4.1 Quick Start**
+## 4. Running the Experiment
+
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "monopoly"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `monopoly.yaml`, which defines the setup for the "monopoly" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `monopoly.yaml`
+
+```yaml
+Environment:
+  env_core:
+    problem_scene: "monopoly"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "tax"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'ramsey'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 100
+          action_dim: 2
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "monopoly"   #  type_list: [ 'perfect', 'monopoly', 'monopolistic_competition', 'oligopoly' ]
+          alpha: 0.36
+          Z: 1.0
+          sigma_z: 0.0038
+          epsilon: 0.5
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'commercial'   # [ 'non_profit', 'commercial' ]
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "saez"
+  firm_alg: "ppo"
+  bank_alg: "ppo"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  wandb: True
+#  n_epochs: 1000
+```
 
 ---
 
 ## **​5.​**​**Illustrative Experiment**
 
-```python
-# Scenario setup related to Monopoly Market
-If firm_type == "monopoly":
-    At each time step:
-        1. Observe current state s_t
-        2. Choose price a_t based on policy π(s_t)
-        3. Receive reward r_t and update policy π via RL algorithm
-```
 
 ### **Experiment 1: The Impact of Monopoly Market on Income Inequality**
 
@@ -161,11 +205,41 @@ If firm_type == "monopoly":
 
 ![Market Q2 P4](../img/Market%20Q2%20P4.png)
 
-**Figure 2-4:** The blue, green, yellow, and red bars represent the average income levels of different income groups (Top 10%, Mid 40%, Bottom 50%,Average in 100%). From left to right, we show the income levels under a perfectly competitive market with government using a rule-based agent and RL agent, and under a monopoly market with both agents.Under the monopoly market, households' exhibit higher income levels in the medium to long term.
+**Figure 2-4:** The blue, green, yellow, and red bars represent the average income levels of different income groups. From left to right, we show the income levels under a perfectly competitive market with government using a rule-based agent or RL agent, and under a monopoly market with both agents.Under the monopoly market, households' exhibit higher income levels in the medium to long term.
 
 ![Market Q2 P5](../img/Market%20Q2%20P5.png)
 
 ​**Figure 5**​**​：​**Under the monopoly market, households' consumption levels are significantly lower than those in the perfectly competitive market.
 
 * Under the monopoly market, although residents' income levels are higher than those in a perfectly competitive market, the rise in commodity prices and the decline in effective social demand lead to a significant reduction in household consumption levels compared to the perfectly competitive scenario.
+
+### **Experiment 3: The Impact of Banking Behavior on Simulated Economies under a Monopoly Market**
+
+* **Experiment Description:**
+
+   This experiment simulates how different banking models influence the stability and longevity of a monopoly-driven economy. Specifically, it compares the effects of **non-profit banks** versus **commercial banks** on household consumption, firm profits, and overall system sustainability.
+* **Experimental Variables:**
+  
+  * ​**Monopoly market ​**​(single dominant firm).
+  * Banking model: **non-profit / rule-based** vs. ​**commercial / PPO-optimized**​.
+* **Baselines:**
+  
+  Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+  
+  * **monopoly\_100\_house\_bc\_gov\_seaz\_firm\_ppo\_bank\_ppo(dark red):** Households are modeled as **BC Agent with**​​**100 households**​,while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.Company and bank are modeled using the**​ ​**​**PPO**​**​​ (​**​​**Proximal Policy Optimization)** reinforcement learning algorithm.
+  * **monopoly\_100\_house\_bc\_gov\_seaz\_firm\_ppo\_bank\_rule(green):** Households are modeled as **BC Agent with**​​**100 households**​,while the government adopts the **Saez rule-based tax formula** to determine optimal taxation.Company is modeled using the **PPO (​**​​**Proximal Policy Optimization) ​**algorithm, while bank is modeled as a **Rule-Based Agent**​.
+* **Visualized Experimental Results：**
+
+![Market Q2 P6](../img/Market%20Q2%20P6.png)
+
+![Market Q2 P7](../img/Market%20Q2%20P7.png)
+
+**​Figure 6–7:​**We observed the changes in key indicators under ​**different banking settings**​, including market prices, wage rates, household consumption, firm rewards, bank rewards, the duration of the simulated economy, household rewards, social welfare, and household wealth.In the ​**non-profit banking setting**​, monopolistic firms rapidly extract ​**consumer surplus**​, leading to a sharp decline in households' ability to consume and save. As a result, financial intermediaries run out of funds and firms face financing shortages. After several iterations, ​**the duration of economic operation (measured in years) converges toward 1**​.
+
+In contrast, under the ​**commercial banking setting**​, banks actively adjust deposit and lending rates to attract savings and build up a capital pool. Funds flow back to the corporate sector,**​ ​**boosting production and profits. Consequently, firms’ rewards increase, and ​**the overall economy sustains a longer lifespan**​. At the same time, the involvement of **commercial banks delays the collapse of the ​**​**social welfare**​​**​ system**​, allowing aggregate output and financial circulation to remain at relatively high levels.
+
+* Under ​**monopoly**​, the extraction of consumer surplus by firms is the primary cause of economic collapse.
+* **Non-profit banks** cannot buffer financial breakdowns, leading to rapid systemic failure.
+* ​**Commercial banks**​, through interest-rate optimization, can “extend the life” of the system to some extent, but cannot fundamentally reverse the downward trend in consumer welfare.
+
 

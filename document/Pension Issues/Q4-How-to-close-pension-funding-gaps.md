@@ -35,8 +35,8 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
 | ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
-| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i, \text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: distributional statistics | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br/>Asset allocation, labor, investment, old agents $\lambda_t^i = 0$ | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility) |
-| **Government**  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | $o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$<br/>Public debt, wage, price level, inflation, GDP, income dist. | $a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$<br/>Retirement age, contribution rate, growth rate | Pension fund sustainability              |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
+| **Government**  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | \$\$o\_t^g = ( F\_{t-1}, N\_{t}, N^{old}\_{t}, \\text{age}^r\_{t-1}, \\tau^p\_{t-1}, B\_{t-1}, Y\_{t-1}) \$\$ <br>Pension fund, current population, old individuals number, last retirement age, last contribution rate, debt, GDP | $a_t^{\text{pension}} = ( \text{age}^r_t, \tau^p_t, k )$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                                  |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
 | **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
@@ -66,27 +66,82 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
 | Individual             | Behavior Cloning Agent      | Reproduce real-world lifecycle-based decisions on contributions, savings, and retirement using behavior cloning.                        |
-| Government             | Rule-Based Agent / RL Agent | Define rule-based triggers (e.g., bond issuance, tax hikes) in response to pension shortfalls, or employ RL to optimize pension policy. |
+| Government             | RL Agent |  Employ RL agent to optimize pension policy. |
 | Firm                 | Rule-Based Agent            | Map labor-market responses via supply–demand rules, reflecting wage and employment dynamics.                                           |
 | Bank | Rule-Based Agent            | Set investment-return adjustments based on long-term interest rates and demographic shifts using explicit rules.                        |
 
+
 ## **4. Running the Experiment**
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "pension_gap"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/pension_gap.yaml`, which defines the setup for the "pension_gap" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `pension_gap.yaml`
+
+```yaml
+Environment:
+  env_core:
+    problem_scene: "pension_gap"
+    estate_tax_rate: 0.0
+    estate_tax_exemption: 13610000
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+          contribution_rate: 0.08
+          gov_task: "pension_gap"
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+          households_n: 1000
+        OLG:
+          birth_rate: 0.011
+          initial_working_age: 24
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "ppo"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  p_lr: 1e-4
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 1000
+  test: False
+  wandb: True
+```
 
 ---
 
@@ -103,9 +158,9 @@ Each simulation scene has its own parameter file that describes how it differs f
   * GDP impact
 * **Baselines:**
   
-  We constructed the simulated economic environment using Individuals modeled as **Behavior Cloning (BC) Agents** with the **OLG framework** and the ​Government modeled as different strategies  (​**DDPG, ​PPO**)​. The bar charts illustrate household pension distributions under alternative household–government policy combinations:
+  We constructed the simulated economic environment using Individuals modeled as **Behavior Cloning (BC) Agents** with the **OLG framework** and the ​Government modeled as different **RL Agent (​DDPG, ​PPO**)​. The bar charts illustrate household pension distributions under alternative household–government policy combinations:
   
-  * **Policy settings (groups of bars):**
+  * **Policy settings (groups of bars , from left to right):**
     * ​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the DDPG algorithm.
     * ​**pension\_gap\_OLG\_1000\_bc\_pension\_ppo**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the PPO algorithm.
     * ​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based**​: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is implemented as a Rule-Based Agent.
@@ -123,10 +178,10 @@ Each simulation scene has its own parameter file that describes how it differs f
   
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
   
-  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg​(the blue line)**: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the DDPG algorithm.
-  * **pension\_gap\_OLG\_1000\_bc\_pension\_ppo​(the green line)**: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is trained using the PPO algorithm.
-  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based(the yellow line)**: Households are modeled as Behavior Cloning (BC) Agents , using the OLG model with 1000 households, while the government is implemented as a Rule-Based Agent.
-  * ​**pension\_gap\_OLG\_1000\_ppo\_pension\_ppo(the red line)**: Households are modeled as RL Agents (PPO) , using the OLG model with 1000 households, and the government is also trained using the PPO algorithm.
+  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_ddpg​(the blue line)**: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with **1000 households**, while the government is trained using the **DDPG algorithm**.
+  * **pension\_gap\_OLG\_1000\_bc\_pension\_ppo​(the green line)**: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with **1000 households**, while the government is trained using the **PPO algorithm**.
+  * ​​**pension\_gap\_OLG\_1000\_bc\_pension\_rule\_based(the yellow line)**: Households are modeled as **Behavior Cloning (BC) Agents** , using the OLG model with **1000 households**, while the government is implemented as a **Rule-Based Agent**.
+  * ​**pension\_gap\_OLG\_1000\_ppo\_pension\_ppo(the red line)**: Households are modeled as **RL Agents (PPO)** , using the OLG model with **1000 households**, and the government is also trained using the **PPO algorithm**.
 
 ![Pension Q4 P2](../img/PensionQ4P2.png)
 
@@ -134,5 +189,4 @@ Each simulation scene has its own parameter file that describes how it differs f
 
 * Although RL strategies are effective in reducing the pension gap, this optimization may come at the cost of **economic growth—particularly ​**when households also adopt RL-based decision-making. Overall, the combination where households follow Behavior Cloning and the government adopts an RL Agent strikes the best balance between sustained economic development and minimizing the pension gap.
 
-
-
+---

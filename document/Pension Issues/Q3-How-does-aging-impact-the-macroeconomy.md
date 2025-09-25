@@ -33,8 +33,8 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                                                                                       | Observation                                                                                                                                          | Action                                                       | Reward                                               |
 | ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
-| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i, \text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: distributional statistics | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br/>Asset allocation, labor, investment, old agents $\lambda_t^i = 0$ | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility) |
-| **Government**  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts. | $o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$<br/>Public debt, wage, price level, inflation, GDP, income dist. | $a_t^{\text{pension}} = \{ \text{age}^r, \tau_p, k \}$<br/>Retirement age, contribution rate, growth rate | Pension fund sustainability              |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.  | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
+| **Government**  | Pension Authority   | Pension Authority manages intergenerational transfers by setting retirement age, contribution rates, and pension payouts.  | \$\$o\_t^g = ( F\_{t-1}, N\_{t}, N^{old}\_{t}, \\text{age}^r\_{t-1}, \\tau^p\_{t-1}, B\_{t-1}, Y\_{t-1}) \$\$ <br>Pension fund, current population, old individuals number, last retirement age, last contribution rate, debt, GDP | $a_t^{\text{pension}} = ( \text{age}^r_t, \tau^p_t, k )$<br>Retirement age, contribution rate, growth rate | Pension fund sustainability                                  |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                 | /                                                                                                                                                    | /                                                            | Zero (long-run)                                      |
 | **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.   | /                                                                                                                                                    | No rate control                                              | No profit                                            |
 
@@ -68,48 +68,79 @@ This section provides a recommended agent configuration. Users are encouraged to
 | Firm                 | Rule-Based Agent       | Simulate firms’ direct responses to changes in financing costs, consistent with the perfect-competition assumption.                         |
 | Bank | Rule-Based Agent       | Commercial banks set margins according to preset strategies, facilitating the assessment of systemic effects under different margin regimes. |
 
+---
 
-## **4. Running the Experiment**
+## 4. Running the Experiment
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "population_aging"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/population_aging.yaml`, which defines the setup for the "population_aging" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `population_aging.yaml`
+
+```yaml
+Environment:
+  env_core:
+    problem_scene: "population_aging"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension"
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+          households_n: 1000
+          action_dim: 2
+
+        OLG:
+          birth_rate: 0.011
+          initial_working_age: 24
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"
+          sigma_z: 0.0038
+          epsilon: 0.5
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+```
 
 ---
 
 ## **​5.​**​**Illustrative Experiments**
 
-```Python
-# Based on real-world demographic trends, the simulated economic environment modifies birth and death rates
-# to represent different levels of population aging in various societies.
-
-population_aging_1: Medium birth rate / High death rate  
-  - Used to simulate: Developing societies or countries with limited medical resources 
-
-population_aging_2: Medium birth rate / Medium death rate   
-  - Used to simulate: Emerging economies in transition 
-
-population_aging_3: High birth rate / Medium death rate  
-  - Used to simulate: Youthful population structures in pro-natalist Southeast Asian countries
-
-population_aging_4: Medium birth rate / Low death rate  
-  - Used to simulate: Societies in early stages of aging 
-
-population_aging_5: High birth rate / Low death rate  
-  - Used to simulate: Societies encouraging childbirth with strong healthcare systems
-```
 
 ### Experiment 1: Impact of Population Aging on Individual Wealth and Labor Supply
 
@@ -139,11 +170,11 @@ population_aging_5: High birth rate / Low death rate
 
 ![Pension Q3 P1](../img/PensionQ3P1.png)
 
-**Figure 1:**​​**Household income statistics at Year 52 under different aging scenarios**​.From the age perspective, young individuals in Scenario 3 exhibit the highest income (green and orange bars), while income levels for middle-aged and elderly individuals show no significant differences across scenarios.From the wealth perspective, wealthy (blue bars) and middle-class households (green bars) in Scenario 3 have the highest income, and the average household consumption (red bars) is also the highest in this scenario.
+**Figure 1:**​​**Household income statistics at Year 52 under different aging scenarios**​.From the age perspective, young individuals in Scenario 3 exhibit the highest income (green and orange bars), while income levels for middle-aged and elderly individuals show no significant differences across scenarios.From the wealth perspective, wealthy (blue bars) and middle-class households (green bar) in Scenario 3 have the highest income, and the average household consumption (red bar) is also the highest in this scenario.
 
 ![Pension Q3 P2](../img/PensionQ3P2.png)
 
-**Figure 2:**​​**Household consumption statistics at Year 52 under different aging scenarios**​. From the age perspective, young individuals in Scenario 3 exhibit the highest consumption (green and orange bars), while middle-aged individuals consume the most in Scenario 4 (blue bars). Consumption levels for the elderly remain relatively low across all scenarios. From the income perspective, wealthy (blue bars) and middle-class households (green bars) in Scenario 3 have the highest consumption, with the overall average household consumption (red bars) also highest in this scenario.
+**Figure 2:**​​**Household consumption statistics at Year 52 under different aging scenarios**​. From the age perspective, young individuals in Scenario 3 exhibit the highest consumption (green and orange bars), while middle-older-aged individuals consume the most in Scenario 4 (blue bar). Consumption levels for the oldest people (yellow bar) remain relatively low across all scenarios. From the income perspective, wealthy (blue bars) and middle-class households (green bar) in Scenario 3 have the highest consumption, with the overall average household consumption (red bar) also highest in this scenario.
 
 * Under different aging scenarios, the income and consumption levels of the elderly show no significant changes; however, the combination of high birth rates and moderate death rates results in a notable difference for the young: in this simulated environment, the young exhibit significantly higher income and consumption compared to other scenarios.
 

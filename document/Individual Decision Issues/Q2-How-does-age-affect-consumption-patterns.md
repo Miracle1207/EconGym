@@ -37,11 +37,12 @@ Population‐structure shifts are a critical determinant of both macroeconomic o
 
 As an example, we selected the following roles from the social role classification of the economic simulation platform. These roles align with the core understanding of the issue and are convenient to implement from an experimental perspective:
 
-| Social Role            | Selected Type                | Role Description                                                                                                                              |
-| ------------------------ | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Individual             | OLG Model / Ramsey Model     | The OLG framework captures life‑cycle effects on consumption; the Ramsey model distinguishes age cohorts under an infinite‑horizon setting. |
-| Firm                 | Perfect Competition | Adjusts product supply and prices in response to age‑specific demand shifts.                                                                 |
-| Bank | Commercial Banks             | Provide savings and loan services, influencing liquidity constraints and intertemporal consumption preferences across age groups.             |
+
+| Social Role | Selected Type       | Role Description                                                        | Observation                                                  | Action                                                       | Reward                                   |
+| ----------- | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------- |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals. | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
+| **Firm**        | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses. | /                                                            | /                                                            | Zero (long-run)                          |
+| **Bank**       | Commercial Banks   | Commercial Banks strategically set deposit and lending rates to maximize profits, subject to central bank constraints. | $o_t^{\text{bank}} = ( \iota_t, \phi_t, r^l_{t-1}, r^d_{t-1}, loan, F_{t-1} )$<br>Benchmark rate, reserve ratio, last lending rate, last deposit_rate, loans, pension fund.| $$a_t^{\text{bank}} = \{ r^d_t, r^l_t \}$$<br>Deposit, lending decisions(Commercial Banks)    | $$r = r^l_t (K_{t+1} + B_{t+1}) - r^d_t A_{t+1}$$<br>Interest margin (Commercial Banks) |
 
 ---
 
@@ -68,31 +69,70 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
-| Individual             | RL Agent          | Each household maximizes utility by using reinforcement learning to optimize age‑specific consumption‑saving decisions and preferences. |
+| Individual             | Behavior Cloning Agent          | Each household maximizes utility by using real world data to optimize age‑specific consumption‑saving decisions and preferences. |
 | Government             | Rule‑Based Agent | Executes taxation and transfer policies according to explicit fiscal rules.                                                               |
 | Firm                 | Rule‑Based Agent | Adjusts prices and supply under predefined rules to match demand shifts and keep the market in equilibrium.                               |
 | Bank | Rule‑Based Agent | Delivers standardized financial services—uniform risk assessment and product pricing—for all age cohorts.                               |
 
+
 ---
 
-## **4. Running the Experiment**
+## 4. Running the Experiment
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "age_consumption"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/age_consumption.yaml`, which defines the setup for the "age_consumption" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `age_consumption.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "age_consumption"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension" # central_bank gov
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"   # ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly']
+
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'commercial'
+
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+```
 ---
 
 ## 5.Illustrative Experiment
@@ -126,24 +166,6 @@ Each simulation scene has its own parameter file that describes how it differs f
     * Yellow bar: Poor households
     * Red bar: Overall average
 
-```Python
-#c denotes the initial consumption ratio​ ​(i.e., proportion of income consumed).
-#Parameters are initialized based on LLM-informed recommendations and U.S. statistical data tracking.
-
-For each individual in the household population:
-    If 18 ≤ age ≤ 30:
-        Set c ≈ 0.65 ± small random noise
-        # Young adults: high consumption, early-stage overconsumption
-    Else if 31 ≤ age ≤ 45:
-        Set c ≈ 0.55 ± small random noise
-        # Early middle age: career building, moderate consumption
-    Else if 46 ≤ age ≤ 65:
-        Set c ≈ 0.45 ± small random noise
-        # Late middle age: stable income, family burden, more balanced
-    Else if age > 65:
-        Set c ≈ 0.35 ± small random noise
-        # Elderly: consumption needs decline, medical costs rise
-```
 
 * **​ Visualized Experimental Results：**
 

@@ -39,8 +39,8 @@ As an example, we selected the following roles from the social role classificati
 
 | Social Role | Selected Type       | Role Description                                             | Observation                                                  | Action                                                       | Reward                                   |
 | ----------- | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------- |
-| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $$\lambda_t^i = 0$$                               |$r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)<br/>OLG includes pension if retired |
-| **Government**  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                     | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.       | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending            | GDP growth, equality, welfare          |
+| **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$<br/>Private: assets, education, age<br/>Global: wealth distribution, education distribution, wage rate, price_level, lending rate, deposit_rate | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $\lambda_t^i = 0$    | $r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)   <br/>*OLG includes pension if retired*      |
+| **Government**  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                     |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                   | /                                                                                                                                                    | /                                                                                          | Zero (long-run)                        |
 | **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.     | /                                                                                                                                                    | No rate control                                                                            | No profit                              |
 
@@ -69,32 +69,85 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
-| Individual             | Rule-Based Agent / Behavior Cloning Agent | Use a rule-based agent to model household decision processes; employ behavior cloning to learn patterns from empirical data. |
-| Government             | Data-Based Agent / RL Agent               | Forecast changes in public finances following UBI implementation using historical fiscal data.                               |
+| Individual             | Behavior Cloning Agent |  Employ behavior cloning to learn patterns from empirical data. |
+| Government             | Rule-Based Agent               | Forecast changes in public finances following UBI implementation using defined rules.                               |
 | Firm                 | Rule-Based Agent                          | Encode supply–demand rules to simulate labor-market responses under UBI.                                                    |
 | Bank | Rule-Based Agent                          | Define financial-market operations based on macroeconomic variables.                                                         |
 
----
-## **4. Running the Experiment**
 
-### **4.1 Quick Start**
+---
+
+## 4. Running the Experiment
+
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "universal_basic_income"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/universal_basic_income.yaml`, which defines the setup for the "universal_basic_income" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `universal_basic_income.yaml`
 
+```yaml
+Environment:
+  env_core:
+    problem_scene: "universal_basic_income"
+    episode_length: 300
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "tax"
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+          households_n: 100
+          action_dim: 2
+
+        OLG:
+          birth_rate: 0.011
+
+          initial_working_age: 24
+    - entity_name: 'market'
+      entity_args:
+        params:
+          type: "perfect"
+          sigma_z: 0.0038
+          epsilon: 0.5
+
+    - entity_name: 'bank'
+      entity_args:
+        params:
+          type: 'non_profit'
+          n: 1
+          lending_rate: 0.0345
+          deposit_rate: 0.0345
+          reserve_ratio: 0.1
+          base_interest_rate: 0.0345
+          depreciation_rate: 0.06
+          real_action_max: [ 1.0, 0.20 ]
+          real_action_min: [ 0.0, -1e-3 ]
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+  epoch_length: 300
+  cuda: False
+#  n_epochs: 300
+```
 ---
-
 ## **​5.​**​**Illustrative Experiment**
 
 ### Experiment 1: Impact of UBI on Social Equity
@@ -106,29 +159,13 @@ Each simulation scene has its own parameter file that describes how it differs f
   * UBI amount (UBI = 0 or UBI = 50% of the base wage)
   * Income inequality (measured by the Gini coefficient of income)
 
-```Python
-# UBI setting for fairness experiment
-# Two UBI levels: 0 and 50% of base wage
 
-For each time period t:
-    If UBI is enabled:
-        For each household:
-            UBI = 0.5 × base_wage
-    Else:
-        UBI = 0
-
-    # Calculate total income for each household
-    total_income = wage_income + investment_income + pension_income + UBI
-
-# Government adjusts expenditure accordingly
-    government_expenditure += total UBI distributed
-```
 
 * ​**Baselines**​:
 
   Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
-  * ​**baseline\_real\_ppo\_100\_OLG (Blue line)** : The baseline scenario where households are modeled under the OLG (Overlapping Generations) framework using Behavior Cloning (BC) strategies, while the government adopts PPO-based reinforcement learning policies. This setting does not include UBI transfers.
-  * ​**UBO\_real\_ppo\_100\_OLG (Green line)** ​: The experimental scenario where households are modeled under the OLG framework using Behavior Cloning (BC) strategies, while the government adopts PPO-based reinforcement learning policies. In this case, a Universal Basic Income (UBI) scheme is introduced, providing unconditional transfers to all households.
+  * ​**baseline\_real\_ppo\_100\_OLG (Blue line)** : The baseline scenario where households are modeled under the **OLG (Overlapping Generations) framework using Behavior Cloning (BC) Agent**, while the government adopts **PPO-based RL policies**. This setting does not include UBI transfers.
+  * ​**UBO\_real\_ppo\_100\_OLG (Green line)** ​: The experimental scenario where households are modeled under the **OLG framework using Behavior Cloning (BC) Agent**, while the government adopts **PPO-based RL policies**. In this case, a **Universal Basic Income (UBI) scheme** is introduced, providing unconditional transfers to all households.
 * **Visualized Experimental Results：**
 
 ![Fiscal Q2 P1](../img/Fiscal%20Q2%20P1.png)
@@ -150,7 +187,7 @@ For each time period t:
   * Average working hours of households by income tier
 * ​**Baselines**​:
 
-  We constructed the simulated economic environment using Individuals modeled as Behavior Cloning Agents under the OLG (Overlapping Generations) framework and the Government modeled as a PPO-based RL Agent. The bar charts illustrate average household working hours under two different policy settings:
+  We constructed the simulated economic environment using **Individuals modeled as Behavior Cloning Agents under the OLG (Overlapping Generations) framework and the Government modeled as a PPO-based RL Agent**. The bar charts illustrate average household working hours under two different policy settings:
   
   * ​**Left group (baseline\_real\_ppo\_100\_OLG)** : Represents the baseline policy without Universal Basic Income (UBI).
     * Blue bar: Rich households

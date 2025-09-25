@@ -32,7 +32,7 @@ As an example, we selected the following roles from the social role classificati
 | Social Role | Selected Type       | Role Description                                             | Observation                                                  | Action                                                       | Reward                                   |
 | ----------- | ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------- |
 | **Individual**  | OLG Model           | OLG agents are age-specific and capture lifecycle dynamics between working-age (Young) and retired (Old) individuals.   | $$o_t^i = (a_t^i, e_t^i,\text{age}_t^i)$$<br/>Private: assets, education, age<br/>Global: distributional statistics                                  | $a_t^i = (\alpha_t^i, \lambda_t^i, \theta_t^i)$<br>Asset allocation, labor, investment <br/>*OLG*: old agents $$\lambda_t^i = 0$$                               |$r_t^i = U(c_t^i, h_t^i)$ (CRRA utility)<br/>OLG includes pension if retired |
-| **Government**  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                     | $$o_t^g = \{ B_{t-1}, W_{t-1}, P_{t-1}, \pi_{t-1}, Y_{t-1}, \mathcal{I}_t \}$$<br>Public debt, wage, price level, inflation, GDP, income dist.       | $$a_t^{\text{fiscal}} = \{ \boldsymbol{\tau}, G_t \}$$<br>Tax rates, spending            | GDP growth, equality, welfare          |
+| **Government**  | Fiscal Authority    | Fiscal Authority sets tax policy and spending, shaping production, consumption, and redistribution.                     |\$\$o\_t^g = (\\mathcal{A}\_{t},\\mathcal{E}\_{t-1}, W\_{t-1}, P\_{t-1}, r^{l}\_{t-1}, r^{d}\_{t-1}, B\_{t-1})\$\$  <br> Wealth distribution, education distribution, wage rate, price level, lending rate, deposit_rate, debt. | $a_t^{\text{fiscal}} = ( \boldsymbol{\tau}, G_t )$<br>Tax rates, spending | GDP growth, equality, welfare                                |
 | **Firm**       | Perfect Competition | Perfectly Competitive Firms are price takers with no strategic behavior, ideal for baseline analyses.                   | /                                                                                                                                                    | /                                                                                          | Zero (long-run)                        |
 | **Bank**       | Non-Profit Platform | Non-Profit Platforms apply a uniform interest rate to deposits and loans, eliminating arbitrage and profit motives.     | /                                                                                                                                                    | No rate control                                                                            | No profit                              |
 
@@ -61,50 +61,73 @@ This section provides a recommended agent configuration. Users are encouraged to
 
 | Economic Role | Agent Algorithm        | Description                                                  |
 | ------------- | ---------------------- | ------------------------------------------------------------ |
-| Individual             | Rule-Based Agent / Behavior Cloning Agent | Use a rule-based agent to model household decision processes.Employ behavior cloning to learn patterns from empirical data.           |
-| Government             | Data-Based Agent                          | Reproduce changes in public finances after inheritance-tax implementation within the simulation environment using historical tax data. |
+| Individual             |Behavior Cloning Agent | Use a rule-based agent to model household decision processes.Employ behavior cloning to learn patterns from empirical data.           |
+| Government             | Rule-Based Agent                           | Reproduce changes in public finances after inheritance-tax implementation within the simulation environment using defined rules. |
 | Firm                 | Rule-Based Agent                          | Encode market supply–demand rules to simulate consumer behavior under inheritance tax.                                                |
 | Bank | Rule-Based Agent                          | Configure financial-market operations based on macroeconomic variables.                                                                |
 
+
 ---
 
-## **4. Running the Experiment**
+## 4. Running the Experiment
 
-### **4.1 Quick Start**
+### 4.1 Quick Start
 
 To run the simulation with a specific problem scene, use the following command:
 
-```Bash
-python main.py --problem_scene ""
+```bash
+python main.py --problem_scene "estate_tax"
 ```
 
-This command loads the configuration file `cfg/`, which defines the setup for the "" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
+This command loads the configuration file `cfg/estate_tax.yaml`, which defines the setup for the "estate_tax" problem scene. Each problem scene is associated with a YAML file located in the `cfg/` directory. You can modify these YAML files or create your own to define custom tasks.
 
-### **4.2 Problem Scene Configuration**
+### 4.2 Problem Scene Configuration
 
 Each simulation scene has its own parameter file that describes how it differs from the base configuration (`cfg/base_config.yaml`). Given that EconGym contains a vast number of parameters, the scene-specific YAML files only highlight the differences compared to the base configuration. For a complete description of each parameter, please refer to the comments in `cfg/base_config.yaml`.
 
-### **Example ​**​**YAML**​**​ Configuration: ​**
+### Example YAML Configuration: `estate_tax.yaml`
 
+```yaml
+
+Environment:
+  env_core:
+    problem_scene: "estate_tax"
+    estate_tax_rate: 0.0   # todo: set estate_tax_rate!!
+    estate_tax_exemption: 13610000
+    episode_length: 300
+
+  Entities:
+    - entity_name: 'government'
+      entity_args:
+        params:
+          type: "pension"  # Focus on pension policy. type_list: ['tax', 'pension', 'central_bank']
+
+    - entity_name: 'households'
+      entity_args:
+        params:
+          type: 'OLG'
+          type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
+          households_n: 100
+          action_dim: 2
+          real_action_max: [1.0, 1.0]
+          real_action_min: [-0.5, 0.0]
+        OLG:
+          birth_rate: 0.011
+          initial_working_age: 24
+
+Trainer:
+  house_alg: "bc"
+  gov_alg: "rule_based"
+  firm_alg: "rule_based"
+  bank_alg: "rule_based"
+  seed: 1
+#  epoch_length: 300
+  cuda: False
+```
 ---
 
 ## **​5.​**​**Illustrative Experiment**
 
-```Python
-# Estate tax logic (triggered upon individual death)
-For each simulation step:
-    For each individual in the household:
-        If the individual dies:
-            1. Compute total_wealth at death
-            2. If total_wealth > exemption threshold:
-                - Apply marginal tax_rate based on wealth tier
-                - Tax amount = (total_wealth - threshold) × tax_rate
-            3. Distribute post-tax wealth to heirs
-            4. Log effects:
-                - Government tax revenue increase
-                - Heirs' wealth updates
-                - Changes in social wealth distribution (for Gini tracking)
-```
 
 ### Experiment 1: Macroeconomic Impact of Estate Tax
 
@@ -166,11 +189,4 @@ For each simulation step:
 * Estate taxes decrease household wealth.
 * Estate taxes exhibit clear labor incentives differences based on income: enhancing labor incentives among low-income groups while discouraging middle-income groups.
 
-
-  
-
-  
-  **​ Figure 3:** Higher estate taxes enhance labor incentives for low-income households but discourage labor among middle-income groups; minimal age-based effects observed.
-* Estate taxes decrease household wealth.
-* Estate taxes exhibit clear labor incentives differences based on income: enhancing labor incentives among low-income groups while discouraging middle-income groups.
 
