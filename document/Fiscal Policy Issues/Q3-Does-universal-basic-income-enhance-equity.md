@@ -205,5 +205,5 @@ Trainer:
 
 **Figure 2: ​**When society adopts Universal Basic Income, the average working hours are slightly higher than in an economy without UBI. Moreover, the average working hours of wealthy households increase, while those of poor households decrease.
 
-* The impact of Universal Basic Income on household working hours is relatively small, but the increase in labor among wealthy groups is significant. Under UBI, wealthy groups may need to work longer hours in order to achieve high inco
+* The impact of Universal Basic Income on household working hours is relatively small, but the increase in labor among wealthy groups is significant. Under UBI, wealthy groups may need to work longer hours in order to achieve high income.
 
