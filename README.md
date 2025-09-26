@@ -17,6 +17,16 @@ Users can simulate multi-agent economic dynamics by flexibly combining economic 
 
 ---
 
+## 📣 News
+
+[09/26/2025] 🎉 The **EconGym** code is officially released! Dive into the platform and start simulating multi-agent economic dynamics!
+
+[09/19/2025] 🎉 [**EconGym**](https://neurips.cc/virtual/2025/poster/121445) accepted for NeurIPS 2025!
+
+
+
+---
+
 ## 📘 User Manual
 
 We provide a detailed **User Manual** that covers **25 key economic research questions**, each accompanied by:
