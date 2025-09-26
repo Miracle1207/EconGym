@@ -1,6 +1,6 @@
 # Q4: How to set optimal bank rate spreads?
 
-## ​1. Introduction
+## 1. Introduction
 
 ### 1.1 Net Interest Margin of Commercial Banks
 
@@ -146,7 +146,15 @@ Trainer:
 
 ## **​5.​**​**Illustrative Experiment**
 
-### Experiment 1: Impact of Net Interest Margin on the Real Economy
+### Experiment 1: Training Curves
+
+**Experiment Description**: The training curves were obtained based on the parameters outlined above.
+
+![Monetary Q4 P1](../img/monetary_policy.jpeg)
+
+
+
+### Experiment 2: Impact of Net Interest Margin on the Real Economy
 
 * **Experiment Description:**
 
@@ -172,7 +180,6 @@ Trainer:
 **Figure 1 & Figure 2:** When commercial banks proactively lower their net interest margin, GDP growth is stimulated in both the short run and the medium-to-long run.
 
 * Proactive NIM reductions by banks help boost aggregate economic output and modestly reduce income and wealth disparities.
-
 
 
 
