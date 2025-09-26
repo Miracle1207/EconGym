@@ -148,7 +148,9 @@ Trainer:
 
 ### Experiment 1: Training Curves
 
-* **Experiment Description**: The training curves were obtained based on the parameters outlined above.
+* **Experiment Description**:
+
+  The training curves were obtained based on the parameters outlined above.
 
 * **Baselines:**
 
@@ -191,7 +193,7 @@ Trainer:
 
 ![Monetary Q4 P2](../img/Monetary%20Q4%20P2.png)
 
-**Figure 1 & Figure 2:** When commercial banks proactively lower their net interest margin, GDP growth is stimulated in both the short run and the medium-to-long run.
+**Figure 2 & Figure 3:** When commercial banks proactively lower their net interest margin, GDP growth is stimulated in both the short run and the medium-to-long run.
 
 * Proactive NIM reductions by banks help boost aggregate economic output and modestly reduce income and wealth disparities.
 
