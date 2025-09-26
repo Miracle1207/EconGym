@@ -148,9 +148,23 @@ Trainer:
 
 ### Experiment 1: Training Curves
 
-**Experiment Description**: The training curves were obtained based on the parameters outlined above.
+* **Experiment Description**: The training curves were obtained based on the parameters outlined above.
+
+* **Baselines:**
+
+ Below, we provide explanations of the experimental settings corresponding to each line in the visualization to help readers better understand the results.
+
+  * **good\_optimal\_monetary\_100\_house\_bc\_gov\_ppo\_firm\_rule\_bank\_ppo\_seed=1 (green line):** Households are modeled as **Behavior-cloning agents** under the **Ramsey model** with 100 households; the government and the bank are **PPO agents**, and the firm is a **Rule-based agent**.
+
+* **Visualized Experimental Results：**
 
 ![Monetary Q4 P1](../img/monetary_policy.jpeg)
+
+**Figure 1:** Training curves (1k steps) under the commercial-banking setting (100 behavior-cloning households; PPO government & bank; rule-based firm). Household reward, consumption, social welfare, and years rise steadily (with a slight late-stage pullback), gov_reward improves mildly, while bank_reward trends negative as the bank compresses its net-interest margin to sustain credit supply. Solid lines show means; shaded regions denote variability.
+
+* Under the current configuration, the bank sacrifices its own returns to sustain gains in household utility, consumption, and social welfare, thereby significantly extending years.
+
+* The rise in welfare and consumption indicates effective policy learning; however, the negative bank_reward signals a need to rebalance objectives between financial stability and social goals.
 
 
 
