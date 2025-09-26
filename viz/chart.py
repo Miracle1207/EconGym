@@ -668,7 +668,15 @@ def generate_ratio_chart(divisor_data, dividend_data, years, chart_name_1, chart
     else:
         for name, dividend_values in dividend_data.items():
             divisor_values = divisor_data[name]
-            ratio = [(divisor / dividend) * 100 for divisor, dividend in zip(divisor_values, dividend_values)]
+            ratio = []
+            for divisor, dividend in zip(divisor_values, dividend_values):
+                if isinstance(divisor, list):
+                    divisor = divisor[0]
+                    if isinstance(divisor, list):
+                        divisor = divisor[0]
+    
+                ratio.append((divisor / dividend) * 100)
+            # ratio = [(divisor[0] / dividend) * 100 for divisor, dividend in zip(divisor_values, dividend_values)]
             ratio_line.add_xaxis(years[name])
             ratio_line.add_yaxis(name, ratio, is_smooth=True, symbol_size=2,
                                  label_opts=opts.LabelOpts(is_show=False))

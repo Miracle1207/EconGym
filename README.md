@@ -7,6 +7,14 @@
 
 Users can simulate multi-agent economic dynamics by flexibly combining economic roles and agent algorithms (e.g., rule-based, reinforcement learning, large language models), enabling reproducible research across disciplines.
 
+
+
+**Paper**: [EconGym: A Scalable AI Testbed with Diverse Economic Tasks](https://arxiv.org/abs/2506.12110)
+
+**Web Page**: [EconGym Official Page](https://miracle1207.github.io/econgym_page/)
+
+
+
 ---
 
 ## 📘 User Manual
@@ -315,65 +323,97 @@ EconGym/
 
 # 🔧 Configuration and Scenario Definitions
 ├── cfg/                    # YAML configs for 25+ economic benchmark tasks
-│   ├── *.yaml              # Each defines a full scenario setup
+│   ├── *.yaml              # Each defines a full scenario setup (e.g., tax models, pension models)
 │   ├── calibrate*.py       # Scripts for calibrating reward functions and parameters
 
 # 🧠 Agents and Algorithms
 ├── agents/                 # Implementation of agent types
-│   ├── rule_based.py       # Rule-based logic agents
-│   ├── data_based_agent.py # Agents trained on real-world data
-│   ├── bc_agent.py         # Behavioral cloning agents
-│   ├── ddpg_agent.py       # Deep Deterministic Policy Gradient
-│   ├── ppo_agent.py        # Proximal Policy Optimization
-│   ├── llm_agent.py        # Large language model agent interface
-│   ├── models.py           # Shared neural network architectures
-│   ├── utils.py            # Agent-level utilities
-│   ├── log_path.py         # Logging paths
-│   ├── data/, real_data/   # Datasets and resources
+│   ├── __init__.py         # Initialization file for the agents module
+│   ├── behavior_cloning/   # Behavioral cloning agents (learning from demonstrations)
+│   │   ├── __init__.py     # Initialization file for behavior cloning agents
+│   │   ├── bc_agent.py     # Main file for behavior cloning agents
+│   │   └── trained_models  # Directory for storing trained models
+│   ├── data/               # Datasets and resources for agents
+│   │   └── advanced_scfp2022_1110.csv  # Example dataset for training
+│   ├── data_based_agent.py # Data-based agent trained on real-world data
+│   ├── llm/                # Large Language Model (LLM) agent interface
+│   │   ├── llm_agent.py    # LLM agent main file
+│   │   └── prompts.py      # Prompt templates for LLMs
+│   ├── log_path.py         # File for managing log paths and logging configuration
+│   ├── models/             # Directory for storing generated trajectory data
+│   ├── rl/                 # Reinforcement Learning (RL) agents
+│   │   ├── __init__.py     # Initialization for RL agents
+│   │   ├── ddpg_agent.py   # DDPG agent
+│   │   ├── models.py       # Shared neural network architectures for RL agents
+│   │   ├── ppo_agent.py    # PPO agent
+│   │   └── sac_agent.py    # SAC agent
+│   ├── rule_based/         # Rule-based agents
+│   │   ├── __init__.py     # Initialization file for rule-based agents
+│   │   ├── bank.py         # Bank logic (non-profit/commercial)
+│   │   ├── government.py   # Government policy
+│   │   ├── households.py   # Household behavior and decision-making
+│   │   ├── market.py       # Market interaction logic (monopoly, perfect competition ...)
+│   │   └── rules_core.py   # Core logic for rule-based systems
+│   ├── saez.py             # Fiscal policy based on Saez Tax model
+│   └── utils.py            # General utility functions for agents
 
 # 🧩 Economic Entities and Logic
-├── entities/               # Core economic actors
-│   ├── household.py        # Household behavior
-│   ├── bank.py             # Private bank logic
-│   ├── central_bank_gov.py # Central bank policies
-│   ├── tax_gov.py          # Tax authority logic
-│   ├── pension_gov.py      # Pension management
-│   ├── government.py       # Fiscal government logic
-│   └── market.py           # Market  = Firm Agent
+├── entities/               # Core economic actors in the system
+│   ├── __init__.py         # Initialization file for entities module
+│   ├── bank.py             # Private bank logic (including non-profit and commercial types)
+│   ├── base.py             # Base class for all entities (inheritance)
+│   ├── government.py       # Fiscal government logic (tax collection, etc.)
+│   ├── households.py       # Household behavior (savings, consumption, etc.)
+│   └── market.py           # Firm interactions in market (wage and price setting)
 
 # 🌍 Simulation Environment
 ├── env/                    # Environment engine and evaluation logic
-│   ├── env_core.py         # Markov game environment core
-│   └── evaluation.py       # Performance evaluation logic
+│   ├── __init__.py         # Initialization for environment module
+│   ├── env_core.py         # Core logic for Markov game environment
+│   └── set_observation.py  # Observation setup for all agents (state space)
 
 # 🏃 Execution Scripts
-├── main.py                 # Entry point for YAML-based runs
-├── runner.py               # Run controller and training loop
-├── arguments.py            # Command-line argument management
+├── main.py                 # Entry point for running the simulation (YAML-based configuration)
+├── runner.py               # Controller for running experiments and training loops
+├── arguments.py            # Command-line argument management for running scripts
 
 # 📊 Visualization and Post-analysis
-├── indicator.py            # Generate metrics and export to Excel
+├── indicator.py            # Generate performance metrics and export them (e.g., to Excel)
 ├── viz/                    # Data visualization (Flask + charts)
-│   ├── chart.py            # Chart generation logic
-│   ├── templates/          # HTML templates
-│   ├── data/, models/      # Saved results
-├── viz_index.py            # Flask app for interactive result exploration
+│   ├── chart.py            # Logic for generating plots and charts
+│   ├── templates/          # HTML templates for visualization (Flask dashboard)
+│   ├── data/               # Directory for storing visualized data
+│   ├── models/             # Saved models used for visualization
+│   └── viz_index.py        # Flask app for interactive visualization of simulation results
 
 # 🌐 Static Assets for Web Interface
-├── static/                 # Web frontend resources
-│   ├── css/, js/, img/     # UI elements for Flask dashboard
+├── static/                 # Web frontend resources (CSS, JS, Images)
+│   ├── css/                # Stylesheets for web UI
+│   ├── js/                 # JavaScript files for web UI interactivity
+│   └── img/                # Image files for UI elements (e.g., icons)
 
 # ⚙️ Utilities
-├── utils/                  # General-purpose tools
-│   ├── config.py           # Load and manage configurations
-│   ├── episode.py          # Episode buffer and management
-│   ├── experience_replay.py# Replay buffer for training
-│   ├── normalizer.py       # Data normalization
-│   └── seeds.py            # Random seed control
+├── utils/                  # General-purpose utility functions and modules
+│   ├── config.py           # Functionality to load and manage configuration files
+│   ├── episode.py          # Episode buffer and management logic
+│   ├── experience_replay.py# Replay buffer for training reinforcement learning agents
+│   ├── normalizer.py       # Data normalization (scaling and transformations)
+│   └── seeds.py            # Management of random seeds for reproducibility
+
 ```
 
+## Citation and Acknowledgments
 
-## Acknowledgments
+We would like to express our sincere gratitude to [Prof. Bo Li](https://liboecon.com/) from Peking University for his invaluable discussions and feedback throughout the development of this project. As a distinguished economist, Prof. Li provided critical insights into the theoretical foundations of the economic models in EconGym, significantly enhancing the platform’s rigor and realism.
 
-We sincerely thank [Prof. Bo Li](https://liboecon.com/) from Peking University for his valuable discussions and feedback throughout the development of this project.  
-As an outstanding economist, Prof. Bo Li provided critical guidance on the theoretical foundations of the economic models in EconGym, significantly enhancing the rigor and realism of the platform.
+If you use `EconGym` in your research or projects, we kindly ask you to cite the following:
+
+```bibtex
+@inproceedings{mi2025econgym,
+  title={EconGym: A Scalable AI Testbed with Diverse Economic Tasks},
+  author={Qirui Mi and Qipeng Yang and Zijun Fan and Wentian Fan and Heyang Ma and Chengdong Ma and Siyu Xia and Bo An and Jun Wang and Haifeng Zhang},
+  journal={Advances in Neural Information Processing Systems},
+  year={2025},
+}
+```
+
