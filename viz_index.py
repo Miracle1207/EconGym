@@ -10,6 +10,8 @@ from omegaconf import OmegaConf
 from werkzeug.utils import secure_filename
 
 from agents.rl.ddpg_agent import ddpg_agent
+from agents.rl.DSMFG.bi_ddpg_agent import bi_ddpg_agent
+from agents.rl.DSMFG.bi_mfrl_agent import bi_mfrl_agent
 from agents.rl.ppo_agent import ppo_agent
 from agents.rl.sac_agent import sac_agent
 from agents.real_data.real_data import real_agent
@@ -338,6 +340,8 @@ def generate_data():
             "llm": llm_agent,
             "data_based": data_agent,
             "ddpg": ddpg_agent,
+            "bi_ddpg":bi_ddpg_agent,
+            "bi_mfrl":bi_mfrl_agent,
             "saez": rule_agent,  # Saez tax policy (implemented as a rule-based agent)
             "us_federal": rule_agent  # US Federal tax policy (implemented as a rule-based agent)
         }

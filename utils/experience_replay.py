@@ -19,10 +19,13 @@ class ReplayBuffer:
         self.next_idx = (self.next_idx + 1) % self.memory_size
 
 
-    def sample(self, agent_name, agent_policy, batch_size, on_policy, transition_dict=None):
+    def sample(self, agent_name, agent_policy, batch_size, on_policy, transition_dict=None,is_stackelberg=False):
         """Fetch data based on the agent's policy and mode (on-policy or off-policy)."""
         # Determine the fetch function based on on-policy flag
-        fetch_function = self.fetch_on_policy_data if on_policy else self.fetch_off_policy_data
+        if is_stackelberg:
+            fetch_function = self.fetch_on_policy_data if on_policy else self.fetch_off_policy_data_stackelberg
+        else:
+            fetch_function = self.fetch_on_policy_data if on_policy else self.fetch_off_policy_data
     
         # If agent_policy is a dictionary, fetch data for each sub-agent
         if isinstance(agent_policy, dict):
@@ -50,6 +53,16 @@ class ReplayBuffer:
                         # If agent_name not found, skip this item
                         continue
                 new_data[item_name].append(data)
+                
+        return new_data
+    
+    def fetch_off_policy_data_stackelberg(self, agent_name, agent_type, batch_size, transition_dict=None):
+        idxes = random.choices(range(len(self.storage)), k=2)
+        new_data = {key: [] for key in self.storage[0]}
+        for i in idxes:
+            sample = self.storage[i]
+            for item_name, item_data in sample.items():
+                new_data[item_name].append(item_data)
         return new_data
 
     def fetch_on_policy_data(self, agent_name, agent_type, batch_size, transition_dict):

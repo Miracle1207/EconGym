@@ -6,14 +6,15 @@ import torch.nn.functional as F
 from torch.optim.lr_scheduler import LambdaLR
 
 class bi_ddpg_agent:
-    def __init__(self, envs, args, agent_name="government"):
+    def __init__(self, envs, args, type=None,agent_name=None):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         self.agent_name = agent_name
+        self.agent_type = type
 
-        self.obs_dim = self.envs.government.observation_space.shape[0]
-        self.action_dim = self.envs.government.action_space.shape[0]
+        self.obs_dim = self.envs.government[type].observation_space.shape[0]
+        self.action_dim = self.envs.government[type].action_space.shape[0]
         if self.args.cuda:
             self.device = "cuda"
         else:
@@ -36,8 +37,15 @@ class bi_ddpg_agent:
         self.on_policy = False
     
     def train(self, transitions, other_agent):
+        device = 'cuda' if self.args.cuda else 'cpu'
+        # Align with PPO/SAC: early exits for fixed-action setups
+        if self.agent_name == "bank" and self.agent_type == "non_profit":
+            return 0.0, 0.0
+        if self.agent_name == "market" and self.agent_type == "perfect":
+            return 0.0, 0.0
+        
         global_obses, private_obses, gov_actions, house_actions, gov_rewards,\
-        house_rewards, next_global_obses, next_private_obses, dones, past_mean_house_actions = transitions
+        house_rewards, next_global_obses, next_private_obses, dones, past_mean_house_actions = transitions.values()
         private_obses = torch.tensor(private_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         global_obses = torch.tensor(global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         gov_actions = torch.tensor(gov_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
@@ -47,14 +55,17 @@ class bi_ddpg_agent:
         house_rewards = torch.tensor(house_rewards, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         next_global_obses = torch.tensor(next_global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         next_private_obses = torch.tensor(next_private_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        inverse_dones = torch.tensor(1 - dones, dtype=torch.float32,
+        inverse_dones = 1.0-torch.tensor(dones, dtype=torch.float32,
                                      device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
 
         next_gov_action = self.target_actor(next_global_obses)
-        next_house_action, next_mean_house_action = other_agent.get_action(global_obs_tensor=next_global_obses,private_obs_tensor=next_private_obses,
+        next_house_action, next_mean_house_action = other_agent.get_action(obs_tensor=next_private_obses,
                                                    gov_action=next_gov_action, agent_name="household")
         next_mean_house_action = torch.tensor(next_mean_house_action, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         next_mean_house_state = torch.mean(next_private_obses, dim=1)
+
+        #next_mean_house_state,next_mean_house_action,next_global_obses,next_gov_action=self.align_dim(next_mean_house_state,next_mean_house_action,next_global_obses,next_gov_action)
+
         next_q_values = self.target_critic(next_global_obses, next_gov_action, next_mean_house_state, next_mean_house_action)
         q_targets = gov_rewards + self.args.gamma * next_q_values * inverse_dones
         mean_house_state = torch.mean(private_obses, dim=1)
@@ -65,7 +76,7 @@ class bi_ddpg_agent:
         self.critic_optimizer.step()
         
         gov_action_ = self.actor(global_obses)
-        _, mean_house_action_ = other_agent.get_action(global_obs_tensor=global_obses,private_obs_tensor=private_obses,gov_action=gov_action_,agent_name="household")
+        _, mean_house_action_ = other_agent.get_action(obs_tensor=private_obses,gov_action=gov_action_,agent_name="household")
         mean_house_action_ = torch.tensor(mean_house_action_, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         mean_house_state_ = torch.mean(private_obses, dim=1)
         actor_loss = -torch.mean(self.critic(global_obses, self.actor(global_obses), mean_house_state_, mean_house_action_))
@@ -86,21 +97,30 @@ class bi_ddpg_agent:
         for target_param, param in zip(target.parameters(), source.parameters()):
             target_param.data.copy_((1 - 0.95) * param.data + 0.95 * target_param.data)
             
-    def get_action(self, global_obs_tensor, private_obs_tensor, gov_action=None, agent_name="household"):
-        if self.agent_name == "government":
-            obs_tensor = global_obs_tensor.reshape(-1, self.obs_dim)
-        elif self.agent_name == "household":
-            obs_tensor = private_obs_tensor
-        else:
-            obs_tensor = None
+    def get_action(self, obs_tensor,gov_action=None, agent_name="government"):
+        if self.agent_name == "bank" and self.agent_type == "non_profit":
+            return np.random.randn(self.action_dim)
+        if self.agent_name == "market" and self.agent_type == "perfect":
+            firm_n = len(obs_tensor)
+            return np.random.randn(firm_n, self.action_dim)
+        
         action = self.actor(obs_tensor).detach().cpu().numpy()
         sigma = 0.01
         action = action + sigma * np.random.randn(self.action_dim)
         # action = (action + 1)/2
-        if len(global_obs_tensor.shape)>1:
+        if len(obs_tensor.shape)>1:
             return action
         else:
             return action.flatten()
+    
+    def align_dim(self,next_mean_house_state,next_mean_house_action,next_global_obses,next_gov_action):
+        next_mean_house_state=next_mean_house_state.unsqueeze(1)
+        next_mean_house_action=next_mean_house_action.unsqueeze(1).repeat(self.envs.households.households_n,1)
+        next_global_obses=next_global_obses.repeat(self.envs.households.households_n,1)
+        next_gov_action=next_gov_action.repeat(self.envs.households.households_n,1)
+        #print(next_mean_house_state.shape,next_mean_house_action.shape,next_global_obses.shape,next_gov_action.shape)
+        
+        return next_mean_house_state,next_mean_house_action,next_global_obses,next_gov_action
 
 
     def save(self, dir_path):

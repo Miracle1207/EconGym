@@ -4,6 +4,8 @@ from agents.rl.ppo_agent import ppo_agent
 from agents.rl.sac_agent import sac_agent
 from agents.behavior_cloning.bc_agent import bc_agent
 from agents.rl.ddpg_agent import ddpg_agent
+from agents.rl.DSMFG.bi_mfrl_agent import bi_mfrl_agent#
+from agents.rl.DSMFG.bi_ddpg_agent import bi_ddpg_agent#
 from agents.real_data.real_data import real_agent
 from agents.llm.llm_agent import llm_agent
 from agents.data_based_agent import data_agent
@@ -22,6 +24,8 @@ agent_algorithms = {
     "llm": llm_agent,
     "data_based": data_agent,
     "ddpg": ddpg_agent,
+    "bi_ddpg":bi_ddpg_agent,
+    'bi_mfrl':bi_mfrl_agent,
     "saez": rule_agent,
     "us_federal": rule_agent,
 }

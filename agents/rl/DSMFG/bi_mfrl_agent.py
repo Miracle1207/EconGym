@@ -4,25 +4,28 @@ from torch import optim
 import os, sys
 
 sys.path.append(os.path.abspath('../..'))
-from agents.models import mlp_net, MFActor, MFCritic
+from agents.rl.models import MFActor, MFCritic
 import copy
-import pickle
 from utils.utils import sync_networks, sync_grads
 from torch.optim.lr_scheduler import LambdaLR
 
 class bi_mfrl_agent():  ## ddpg_based
-    def __init__(self, envs, args):
+    def __init__(self, envs, args,type=None,agent_name=None):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
         obs_dims = self.envs.households.observation_space.shape[0]
         # start to build the network.
+        self.type=type
+        for k,v in self.envs.government.items():
+            self.government_type=k
+
         self.mf_actor = MFActor(input_dims=self.envs.households.observation_space.shape[0],
-                                gov_action_dim=self.envs.government.action_space.shape[0],
+                                leader_action_dim=self.envs.government[self.government_type].action_space.shape[0],
                                 action_dims=self.envs.households.action_space.shape[1],
                                       hidden_size=128)  # Stackelberg mean field game
         self.mf_critic = MFCritic(obs_dims=self.envs.households.observation_space.shape[0],
-                                  gov_action_dim=self.envs.government.action_space.shape[0],
+                                  gov_action_dim=self.envs.government[self.government_type].action_space.shape[0],
                                   action_dim=self.envs.households.action_space.shape[1],
                                   mean_state_dim=self.envs.households.observation_space.shape[0],
                                   mean_action_dim=self.envs.households.action_space.shape[1],
@@ -30,11 +33,8 @@ class bi_mfrl_agent():  ## ddpg_based
         # sync the weights across the mpi
         sync_networks(self.mf_actor)
         sync_networks(self.mf_critic)
-        if self.args.bc == True:#是否有real data预训练？
-            self.mf_actor.load_state_dict(torch.load("agents/real_data/2024_01_04_16_56_mfrl_trained_model.pth", weights_only=True))
-            self.mf_actor_optimizer = optim.Adam(self.mf_actor.parameters(), 1e-6, eps=self.args.eps)
-        else:
-            self.mf_actor_optimizer = optim.Adam(self.mf_actor.parameters(), self.args.p_lr, eps=self.args.eps)
+        
+        self.mf_actor_optimizer = optim.Adam(self.mf_actor.parameters(), self.args.p_lr, eps=self.args.eps)
         # # build the target newtork
         self.mf_actor_target = copy.deepcopy(self.mf_actor)
         self.mf_critic_target = copy.deepcopy(self.mf_critic)
@@ -56,12 +56,13 @@ class bi_mfrl_agent():  ## ddpg_based
             self.mf_critic_target.cuda()
         self.on_policy = False
 
-    def get_action(self, global_obs_tensor, private_obs_tensor, gov_action, agent_name="household"):
+    def get_action(self, obs_tensor,gov_action,agent_name="household"):
+        private_obs_tensor=obs_tensor
         if len(private_obs_tensor.shape) == 3:
-            gov_action_tensor = gov_action.unsqueeze(1).repeat(1,self.args.n_households,1)
+            gov_action_tensor = gov_action.unsqueeze(1).repeat(1,self.envs.households.households_n,1)
         else:
             gov_action_tensor = torch.tensor(gov_action, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-            gov_action_tensor = gov_action_tensor.repeat(self.args.n_households, 1)
+            gov_action_tensor = gov_action_tensor.repeat(self.envs.households.households_n, 1)
         # action = self.mf_actor((private_obs_tensor +1)/2, gov_action_tensor).detach().cpu().numpy()
         action = self.mf_actor(private_obs_tensor, gov_action_tensor).detach().cpu().numpy()
         sigma = 0.01
@@ -74,7 +75,7 @@ class bi_mfrl_agent():  ## ddpg_based
     def train(self, transitions, other_agent):
         # smaple batch of samples from the replay buffer
         global_obses, private_obses, gov_actions, house_actions, gov_rewards,\
-        house_rewards, next_global_obses, next_private_obses, dones, past_mean_house_actions = transitions
+        house_rewards, next_global_obses, next_private_obses, dones, past_mean_house_actions = transitions.values()
         global_obses = torch.tensor(global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         private_obses = torch.tensor(private_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         gov_actions = torch.tensor(gov_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
@@ -83,30 +84,30 @@ class bi_mfrl_agent():  ## ddpg_based
         house_rewards = torch.tensor(house_rewards, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         next_private_obses = torch.tensor(next_private_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         next_global_obses = torch.tensor(next_global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        inverse_dones = torch.tensor(1 - dones, dtype=torch.float32,
+        inverse_dones = 1.0-torch.tensor(dones, dtype=torch.float32,
                                      device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
       
         with torch.no_grad():
-            next_gov_actions = other_agent.get_action(global_obs_tensor=next_global_obses,private_obs_tensor=next_private_obses,agent_name="government")
-            next_gov_actions = torch.tensor(next_gov_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu').unsqueeze(1).repeat(1, self.args.n_households,1)
+            next_gov_actions = other_agent.get_action(obs_tensor=global_obses,agent_name="government")
+            next_gov_actions = torch.tensor(next_gov_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu').unsqueeze(1).repeat(1, self.envs.households.households_n,1)
             next_house_actions_ = self.mf_actor_target(next_private_obses, next_gov_actions)
             # mean field Mt
-            next_mean_house_actions_ = torch.mean(next_house_actions_, dim=1).unsqueeze(1).repeat(1,self.args.n_households,1)
-            next_mean_house_state = torch.mean(next_private_obses, dim=1).unsqueeze(1).repeat(1,self.args.n_households,1)
+            next_mean_house_actions_ = torch.mean(next_house_actions_, dim=1).unsqueeze(1).repeat(1,self.envs.households.households_n,1)
+            next_mean_house_state = torch.mean(next_private_obses, dim=1).unsqueeze(1).repeat(1,self.envs.households.households_n,1)
             q_next_value = self.mf_critic_target(next_private_obses, next_gov_actions, next_house_actions_,  next_mean_house_state, next_mean_house_actions_)
-            target_q_value = house_rewards + inverse_dones.unsqueeze(1).repeat(1, self.args.n_households,1) * self.args.gamma * q_next_value
+            target_q_value = house_rewards + inverse_dones.unsqueeze(1).repeat(1, self.envs.households.households_n,1) * self.args.gamma * q_next_value
         # the real q value
-        mean_house_actions = torch.mean(house_actions, dim=1).unsqueeze(1).repeat(1,self.args.n_households,1)
-        mean_house_state = torch.mean(private_obses, dim=1).unsqueeze(1).repeat(1,self.args.n_households,1)
-        q_value = self.mf_critic(private_obses, gov_actions.unsqueeze(1).repeat(1, self.args.n_households, 1), house_actions, mean_house_state, mean_house_actions)
+        mean_house_actions = torch.mean(house_actions, dim=1).unsqueeze(1).repeat(1,self.envs.households.households_n,1)
+        mean_house_state = torch.mean(private_obses, dim=1).unsqueeze(1).repeat(1,self.envs.households.households_n,1)
+        q_value = self.mf_critic(private_obses, gov_actions.unsqueeze(1).repeat(1, self.envs.households.households_n, 1), house_actions, mean_house_state, mean_house_actions)
         critic_loss = (q_value - target_q_value).pow(2).mean()
         self.mf_critic_optimizer.zero_grad()
         critic_loss.backward()
         self.mf_critic_optimizer.step()
         # the actor loss
-        house_actions_ = self.mf_actor(private_obses, gov_actions.unsqueeze(1).repeat(1, self.args.n_households, 1))
-        mean_house_actions_ = torch.mean(house_actions_, dim=1).unsqueeze(1).repeat(1,self.args.n_households,1)
-        actor_loss = - self.mf_critic(private_obses, gov_actions.unsqueeze(1).repeat(1, self.args.n_households, 1), house_actions_, mean_house_state,mean_house_actions_ ).mean()
+        house_actions_ = self.mf_actor(private_obses, gov_actions.unsqueeze(1).repeat(1, self.envs.households.households_n, 1))
+        mean_house_actions_ = torch.mean(house_actions_, dim=1).unsqueeze(1).repeat(1,self.envs.households.households_n,1)
+        actor_loss = - self.mf_critic(private_obses, gov_actions.unsqueeze(1).repeat(1, self.envs.households.households_n, 1), house_actions_, mean_house_state,mean_house_actions_ ).mean()
         
         self.mf_actor_optimizer.zero_grad()
         actor_loss.backward()

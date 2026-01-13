@@ -268,7 +268,7 @@ class MFCritic(nn.Module):
         obs_emb = F.relu(self.fc1(obs))
         gov_action_emb = F.relu(self.gov_action_emb(gov_action))
         action_emb = F.relu(self.house_action_emb(action))
-        mean_state_emb = F.relu(self.mean_action_emb(mean_state))
+        mean_state_emb = F.relu(self.mean_state_emb(mean_state))
         mean_action_emb = F.relu(self.mean_action_emb(mean_action))
 
         inputs_emb = torch.cat([obs_emb, gov_action_emb, action_emb, mean_state_emb, mean_action_emb], dim=-1)

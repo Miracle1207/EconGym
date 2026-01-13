@@ -111,7 +111,7 @@ class Runner:
     # ------------------------------
     # Main function
     # ------------------------------
-    def agents_get_action(self, obs_dict_tensor):
+    def agents_get_action(self, obs_dict_tensor,is_stackelberg=False):
         """
         Get actions from all agents.
         Returns:
@@ -143,15 +143,60 @@ class Runner:
                     f"[Warning] get_action failed at '{path}' "
                     f"for policy {getattr(policy, 'name', type(policy).__name__)}: {e}")
                 return None, None
-    
-        raw_actions_dict, processed_actions_dict = act(self.agents_policy, obs_dict_tensor)
-        return raw_actions_dict, processed_actions_dict
+        
+        def stackberg_act(policy, obs, path=""):
+            if isinstance(policy, dict):
+                raw, proc = {}, {}
+                gov_action=np.array([])
+                if 'government' in policy:
+                    raw['government'],proc['government']={},{}
+                    for k in policy['government']:
+                        action = policy['government'][k].get_action(obs['government'][k])
+                        raw_action = action
+                        proc_action = self._process_rl_action(policy['government'][k], action, path)
+                        raw['government'][k],proc['government'][k]=raw_action,proc_action
+                        gov_action=np.concatenate([gov_action,proc_action],axis=-1)
+                    
+                if 'households' in policy:
+                    action,mean_action=policy['households'].get_action(obs['households'],gov_action)
+                    raw_action=action
+                    proc_action = self._process_rl_action(policy['households'], action, path)
+                    raw['households'],proc['households']=raw_action,proc_action
+                    
+                for k in policy:
+                    if k not in ['government','households']:
+                        action= policy[k].get_action(obs[k])
+                        raw_action = action
+                        proc_action = self._process_rl_action(policy, action, path)
+                        raw[k],proc[k]=raw_action,proc_action
 
-    def run(self):
+                return raw, proc,mean_action
+        
+        if is_stackelberg:
+            raw_actions_dict, processed_actions_dict,mean_action = stackberg_act(self.agents_policy, obs_dict_tensor)
+            return raw_actions_dict, processed_actions_dict,mean_action
+        else:
+            raw_actions_dict, processed_actions_dict = act(self.agents_policy, obs_dict_tensor)
+            return raw_actions_dict, processed_actions_dict
+
+    def run(self,is_stackelberg=True):
         obs_dict = self.envs.reset()
 
         for epoch in range(self.args.n_epochs):
-            transition_dict = {
+            if is_stackelberg:
+                transition_dict = {
+                    'global_obs': [], 
+                    'private_obs': [], 
+                    'gov_action': [], 
+                    'house_action': [],
+                    'gov_reward': [],
+                    'house_reward': [], 
+                    'next_global_obs': [], 
+                    'next_private_obs': [], 
+                    'done': [], 
+                    'mean_house_actions': []}
+            else:
+                transition_dict = {
                 "obs_dict": [],
                 "action_dict": [],
                 "reward_dict": [],
@@ -166,11 +211,22 @@ class Runner:
 
             for t in range(self.args.epoch_length):
                 obs_dict_tensor = self._get_tensor_inputs(obs_dict)
-                action_dict, processed_actions_dict = self.agents_get_action(obs_dict_tensor)
-                next_obs_dict, reward_dict, done = self.envs.step(processed_actions_dict, t)
+                if is_stackelberg:
+                    action_dict, processed_actions_dict,mean_house_actions = self.agents_get_action(obs_dict_tensor,is_stackelberg=is_stackelberg)
+                    next_obs_dict, reward_dict, done = self.envs.step(processed_actions_dict, t)
+                    global_obs=obs_dict['government']['central_bank']
+                    private_obs=obs_dict['households']
+                    gov_action=processed_actions_dict['government']['central_bank']
+                    house_action=processed_actions_dict['households']
+                    gov_reward=reward_dict['government']['central_bank']
+                    house_reward=reward_dict['households']
+                    next_global_obs=next_obs_dict['government']['central_bank']
+                    next_private_obs=next_obs_dict['households']
+                else:
+                    action_dict, processed_actions_dict = self.agents_get_action(obs_dict_tensor)
+                    next_obs_dict, reward_dict, done = self.envs.step(processed_actions_dict, t)
 
                 on_policy_process = all(self.envs.recursive_decompose_dict(self.agents_policy, lambda a: a.on_policy))
-
                 if on_policy_process:
                     # on policy
                     for key in transition_dict:
@@ -190,18 +246,18 @@ class Runner:
                 batch_size = self.args.epoch_length if on_policy_process else self.args.batch_size
                 agent_data = self.buffer.sample(agent_name=agent_name, agent_policy=sub_agent_policy,
                                                 batch_size=batch_size, on_policy=on_policy_process,
-                                                transition_dict=transition_dict)
+                                                transition_dict=transition_dict,is_stackelberg=is_stackelberg)
                 if isinstance(sub_agent_policy, dict):
                     for name in sub_agent_policy:
                         sum_loss = self.sub_agent_training(agent_name=name,
                                                            agent_policy=sub_agent_policy[name],
                                                            transitions=agent_data[name],
-                                                           loss=sum_loss)
+                                                           loss=sum_loss,is_stackelberg=is_stackelberg)
                 else:
                     sum_loss = self.sub_agent_training(agent_name=agent_name,
                                                        agent_policy=sub_agent_policy,
                                                        transitions=agent_data,
-                                                       loss=sum_loss)
+                                                       loss=sum_loss,is_stackelberg=is_stackelberg)
 
             # print the log information
             if epoch % self.args.display_interval == 0:
@@ -230,7 +286,7 @@ class Runner:
         if self.wandb:
             wandb.finish()
 
-    def sub_agent_training(self, agent_name, agent_policy, transitions, loss):
+    def sub_agent_training(self, agent_name, agent_policy, transitions, loss,is_stackelberg=False):
         if agent_policy.on_policy == True:
             actor_loss, critic_loss = agent_policy.train(transitions)
             loss['actor_loss'][agent_name] = actor_loss
@@ -238,10 +294,32 @@ class Runner:
         else:
             total_actor_loss = 0.
             total_critic_loss = 0.
-            for _ in range(self.args.update_cycles):
-                actor_loss, critic_loss = agent_policy.train(transitions)
-                total_actor_loss += actor_loss
-                total_critic_loss += critic_loss
+            if is_stackelberg:
+                if agent_name=='households':
+                    if isinstance(self.agents_policy['government'],dict):
+                        other_agent=self.agents_policy['government']['central_bank']
+                    else:
+                        other_agent=self.agents_policy['government']
+                elif agent_name in ['government','central_bank']:
+                    other_agent=self.agents_policy['households']
+                else:
+                    other_agent=None
+                if other_agent:
+                    for _ in range(self.args.update_cycles):
+                        actor_loss, critic_loss = agent_policy.train(transitions,other_agent)
+                        total_actor_loss += actor_loss
+                        total_critic_loss += critic_loss
+                else:
+                    for _ in range(self.args.update_cycles):
+                        actor_loss, critic_loss = agent_policy.train(transitions)
+                        total_actor_loss += actor_loss
+                        total_critic_loss += critic_loss
+                
+            else:
+                for _ in range(self.args.update_cycles):
+                    actor_loss, critic_loss = agent_policy.train(transitions)
+                    total_actor_loss += actor_loss
+                    total_critic_loss += critic_loss
             loss['actor_loss'][agent_name] = total_actor_loss
             loss['critic_loss'][agent_name] = total_critic_loss
         return loss
