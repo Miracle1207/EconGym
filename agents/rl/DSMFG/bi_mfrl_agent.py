@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torch import optim
 import os, sys
+import pdb
 
 sys.path.append(os.path.abspath('../..'))
 from agents.rl.models import MFActor, MFCritic
@@ -9,11 +10,68 @@ import copy
 from utils.utils import sync_networks, sync_grads
 from torch.optim.lr_scheduler import LambdaLR
 
+class RunningMeanStd:
+    def __init__(self, epsilon=1e-4, shape=()):
+        self.mean = np.zeros(shape, 'float64')
+        self.var = np.ones(shape, 'float64')
+        self.count = epsilon
+
+    def update(self, x):
+        x = np.asarray(x)
+        batch_mean = np.mean(x, axis=0)
+        batch_var = np.var(x, axis=0)
+        batch_count = x.shape[0]
+
+        self.update_from_moments(batch_mean, batch_var, batch_count)
+
+    def update_from_moments(self, batch_mean, batch_var, batch_count):
+        delta = batch_mean - self.mean
+        tot_count = self.count + batch_count
+
+        new_mean = self.mean + delta * batch_count / tot_count
+        m_a = self.var * self.count
+        m_b = batch_var * batch_count
+        M2 = m_a + m_b + delta ** 2 * self.count * batch_count / tot_count
+        new_var = M2 / tot_count
+
+        self.mean = new_mean
+        self.var = new_var
+        self.count = tot_count
+
+    @property
+    def std(self):
+        return np.sqrt(self.var)
+
+def normalize(x,method='z_score',axis=-1):
+    if method=='z_score':
+        return (x - np.mean(x,axis=axis,keepdims=True)) / (np.std(x,axis=axis,keepdims=True) + 1e-8)
+    elif method=='robust_scale':
+        median = np.median(x,axis=axis,keepdims=True)
+        q1 = np.percentile(x, 25,axis=axis,keepdims=True)
+        q3 = np.percentile(x, 75,axis=axis,keepdims=True)
+        iqr = q3 - q1
+        return (x - median) / (iqr + 1e-8)
+    else:
+        raise ValueError("Unsupported normalization method")
+
+def quick_normalize(global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,gov_rewards,house_rewards):
+    global_obses = normalize(global_obses,method='z_score',axis=0)
+    private_obses = normalize(private_obses,method='z_score',axis=0)
+    gov_actions = normalize(gov_actions,method='z_score',axis=0)
+    house_actions = normalize(house_actions,method='z_score',axis=0)
+    next_global_obses = normalize(next_global_obses,method='z_score',axis=0)
+    next_private_obses = normalize(next_private_obses,method='z_score',axis=0)
+    gov_rewards=normalize(gov_rewards,method='z_score',axis=0)
+    house_rewards=normalize(house_rewards,method='z_score',axis=0)
+    return global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,gov_rewards,house_rewards
+
+    
 class bi_mfrl_agent():  ## ddpg_based
     def __init__(self, envs, args,type=None,agent_name=None):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
+        self.bc=True
         obs_dims = self.envs.households.observation_space.shape[0]
         # start to build the network.
         self.type=type
@@ -33,8 +91,23 @@ class bi_mfrl_agent():  ## ddpg_based
         # sync the weights across the mpi
         sync_networks(self.mf_actor)
         sync_networks(self.mf_critic)
+
+        if self.bc == True:
+            checkpoint = torch.load("F:\\project\\intern\\EconGym\\agents\\models\\optimal_monetary\\100\\run204\\ramsey_bc_binet.pt", weights_only=True)
+            checkpoint.pop('mean', None)
+            checkpoint.pop('std', None)
+            self.mf_actor.load_state_dict(checkpoint)
+            self.mf_actor_optimizer = optim.Adam(self.mf_actor.parameters(), 1e-6, eps=self.args.eps)
+        else:
+            self.mf_actor_optimizer = optim.Adam(self.mf_actor.parameters(), self.args.p_lr, eps=self.args.eps)
         
-        self.mf_actor_optimizer = optim.Adam(self.mf_actor.parameters(), self.args.p_lr, eps=self.args.eps)
+        self.obs_dim=self.envs.households.observation_space.shape[0]
+        self.state_rms = RunningMeanStd(shape=(self.obs_dim,))
+        self.normalizer_applied=False
+        self.step_counter=0
+        self.max_warmup_steps=1000
+
+        #self.mf_actor_optimizer = optim.Adam(self.mf_actor.parameters(), self.args.p_lr, eps=self.args.eps)
         # # build the target newtork
         self.mf_actor_target = copy.deepcopy(self.mf_actor)
         self.mf_critic_target = copy.deepcopy(self.mf_critic)
@@ -63,6 +136,18 @@ class bi_mfrl_agent():  ## ddpg_based
         else:
             gov_action_tensor = torch.tensor(gov_action, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
             gov_action_tensor = gov_action_tensor.repeat(self.envs.households.households_n, 1)
+
+        # === 1. Running mean/std update ===
+        if self.step_counter < self.max_warmup_steps:
+            obs_np = obs_tensor.detach().cpu().numpy()
+            self.state_rms.update(obs_np)
+            self.step_counter += 1
+
+        # === 2. Inject normalizer after warmup ===
+        if (not self.normalizer_applied) and (self.step_counter >= self.max_warmup_steps):
+            self.mf_actor.set_normalizer(self.state_rms.mean, self.state_rms.std)
+            self.normalizer_applied = True
+
         # action = self.mf_actor((private_obs_tensor +1)/2, gov_action_tensor).detach().cpu().numpy()
         action = self.mf_actor(private_obs_tensor, gov_action_tensor).detach().cpu().numpy()
         sigma = 0.01
@@ -75,7 +160,13 @@ class bi_mfrl_agent():  ## ddpg_based
     def train(self, transitions, other_agent):
         # smaple batch of samples from the replay buffer
         global_obses, private_obses, gov_actions, house_actions, gov_rewards,\
-        house_rewards, next_global_obses, next_private_obses, dones, past_mean_house_actions = transitions.values()
+        house_rewards, next_global_obses, next_private_obses, dones, past_mean_house_actions,*_ = transitions.values()
+
+        #normalize
+        '''
+        global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,gov_rewards,house_rewards\
+        =quick_normalize(global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,gov_rewards,house_rewards)
+        '''
         global_obses = torch.tensor(global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         private_obses = torch.tensor(private_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         gov_actions = torch.tensor(gov_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
@@ -86,7 +177,6 @@ class bi_mfrl_agent():  ## ddpg_based
         next_global_obses = torch.tensor(next_global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
         inverse_dones = 1.0-torch.tensor(dones, dtype=torch.float32,
                                      device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
-      
         with torch.no_grad():
             next_gov_actions = other_agent.get_action(obs_tensor=global_obses,agent_name="government")
             next_gov_actions = torch.tensor(next_gov_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu').unsqueeze(1).repeat(1, self.envs.households.households_n,1)
@@ -127,5 +217,9 @@ class bi_mfrl_agent():  ## ddpg_based
     
     def save(self, dir_path):
         torch.save(self.mf_actor.state_dict(), str(dir_path) + '/bimf_house_actor.pt')
+        torch.save(self.mf_critic.state_dict(), str(dir_path) + '/bimf_house_critic.pt')
+        torch.save(self.mf_actor_target.state_dict(), str(dir_path) + '/bimf_house_actor_target.pt')
+        torch.save(self.mf_critic_target.state_dict(), str(dir_path) + '/bimf_house_critic_target.pt')
+
     def load(self, dir_path):
         self.mf_actor.load_state_dict(torch.load(dir_path, map_location=torch.device(self.device), weights_only=True))

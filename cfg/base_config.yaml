@@ -190,8 +190,8 @@ Trainer:                                # Store parameters related to policy tra
   log_std_max: 2                        # Maximum log standard deviation
   hidden_size: 128                      # Hidden layer size of neural nets
   cuda: False                           # Whether to use CUDA GPU
-  q_lr: 3e-4                            # Learning rate for Q-network
-  p_lr: 3e-4                            # Learning rate for policy network
+  q_lr: 5e-6                            # Learning rate for Q-network
+  p_lr: 3e-5                            # Learning rate for policy network
   buffer_size: 1e6                      # Replay buffer size
   n_epochs: 1000                        # Number of training epochs
   update_cycles: 100                    # Training updates per epoch

@@ -10,6 +10,9 @@ def orthogonal_init(layer, gain=1.0):
     nn.init.orthogonal_(layer.weight, gain=gain)
     nn.init.constant_(layer.bias, 0)
 
+def kaiming_init(layer):
+    nn.init.kaiming_normal_(layer.weight,mode='fan_in',nonlinearity='relu')
+    nn.init.constant_(layer.bias,0)
 
 class StackelbergMlp(nn.Module):
     def __init__(self, state_dim, follower_action_dim, hidden_dim, action_dim):
@@ -192,6 +195,9 @@ class PolicyNet(nn.Module):
         self.use_norm = False
         self.fc1 = nn.Linear(state_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, action_dim)
+        kaiming_init(self.fc1)
+        kaiming_init(self.fc2)
+
 
     def set_normalizer(self, mean, std):
         self.use_norm = True
@@ -227,6 +233,10 @@ class BiQValueNet(torch.nn.Module):
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
         self.fc_out = nn.Linear(hidden_dim, 1)
 
+        kaiming_init(self.fc1)
+        kaiming_init(self.fc2)
+        kaiming_init(self.fc_out)
+
     def forward(self, sl, al, mean_sf, mean_af):
         cat = torch.cat([sl, al, mean_sf, mean_af], dim=-1)  # 拼接状态和动作
         x = F.relu(self.fc1(cat))
@@ -237,14 +247,22 @@ class BiQValueNet(torch.nn.Module):
 class MFActor(nn.Module):
     def __init__(self, input_dims, leader_action_dim, action_dims, hidden_size):
         super(MFActor, self).__init__()
+        self.use_norm = False
         self.fc1 = nn.Linear(input_dims, hidden_size)
         self.gov_action_emb = nn.Linear(leader_action_dim, hidden_size)
         self.fc2 = nn.Linear(2 * hidden_size, action_dims)
         orthogonal_init(self.fc1)
         orthogonal_init(self.gov_action_emb)
         orthogonal_init(self.fc2)
+    
+    def set_normalizer(self, mean, std):
+        self.use_norm = True
+        self.register_buffer('mean', torch.tensor(mean, dtype=torch.float32))
+        self.register_buffer('std', torch.tensor(std, dtype=torch.float32))
 
     def forward(self, obs, gov_action):
+        if self.use_norm:
+            obs = (obs - self.mean) / (self.std + 1e-8)
         x = F.relu(self.fc1(obs))
         y = F.relu(self.gov_action_emb(gov_action))
         z = torch.cat((x, y), dim=-1)
@@ -263,6 +281,15 @@ class MFCritic(nn.Module):
         self.q_value_fc1 = nn.Linear(hidden_size_1 * 5, hidden_size)
         self.q_value_fc2 = nn.Linear(hidden_size, hidden_size)
         self.q_value = nn.Linear(hidden_size, 1)
+
+        kaiming_init(self.fc1)
+        kaiming_init(self.gov_action_emb)
+        kaiming_init(self.house_action_emb)
+        kaiming_init(self.mean_action_emb)
+        kaiming_init(self.mean_state_emb)
+        kaiming_init(self.q_value_fc1)
+        kaiming_init(self.q_value_fc2)
+        kaiming_init(self.q_value)
 
     def forward(self, obs, gov_action, action, mean_state, mean_action):
         obs_emb = F.relu(self.fc1(obs))

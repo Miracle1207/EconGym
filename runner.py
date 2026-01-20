@@ -4,6 +4,7 @@ import random
 import numpy as np
 import torch
 import os, sys
+import pdb
 # import wandb
 import swanlab as wandb
 import json
@@ -66,6 +67,7 @@ class Runner:
                 name=self.file_name + "_seed=" + str(self.args.seed),
                 dir=str(self.model_path),
                 job_type="training",
+                mode='local'
             )
 
     def _get_tensor_inputs(self, obs_dict):
@@ -169,8 +171,12 @@ class Runner:
                         raw_action = action
                         proc_action = self._process_rl_action(policy, action, path)
                         raw[k],proc[k]=raw_action,proc_action
-
+                
                 return raw, proc,mean_action
+            else:
+                raise ValueError("Must a dict for policy!")
+
+                
         
         if is_stackelberg:
             raw_actions_dict, processed_actions_dict,mean_action = stackberg_act(self.agents_policy, obs_dict_tensor)
@@ -179,7 +185,7 @@ class Runner:
             raw_actions_dict, processed_actions_dict = act(self.agents_policy, obs_dict_tensor)
             return raw_actions_dict, processed_actions_dict
 
-    def run(self,is_stackelberg=True):
+    def run(self,is_stackelberg=True,is_bc=False):
         obs_dict = self.envs.reset()
 
         for epoch in range(self.args.n_epochs):
@@ -194,7 +200,11 @@ class Runner:
                     'next_global_obs': [], 
                     'next_private_obs': [], 
                     'done': [], 
-                    'mean_house_actions': []}
+                    'mean_house_actions': [],
+                    'bank_obs':[],
+                    'bank_action':[],
+                    'bank_reward':[],
+                    'next_bank_obs':[]}
             else:
                 transition_dict = {
                 "obs_dict": [],
@@ -222,6 +232,11 @@ class Runner:
                     house_reward=reward_dict['households']
                     next_global_obs=next_obs_dict['government']['central_bank']
                     next_private_obs=next_obs_dict['households']
+                    bank_obs=obs_dict['bank']
+                    bank_action=processed_actions_dict['bank']
+                    bank_reward=reward_dict['bank']
+                    next_bank_obs=next_obs_dict['bank']
+                    
                 else:
                     action_dict, processed_actions_dict = self.agents_get_action(obs_dict_tensor)
                     next_obs_dict, reward_dict, done = self.envs.step(processed_actions_dict, t)
@@ -246,7 +261,7 @@ class Runner:
                 batch_size = self.args.epoch_length if on_policy_process else self.args.batch_size
                 agent_data = self.buffer.sample(agent_name=agent_name, agent_policy=sub_agent_policy,
                                                 batch_size=batch_size, on_policy=on_policy_process,
-                                                transition_dict=transition_dict,is_stackelberg=is_stackelberg)
+                                                transition_dict=transition_dict,is_stackelberg=is_stackelberg,is_bc=is_bc)
                 if isinstance(sub_agent_policy, dict):
                     for name in sub_agent_policy:
                         sum_loss = self.sub_agent_training(agent_name=name,
@@ -261,7 +276,7 @@ class Runner:
 
             # print the log information
             if epoch % self.args.display_interval == 0:
-                economic_idicators_dict = self._evaluate_agent()
+                economic_idicators_dict = self._evaluate_agent(is_stackelberg=is_stackelberg)
 
                 if self.wandb:
                     wandb.log(economic_idicators_dict)
@@ -288,7 +303,10 @@ class Runner:
 
     def sub_agent_training(self, agent_name, agent_policy, transitions, loss,is_stackelberg=False):
         if agent_policy.on_policy == True:
-            actor_loss, critic_loss = agent_policy.train(transitions)
+            if is_stackelberg and agent_name not in ['market']:
+                 actor_loss, critic_loss = agent_policy.train(transitions,is_stackelberg=is_stackelberg)
+            else:
+                actor_loss, critic_loss = agent_policy.train(transitions)
             loss['actor_loss'][agent_name] = actor_loss
             loss['critic_loss'][agent_name] = critic_loss
         else:
@@ -311,7 +329,7 @@ class Runner:
                         total_critic_loss += critic_loss
                 else:
                     for _ in range(self.args.update_cycles):
-                        actor_loss, critic_loss = agent_policy.train(transitions)
+                        actor_loss, critic_loss = agent_policy.train(transitions,is_stackelberg=is_stackelberg)
                         total_actor_loss += actor_loss
                         total_critic_loss += critic_loss
                 
@@ -324,15 +342,15 @@ class Runner:
             loss['critic_loss'][agent_name] = total_critic_loss
         return loss
 
-    def test(self):
+    def test(self,is_stackelberg=True):
         ''' record the actions of gov and households'''
-        economic_idicators_dict = self._evaluate_agent(write_evaluate_data=False)
+        economic_idicators_dict = self._evaluate_agent(write_evaluate_data=False,is_stackelberg=is_stackelberg)
 
-    def viz_data(self, house_model_path, government_model_path):
+    def viz_data(self, house_model_path, government_model_path,is_stackelberg=True):
         self.house_agent.load(dir_path=house_model_path)
         self.government_agent.load(dir_path=government_model_path)
         # this data is used for visualization
-        self._evaluate_agent(write_evaluate_data=True)
+        self._evaluate_agent(write_evaluate_data=True,is_stackelberg=is_stackelberg)
 
     def init_economic_dict(self, reward_dict):
         gov_rewards = reward_dict['government']
@@ -404,7 +422,7 @@ class Runner:
                      (sublist if isinstance(sublist, (list, np.ndarray)) else [sublist])]
         return np.mean(flat_list)
 
-    def _evaluate_agent(self, write_evaluate_data=False):
+    def _evaluate_agent(self, write_evaluate_data=False,is_stackelberg=False):
         eval_econ = ["gov_reward", "tax_gov_reward", "central_bank_gov_reward", "pension_gov_reward",
                      "house_reward", "social_welfare", "per_gdp", "income_gini", "firm_production",
                      "wealth_gini", "years", "GDP", "gov_spending", "house_total_tax", "house_income_tax",
@@ -434,8 +452,12 @@ class Runner:
             while True:
                 with torch.no_grad():
                     obs_dict_tensor = self._get_tensor_inputs(obs_dict)
-                    action_dict, processed_actions_dict = self.agents_get_action(obs_dict_tensor)
-                    next_obs_dict, rewards_dict, done = self.eval_env.step(processed_actions_dict, t)
+                    if is_stackelberg:
+                        action_dict, processed_actions_dict,mean_house_actions = self.agents_get_action(obs_dict_tensor,is_stackelberg=is_stackelberg)
+                        next_obs_dict, rewards_dict, done = self.eval_env.step(processed_actions_dict, t)
+                    else:
+                        action_dict, processed_actions_dict = self.agents_get_action(obs_dict_tensor)
+                        next_obs_dict, rewards_dict, done = self.eval_env.step(processed_actions_dict, t)
                 t += 1
                 self.init_economic_dict(rewards_dict)
 
