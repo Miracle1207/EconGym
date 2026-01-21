@@ -48,35 +48,6 @@ class RunningMeanStd:
     @property
     def std(self):
         return np.sqrt(self.var)
-def normalize(x,method='z_score',axis=-1):
-    if method=='z_score':
-        return (x - np.mean(x,axis=axis,keepdims=True)) / (np.std(x,axis=axis,keepdims=True) + 1e-8)
-    elif method=='robust_scale':
-        median = np.median(x,axis=axis,keepdims=True)
-        q1 = np.percentile(x, 25,axis=axis,keepdims=True)
-        q3 = np.percentile(x, 75,axis=axis,keepdims=True)
-        iqr = q3 - q1
-        return (x - median) / (iqr + 1e-8)
-    elif method=='log':
-        return np.log(x+1e-8)
-        raise ValueError("Unsupported normalization method")
-
-def quick_normalize(global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,\
-                    bank_obs,bank_action,next_bank_obs,gov_rewards,house_rewards,bank_reward):
-    global_obses = normalize(global_obses,method='z_score',axis=0)
-    private_obses = normalize(private_obses,method='z_score',axis=0)
-    gov_actions = normalize(gov_actions,method='z_score',axis=0)
-    house_actions = normalize(house_actions,method='z_score',axis=0)
-    next_global_obses = normalize(next_global_obses,method='z_score',axis=0)
-    next_private_obses = normalize(next_private_obses,method='z_score',axis=0)
-    bank_obs = normalize(bank_obs,method='z_score',axis=0)
-    bank_action = normalize(bank_action,method='z_score',axis=0)
-    next_bank_obs = normalize(next_bank_obs,method='z_score',axis=0)
-    gov_rewards=normalize(gov_rewards,method='z_score',axis=0)
-    house_rewards=normalize(house_rewards,method='z_score',axis=0)
-    bank_reward=normalize(bank_reward,method='z_score',axis=0)
-    return global_obses, private_obses, gov_actions, house_actions,next_global_obses,\
-        next_private_obses,bank_obs,bank_action,next_bank_obs,gov_rewards,house_rewards,bank_reward
 
 class ppo_agent:
     def __init__(self, envs, args, type=None, agent_name="households"):
@@ -86,7 +57,6 @@ class ppo_agent:
         self.args = args
         self.agent_name = agent_name
         self.agent_type = type
-        
 
         env_agent_name = "households" if agent_name == "households" else agent_name
 
@@ -170,47 +140,13 @@ class ppo_agent:
             return 0, 0
         sum_loss = torch.tensor([0., 0.], dtype=torch.float32).to(self.device)
 
-        if not is_stackelberg:
-            agent_data = transition_dict
-            obs_tensor = torch.tensor(np.array(agent_data['obs_dict']), dtype=torch.float32).to(self.device)
-            next_obs_tensor = torch.tensor(np.array(agent_data['next_obs_dict']), dtype=torch.float32).to(self.device)
-            action_tensor = torch.tensor(np.array(agent_data['action_dict']), dtype=torch.float32).to(self.device)
-            reward_tensor = torch.tensor(np.array(agent_data['reward_dict']), dtype=torch.float32).to(self.device)
-            inverse_dones = torch.tensor([x - 1 for x in agent_data['done']], dtype=torch.float32).unsqueeze(-1)
-        else:
-            global_obses, private_obses, gov_actions, house_actions, gov_rewards,\
-            house_rewards, next_global_obses, next_private_obses, dones, past_mean_house_actions,\
-            bank_obs,bank_action,bank_reward,next_bank_obs = transition_dict.values()
+        agent_data = transition_dict
+        obs_tensor = torch.tensor(np.array(agent_data['obs_dict']), dtype=torch.float32).to(self.device)
+        next_obs_tensor = torch.tensor(np.array(agent_data['next_obs_dict']), dtype=torch.float32).to(self.device)
+        action_tensor = torch.tensor(np.array(agent_data['action_dict']), dtype=torch.float32).to(self.device)
+        reward_tensor = torch.tensor(np.array(agent_data['reward_dict']), dtype=torch.float32).to(self.device)
+        inverse_dones = torch.tensor([x - 1 for x in agent_data['done']], dtype=torch.float32).unsqueeze(-1)
 
-            #normalize
-            #global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,\
-            #        bank_obs,bank_action,next_bank_obs,gov_rewards,house_rewards,bank_reward\
-            #=quick_normalize(global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,\
-            #        bank_obs,bank_action,next_bank_obs,gov_rewards,house_rewards,bank_reward)
-
-            if self.agent_name == 'households':
-                obs_tensor = torch.tensor(private_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                action_tensor = torch.tensor(house_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                reward_tensor= torch.tensor(house_rewards, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                next_obs_tensor = torch.tensor(next_private_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                inverse_dones = 1.0-torch.tensor(dones, dtype=torch.float32,
-                                     device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
-            elif self.agent_name=='government':
-                obs_tensor = torch.tensor(global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                action_tensor = torch.tensor(gov_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                next_obs_tensor = torch.tensor(next_global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                reward_tensor = torch.tensor(gov_rewards, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
-                inverse_dones = 1.0-torch.tensor(dones, dtype=torch.float32,
-                                     device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
-            elif self.agent_name=='bank':
-                obs_tensor = torch.tensor(bank_obs, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                action_tensor = torch.tensor(bank_action, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                next_obs_tensor = torch.tensor(next_bank_obs, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-                reward_tensor = torch.tensor(bank_reward, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
-                inverse_dones = 1.0-torch.tensor(dones, dtype=torch.float32,
-                                     device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
-
-        
         # Ensure both tensors have the same shape before expanding
         if inverse_dones.shape != reward_tensor.shape:
             inverse_dones = inverse_dones.unsqueeze(-1).expand_as(reward_tensor)

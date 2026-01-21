@@ -45,7 +45,7 @@ def plot_academic_chart(metric_name_display, mf_df, ppo_df, save_name):
     ema_a = raw_a.ewm(span=current_span, adjust=True).mean()
     
     ax1.plot(mf_df['step'], raw_a, color='#1f77b4', alpha=0.15, linewidth=0.8)
-    ax1.plot(mf_df['step'], ema_a, color='#1f77b4', linewidth=2.5, label='MF (Ours)')
+    ax1.plot(mf_df['step'], ema_a, color='#1f77b4', linewidth=2.5, label='SMFRL (Ours)')
     ax1.axhline(y=ema_a.iloc[-1], color='#1f77b4', linestyle='--', alpha=0.4)
 
     # --- 绘制算法 B (PPO) ---
@@ -60,11 +60,11 @@ def plot_academic_chart(metric_name_display, mf_df, ppo_df, save_name):
     plt.setp(ax2.get_yticklabels(), visible=False)
     ax1.set_ylabel(metric_name_display, fontsize=14, fontweight='bold')
     fig.text(0.5, 0.02, 'Training Steps', ha='center', fontsize=14, fontweight='bold')
-    fig.suptitle(f'Convergence Comparison: {metric_name_display}', fontsize=16, y=0.96)
+    fig.suptitle(f'Training curve for {metric_name_display}', fontsize=16, y=0.96)
 
     handles1, labels1 = ax1.get_legend_handles_labels()
     handles2, labels2 = ax2.get_legend_handles_labels()
-    ax2.legend(handles1 + handles2, labels1 + labels2, loc='lower right', frameon=True, shadow=True)
+    ax2.legend(handles1 + handles2, labels1 + labels2, loc='upper right', frameon=True, shadow=True)
 
     ax1.tick_params(labelsize=10)
     ax2.tick_params(labelsize=10)
@@ -141,8 +141,8 @@ def plot_monetary_policy_tradeoff(mf_inf, mf_gdp, ppo_inf, ppo_gdp):
     # --- 第一行：散点与回归线 (显示政策的动态权衡趋势) ---
     # MF: Inflation vs GDP
     sns.regplot(x=mf_inf, y=mf_gdp, ax=axes[0, 0], color=color_mf, 
-                label='MF (Ours)', scatter_kws={'alpha': 0.15, 's': 10}, line_kws={'linewidth': 2.5})
-    axes[0, 0].set_title("MF: Inflation-GDP Trade-off", fontsize=14, fontweight='bold')
+                label='SMFRL (Ours)', scatter_kws={'alpha': 0.15, 's': 10}, line_kws={'linewidth': 2.5})
+    axes[0, 0].set_title("SMFRL: Inflation-GDP Trade-off", fontsize=14, fontweight='bold')
     
     # PPO: Inflation vs GDP
     sns.regplot(x=ppo_inf, y=ppo_gdp, ax=axes[0, 1], color=color_ppo, 
@@ -152,7 +152,7 @@ def plot_monetary_policy_tradeoff(mf_inf, mf_gdp, ppo_inf, ppo_gdp):
     # --- 第二行：收敛密度图 (显示最终政策目标的锚定精度) ---
     # MF Density
     sns.kdeplot(x=mf_inf, y=mf_gdp, ax=axes[1, 0], fill=True, cmap="Blues", thresh=0.02, levels=10)
-    axes[1, 0].set_title("MF: Policy Convergence Density", fontsize=13, fontstyle='italic')
+    axes[1, 0].set_title("SMFRL: Policy Convergence Density", fontsize=13, fontstyle='italic')
     
     # PPO Density
     sns.kdeplot(x=ppo_inf, y=ppo_gdp, ax=axes[1, 1], fill=True, cmap="Reds", thresh=0.02, levels=10)
@@ -165,7 +165,7 @@ def plot_monetary_policy_tradeoff(mf_inf, mf_gdp, ppo_inf, ppo_gdp):
             axes[i, j].set_xlabel("Inflation Rate", fontsize=12, fontweight='bold')
             axes[i, j].set_ylabel("GDP", fontsize=12, fontweight='bold')
             # 可以在此处根据需要手动设置 xlim 或 ylim，例如：
-            # axes[i, j].set_xlim(left=0) 
+            #axes[i, j].set_xlim(left=0) 
 
     plt.tight_layout(pad=3.0)
     
@@ -181,6 +181,7 @@ plt.rcParams['axes.unicode_minus'] = False
 sns.set_context("paper", font_scale=1.5)
 sns.set_style("whitegrid", {'grid.linestyle': '--'})
 
+'''
 for mf_var, ppo_var, display_name in metrics_map:
     try:
         mf_data = globals()[mf_var]
@@ -190,7 +191,7 @@ for mf_var, ppo_var, display_name in metrics_map:
     except KeyError as e:
         print(f"跳过: 找不到变量 {e}")
 
-'''
+
 # --- 执行绘图任务 ---
 
 # 1. GDP 与 财富/收入基尼 (演示 4 子图模式)
@@ -205,7 +206,7 @@ plot_split_correlation('inflation_rate', 'house_consumption', 'Inflation Rate', 
 plot_split_correlation('income_gini', 'wealth_gini', 'Income Gini', 'Wealth Gini', 'inequality_structure')
 
 
-
+    '''
 # --- 调用部分 ---
 try:
     # 提取数据最后一列（假设您的 DataFrame 已载入全局变量）
@@ -219,4 +220,3 @@ try:
 
 except KeyError as e:
     print(f"绘图失败：缺少变量 {e}")
-    '''

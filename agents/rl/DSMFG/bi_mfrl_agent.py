@@ -42,36 +42,23 @@ class RunningMeanStd:
     def std(self):
         return np.sqrt(self.var)
 
-def normalize(x,method='z_score',axis=-1):
-    if method=='z_score':
-        return (x - np.mean(x,axis=axis,keepdims=True)) / (np.std(x,axis=axis,keepdims=True) + 1e-8)
-    elif method=='robust_scale':
-        median = np.median(x,axis=axis,keepdims=True)
-        q1 = np.percentile(x, 25,axis=axis,keepdims=True)
-        q3 = np.percentile(x, 75,axis=axis,keepdims=True)
-        iqr = q3 - q1
-        return (x - median) / (iqr + 1e-8)
-    else:
-        raise ValueError("Unsupported normalization method")
+def get_path(relative_path):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = current_dir
+    while os.path.basename(project_root) != "EconGym" and project_root != os.path.dirname(project_root):
+        project_root = os.path.dirname(project_root)
+    model_path = os.path.join(project_root, relative_path)
 
-def quick_normalize(global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,gov_rewards,house_rewards):
-    global_obses = normalize(global_obses,method='z_score',axis=0)
-    private_obses = normalize(private_obses,method='z_score',axis=0)
-    gov_actions = normalize(gov_actions,method='z_score',axis=0)
-    house_actions = normalize(house_actions,method='z_score',axis=0)
-    next_global_obses = normalize(next_global_obses,method='z_score',axis=0)
-    next_private_obses = normalize(next_private_obses,method='z_score',axis=0)
-    gov_rewards=normalize(gov_rewards,method='z_score',axis=0)
-    house_rewards=normalize(house_rewards,method='z_score',axis=0)
-    return global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,gov_rewards,house_rewards
+    return model_path
 
-    
+
+
 class bi_mfrl_agent():  ## ddpg_based
     def __init__(self, envs, args,type=None,agent_name=None):
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
-        self.bc=True
+        self.bc=False #设置一个args
         obs_dims = self.envs.households.observation_space.shape[0]
         # start to build the network.
         self.type=type
@@ -93,7 +80,9 @@ class bi_mfrl_agent():  ## ddpg_based
         sync_networks(self.mf_critic)
 
         if self.bc == True:
-            checkpoint = torch.load("F:\\project\\intern\\EconGym\\agents\\models\\optimal_monetary\\100\\run204\\ramsey_bc_binet.pt", weights_only=True)
+            relative_path = os.path.join("agents", "models", "optimal_monetary", "100", "run204", "ramsey_bc_binet.pt")
+            model_path=get_path(relative_path)
+            checkpoint = torch.load(model_path, weights_only=True)
             checkpoint.pop('mean', None)
             checkpoint.pop('std', None)
             self.mf_actor.load_state_dict(checkpoint)
@@ -129,7 +118,7 @@ class bi_mfrl_agent():  ## ddpg_based
             self.mf_critic_target.cuda()
         self.on_policy = False
 
-    def get_action(self, obs_tensor,gov_action,agent_name="household"):
+    def get_action(self, obs_tensor,gov_action,agent_name="households"):
         private_obs_tensor=obs_tensor
         if len(private_obs_tensor.shape) == 3:
             gov_action_tensor = gov_action.unsqueeze(1).repeat(1,self.envs.households.households_n,1)
@@ -154,29 +143,22 @@ class bi_mfrl_agent():  ## ddpg_based
         action = action + sigma * np.random.randn(self.envs.households.action_space.shape[1])
         action = (action+1)/2
         action[:,0] = action[:,0] * 0.5 + 0.5
-        return action, np.mean(action, axis=-2)
+        return action
     
 
     def train(self, transitions, other_agent):
         # smaple batch of samples from the replay buffer
-        global_obses, private_obses, gov_actions, house_actions, gov_rewards,\
-        house_rewards, next_global_obses, next_private_obses, dones, past_mean_house_actions,*_ = transitions.values()
+        agent_data = transitions
+        global_obses=torch.tensor(np.array(agent_data['obs_dict']['government']), dtype=torch.float32).to(self.device)
+        private_obses=torch.tensor(np.array(agent_data['obs_dict']['households']), dtype=torch.float32).to(self.device)
+        gov_actions=torch.tensor(np.array(agent_data['action_dict']['government']), dtype=torch.float32).to(self.device)
+        house_actions=torch.tensor(np.array(agent_data['action_dict']['households']), dtype=torch.float32).to(self.device)
+        gov_rewards=torch.tensor(np.array(agent_data['reward_dict']['government']), dtype=torch.float32).to(self.device)
+        house_rewards=torch.tensor(np.array(agent_data['reward_dict']['households']), dtype=torch.float32).to(self.device)
+        next_global_obses=torch.tensor(np.array(agent_data['next_obs_dict']['government']), dtype=torch.float32).to(self.device)
+        next_private_obses=torch.tensor(np.array(agent_data['next_obs_dict']['households']), dtype=torch.float32).to(self.device)
+        inverse_dones = torch.tensor([x - 1 for x in agent_data['done']], dtype=torch.float32).unsqueeze(-1)
 
-        #normalize
-        '''
-        global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,gov_rewards,house_rewards\
-        =quick_normalize(global_obses, private_obses, gov_actions, house_actions,next_global_obses, next_private_obses,gov_rewards,house_rewards)
-        '''
-        global_obses = torch.tensor(global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        private_obses = torch.tensor(private_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        gov_actions = torch.tensor(gov_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        house_actions = torch.tensor(house_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        # mean_house_actions = torch.tensor(past_mean_house_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        house_rewards = torch.tensor(house_rewards, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        next_private_obses = torch.tensor(next_private_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        next_global_obses = torch.tensor(next_global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-        inverse_dones = 1.0-torch.tensor(dones, dtype=torch.float32,
-                                     device='cuda' if self.args.cuda else 'cpu').unsqueeze(-1)
         with torch.no_grad():
             next_gov_actions = other_agent.get_action(obs_tensor=global_obses,agent_name="government")
             next_gov_actions = torch.tensor(next_gov_actions, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu').unsqueeze(1).repeat(1, self.envs.households.households_n,1)
