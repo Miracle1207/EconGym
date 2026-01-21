@@ -17,11 +17,13 @@ class ReplayBuffer:
         self.next_idx = (self.next_idx + 1) % self.memory_size
 
 
-    def sample(self, agent_name, agent_policy, batch_size, on_policy, transition_dict=None,is_stackelberg=False):
+    def sample(self, agent_name, agent_policy, batch_size, on_policy, transition_dict=None,is_stackelberg=False,is_bc_stackelberg=False):
         """Fetch data based on the agent's policy and mode (on-policy or off-policy)."""
         # Determine the fetch function based on on-policy flag
         if is_stackelberg:
             fetch_function = self.fetch_on_policy_data if on_policy else self.fetch_off_policy_data_stackelberg
+        elif is_bc_stackelberg:
+            fetch_function = self.fetch_on_policy_data_bc if on_policy else self.fetch_off_policy_data
         else:
             fetch_function = self.fetch_on_policy_data if on_policy else self.fetch_off_policy_data
     
@@ -115,6 +117,35 @@ class ReplayBuffer:
                 new_data[item_name].append(data)
     
         return new_data
+    
+    def fetch_on_policy_data_bc(self, agent_name, agent_type, batch_size, transition_dict):
+        """Fetch data for a specific agent, reducing redundancy."""
+        new_data = {key: [] for key in transition_dict}
+        if agent_name=='households':
+            new_data['action_dict']={
+                'households':[],
+                'government':[]
+            }
+
+        for i in range(batch_size):
+            for item_name, item_data in transition_dict.items():
+                if item_name == "done":
+                    data = item_data[i]
+                    new_data[item_name].append(data)
+                elif agent_name=='households' and item_name=='action_dict':
+                    data=item_data[i]['households']
+                    new_data[item_name]['households'].append(data)
+                    for k,v in item_data[i]['government'].items():
+                        data=v
+                    new_data[item_name]['government'].append(data)
+                else:
+                    data = item_data[i][agent_name]
+                    if agent_name != agent_type:
+                        data = data[agent_type]
+                    new_data[item_name].append(data)
+    
+        return new_data
+    
     
     
 

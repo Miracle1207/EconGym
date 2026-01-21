@@ -133,7 +133,7 @@ class ppo_agent:
         norm_advantage = (advantage_output - torch.mean(advantage_output)) / torch.std(advantage_output)
         return norm_advantage
 
-    def train(self, transition_dict,is_stackelberg=False):
+    def train(self, transition_dict):
         if self.agent_name == "bank" and self.agent_type == "non_profit":
             return 0, 0
         if self.agent_name == "market" and self.agent_type == "perfect":

@@ -1,10 +1,9 @@
 import os
-
 import copy
 import torch
 import numpy as np
 import pandas as pd
-from agents.rl.models import MFActor
+from agents.rl.models import mlp_net
 import torch.nn.functional as F
 from torch.optim.lr_scheduler import LambdaLR
 import torch.nn.utils.rnn as rnn_utils
@@ -17,40 +16,6 @@ def save_args(path, args):
         for eachArg, value in argsDict.items():
             f.writelines(eachArg + ' : ' + str(value) + '\n')
         f.writelines('------------------- end -------------------')
-
-class RunningMeanStd:
-    def __init__(self, epsilon=1e-4, shape=()):
-        self.mean = np.zeros(shape, 'float64')
-        self.var = np.ones(shape, 'float64')
-        self.count = epsilon
-
-    def update(self, x):
-        x = np.asarray(x)
-        batch_mean = np.mean(x, axis=0)
-        batch_var = np.var(x, axis=0)
-        batch_count = x.shape[0]
-
-        self.update_from_moments(batch_mean, batch_var, batch_count)
-
-    def update_from_moments(self, batch_mean, batch_var, batch_count):
-        delta = batch_mean - self.mean
-        tot_count = self.count + batch_count
-
-        new_mean = self.mean + delta * batch_count / tot_count
-        m_a = self.var * self.count
-        m_b = batch_var * batch_count
-        M2 = m_a + m_b + delta ** 2 * self.count * batch_count / tot_count
-        new_var = M2 / tot_count
-
-        self.mean = new_mean
-        self.var = new_var
-        self.count = tot_count
-
-    @property
-    def std(self):
-        return np.sqrt(self.var)
-
-
 
 
 class bc_agent:
@@ -76,9 +41,9 @@ class bc_agent:
         
         # special setting for BC: The real dataset only contains partial observations
         if "ramsey" in self.type:
-            self.bc_obs_dim = 10  # [education, wealth]
+            self.bc_obs_dim = 2  # [education, wealth]
         elif "OLG" in self.type:
-            self.bc_obs_dim = 11  # [education, wealth, age]
+            self.bc_obs_dim = 3  # [education, wealth, age]
         else:
             raise ValueError(f"Agent type Error: No {self.type} in EconGym.")
         
@@ -86,10 +51,7 @@ class bc_agent:
             self.bc_action_dim = 3
         else:
             self.bc_action_dim = 2
-        self.net = MFActor(input_dims=self.envs.households.observation_space.shape[0],
-                                leader_action_dim=2,
-                                action_dims=self.envs.households.action_space.shape[1],
-                                      hidden_size=128)
+        self.net = mlp_net(state_dim=self.bc_obs_dim, num_actions=self.bc_action_dim).to(self.device)
         # Define the mapping of types to model paths
         model_paths = {
             "ramsey": "agents/behavior_cloning/trained_models/ramsey_bc_net.pt",
@@ -98,7 +60,6 @@ class bc_agent:
             "OLG_risk_invest": "agents/behavior_cloning/trained_models/risky_investment/OLG_risk_invest_bc_net.pt"
         }
 
-        self.args.bc_test=False
         if self.args.bc_test:  # if False, get actions from real data, and trained via BC; if True, get action from trained BC policy.
             if type not in model_paths:
                 raise ValueError(
@@ -109,9 +70,6 @@ class bc_agent:
         else:
             # Load real data
             self.real_data = self.get_real_data(age_limit=None)  # Adjust age_limit if needed
-        
-        self.state_rms = RunningMeanStd(shape=(self.obs_dim,))
-        self.normalizer_applied=False
 
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.args.p_lr, eps=1e-5)
         lambda_function = lambda epoch: 0.97 ** (epoch // 10)
@@ -119,34 +77,23 @@ class bc_agent:
         self.on_policy = True
         
 
-    def train(self, transition_dict,other_agent=None):
+    def train(self, transition_dict):
         """
         Train the agent using Behavior Cloning.
         transition_dict: Dictionary containing the transitions with expert actions.
         Returns: The loss for the current training step.
         """
-        if not self.args.bc_test:      
-            global_obses=np.array(transition_dict['obs_dict']['government'])
-            obs_tensor=np.array(transition_dict['obs_dict']['households'])
-            expert_action_tensor=np.array(transition_dict['action_dict'])
+        if not self.args.bc_test:
+            house_obses = [torch.tensor(obs[self.agent_name][:, -self.bc_obs_dim:], dtype=torch.float32) for obs in transition_dict['obs_dict']]
+            house_actions = [torch.tensor(obs[self.agent_name], dtype=torch.float32) for obs in transition_dict['action_dict']]
 
-            gov_obses = torch.tensor(global_obses, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-            obs_tensor= torch.tensor(obs_tensor, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-            expert_action_tensor=torch.tensor(expert_action_tensor, dtype=torch.float32, device='cuda' if self.args.cuda else 'cpu')
-            '''
-            house_obses = np.array(transition_dict['obs_dict'])
-            house_actions = np.array(transition_dict['action_dict'])
-            '''
-            if other_agent==None:
-                gov_actions=2 * torch.rand(1,2,dtype=torch.float32) - 1
-                gov_actions = gov_actions.unsqueeze(0)
-                gov_action_tensor = gov_actions.expand(128, 100, 2)
-            else:
-                gov_actions=other_agent.get_action(obs_tensor=gov_obses,agent_name="government")
+            # Pad sequences for household data
+            obs_tensor = rnn_utils.pad_sequence(house_obses, batch_first=True).to(self.device)
+            expert_action_tensor = rnn_utils.pad_sequence(house_actions, batch_first=True).to(self.device)
 
-            
-            action= self.net(obs_tensor,gov_action_tensor)
-            bc_loss = F.huber_loss(action,expert_action_tensor).mean()
+            _, pi = self.net(obs_tensor)  # pi contains (mu, std)
+            mu, _ = pi
+            bc_loss = torch.sum(F.huber_loss(mu, expert_action_tensor[:, :, :self.envs.households.action_dim]))
 
             # Backpropagation
             self.optimizer.zero_grad()
@@ -161,7 +108,7 @@ class bc_agent:
         else:
             return torch.tensor(0.), torch.tensor(0.)
 
-    def get_action(self, obs_tensor,gov_action=None,agent_name='household'):
+    def get_action(self, full_obs_tensor):
         """
         Get expert actions by finding the closest observations in real data or running test-time policy.
 
@@ -174,21 +121,13 @@ class bc_agent:
         if self.agent_name != "households":
             raise ValueError("AgentError: Behavior cloning method is suitable for household agents only.")
         
-        obs_tensor = obs_tensor[:, -self.bc_obs_dim:]   # Each household's private obs: [education, wealth, age (optional)]
-        obs_np = obs_tensor.detach().cpu().numpy()
-        self.state_rms.update(obs_np)
-
-        if not self.normalizer_applied:
-            self.net.set_normalizer(self.state_rms.mean, self.state_rms.std)
-            self.normalizer_applied = True
-
+        obs_tensor = full_obs_tensor[:, -self.bc_obs_dim:]   # Each household's private obs: [education, wealth, age (optional)]
+        
         if self.args.bc_test:
-            if gov_action==None:
-                gov_action=2 * torch.rand(1,2) - 1
-                gov_action = gov_action.unsqueeze(0)
-                gov_action = gov_action.expand(128, 100, 2)
-            action = self.net(obs_tensor,gov_action)
-            action = action.cpu().numpy()
+            _, pi = self.net(obs_tensor)
+            mu, sigma = pi
+            action_dist = torch.distributions.Normal(mu, 0.01 * sigma)
+            action = action_dist.sample().cpu().numpy()
             
         else:
             # Use expert actions directly
@@ -216,18 +155,15 @@ class bc_agent:
             )
 
     def get_real_data(self, age_limit=None):
-        global action_windows
-        df = pd.read_csv(os.path.join(os.path.abspath(''), "agents/data/advanced_scfp2022_1110_extension.csv"))
+        df = pd.read_csv(os.path.join(os.path.abspath(''), "agents/data/advanced_scfp2022_1110.csv"))
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
         if age_limit is not None:
             df = df[df['AGE'] == age_limit]
             if df.empty:
                 raise ValueError(f"No data available for individuals aged {age_limit}.")
 
-        columns = ['TOP10_MEAN_ASSET', 'TOP10_MEAN_EDUC', 'BOT50_MEAN_ASSET',
-       'BOT50_MEAN_EDUC', 'WAGE_RATE','PRICE_LEVEL','DEPOSIT_RATE','LENDING_RATE','EDUC', 'ASSET','INCOME', 'AGE']
+        columns = ['EDUC', 'ASSET', 'INCOME', 'AGE']
         data = [df[col].values for col in columns]
-        action_windows=len(data)
 
         consumption_p = (df['FOODHOME'].values + df['FOODAWAY'].values + df['FOODDELV'].values +
                          df['RENT'].values + df['TPAY'].values + 0.0001) / (df['ASSET'].values + 0.0001)
@@ -252,14 +188,11 @@ class bc_agent:
         Returns:
             torch.Tensor: Tensor of shape (N, 3) containing expert actions [LF, consumption_p, invest_p].
         """
-        indice=[0,1,2,3,8,9]
         # Extract observation and action components from real_data
-        real_obs = np.stack(real_data,axis=1)  # Shape: (D, obs_dim) for ASSET, EDUC, AGE(optional)
-        real_obs=real_obs[:,indice]
-        
-        real_actions = np.stack(real_data, axis=1)[:, [4, 5, 6]] # Shape: (D, 3) for LF, consumption_p, invest_p
+        real_obs = np.stack(real_data[:self.bc_obs_dim],axis=1)  # Shape: (D, obs_dim) for ASSET, EDUC, AGE(optional)
+        real_actions = np.stack(real_data[4:], axis=1)  # Shape: (D, 3) for LF, consumption_p, invest_p
+
         # Convert to tensors
-        
         real_obs_tensor = torch.tensor(real_obs, dtype=torch.float32).to(
             private_obs_tensor.device)  # Shape: (D, obs_dim)
         real_actions_tensor = torch.tensor(real_actions, dtype=torch.float32).to(
@@ -271,10 +204,10 @@ class bc_agent:
 
         # Normalize real observations and private_obs_tensor
         norm_real_obs = (real_obs_tensor - obs_mean) / obs_std  # Shape: (D, obs_dim)
-        norm_private_obs = (private_obs_tensor[:,indice] - obs_mean) / obs_std  # Shape: (N, obs_dim)
+        norm_private_obs = (private_obs_tensor - obs_mean) / obs_std  # Shape: (N, obs_dim)
 
-        # Use torch.cdist for optimized exact distance calculation
-        distances = torch.cdist(norm_private_obs, norm_real_obs, p=2)  # Shape: (N, D)
+        diff = norm_private_obs.unsqueeze(1) - norm_real_obs.unsqueeze(0)
+        distances = torch.norm(diff, dim=2)  # Shape: (N, D)
 
         # Find the index of the closest observation for each private_obs
         nearest_idx = torch.argmin(distances, dim=1)  # Shape: (N,)
@@ -283,7 +216,6 @@ class bc_agent:
         expert_actions = real_actions_tensor[nearest_idx]  # Shape: (N, 3)
 
         return expert_actions
-    
-    def save(self, dir_path):
-        torch.save(self.net.state_dict(), str(dir_path) + f'/{self.type}_bc_binet.pt')
 
+    def save(self, dir_path):
+        torch.save(self.net.state_dict(), str(dir_path) + f'/{self.type}_bc_net.pt')

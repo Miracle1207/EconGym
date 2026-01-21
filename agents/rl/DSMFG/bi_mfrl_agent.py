@@ -58,7 +58,6 @@ class bi_mfrl_agent():  ## ddpg_based
         self.envs = envs
         self.eval_env = copy.copy(envs)
         self.args = args
-        self.bc=False #设置一个args
         obs_dims = self.envs.households.observation_space.shape[0]
         # start to build the network.
         self.type=type
@@ -79,8 +78,8 @@ class bi_mfrl_agent():  ## ddpg_based
         sync_networks(self.mf_actor)
         sync_networks(self.mf_critic)
 
-        if self.bc == True:
-            relative_path = os.path.join("agents", "models", "optimal_monetary", "100", "run204", "ramsey_bc_binet.pt")
+        if self.args.bc == True:
+            relative_path = os.path.join("agents", "behavior_cloning", "trained_models","ramsey_bc_binet.pt")
             model_path=get_path(relative_path)
             checkpoint = torch.load(model_path, weights_only=True)
             checkpoint.pop('mean', None)

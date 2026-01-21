@@ -3,6 +3,7 @@ from agents.rule_based.rules_core import rule_agent
 from agents.rl.ppo_agent import ppo_agent
 from agents.rl.sac_agent import sac_agent
 from agents.behavior_cloning.bc_agent import bc_agent
+from agents.behavior_cloning.bc_agent_stackelberg import bc_agent_stackelberg
 from agents.rl.ddpg_agent import ddpg_agent
 from agents.rl.DSMFG.bi_mfrl_agent import bi_mfrl_agent#
 from agents.rl.DSMFG.bi_ddpg_agent import bi_ddpg_agent#
@@ -22,6 +23,7 @@ agent_algorithms = {
     "sac": sac_agent,
     "rule_based": rule_agent,
     "bc": bc_agent,
+    "bc_stackelberg":bc_agent_stackelberg,
     "llm": llm_agent,
     "data_based": data_agent,
     "ddpg": ddpg_agent,
@@ -66,6 +68,24 @@ def setup_government_agents(config, env):
     else:
         raise ValueError("Government should be a dict")
 
+def set_stackelberg(config):
+    house_alg=config['Trainer']['house_alg']
+    gov_alg=config['Trainer']['gov_alg']
+
+    if house_alg=='bi_mfrl' and gov_alg=='bi_ddpg':
+        return True
+    elif house_alg=='bi_mfrl' and gov_alg!='bi_ddpg' or house_alg!='bi_mfrl' and gov_alg=='bi_ddpg':
+        raise KeyError(' house_alg: bi_mfrl and gov_alg: bi_ddpg should exist together !')
+    else:
+        return False
+
+def set_bc_stackelberg(config):
+    house_alg=config['Trainer']['house_alg']
+
+    if house_alg=='bc_stackelberg':
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     os.environ['OMP_NUM_THREADS'] = '1'
@@ -89,6 +109,9 @@ if __name__ == '__main__':
 
     gov_agents = setup_government_agents(config, env)
 
+    is_stackelberg=set_stackelberg(config)
+    is_bc_stackelberg=set_bc_stackelberg(config)
+
     print(f"Problem Scene: {env.problem_scene}")
     print(f"Households_n: {env.households.households_n}")
 
@@ -102,7 +125,7 @@ if __name__ == '__main__':
         bank_agent=bank_agent,
     )
     if test_mode:
-        runner.test()
+        runner.test(is_stackelberg=is_stackelberg,is_bc_stackelberg=is_bc_stackelberg)
     else:
         
-        runner.run()
+        runner.run(is_stackelberg=is_stackelberg,is_bc_stackelberg=is_bc_stackelberg)

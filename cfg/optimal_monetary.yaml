@@ -15,6 +15,7 @@ Environment:
           type_list: ['ramsey', 'OLG', 'OLG_risk_invest', 'ramsey_risk_invest']
           households_n: 100
           action_dim: 2
+          
 
 
     - entity_name: 'market'
@@ -40,12 +41,12 @@ Environment:
           real_action_min: [ 0.0, -1e-3 ]
 
 Trainer:
-  house_alg: "bi_mfrl"
-  gov_alg: "bi_ddpg"
+  house_alg: "bc"
+  gov_alg: "ppo"
   firm_alg: "rule_based"
   bank_alg: "ppo"
-  seed: 2
-  epoch_length: 128
+  seed: 1
+  epoch_length: 300
   cuda: False
   n_epochs: 2000
   wandb: True
