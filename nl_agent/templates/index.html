@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EconGym 经济仿真平台</title>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --bg-glow: radial-gradient(1200px 480px at 50% -120px, rgba(91,139,255,0.16), transparent 60%);
+    --panel: #12151b;
+    --panel-2: #171b22;
+    --panel-border: #232833;
+    --panel-border-soft: #1b1f27;
+    --text: #eef1f6;
+    --muted: #8b94a5;
+    --muted-2: #626b7a;
+    --accent: #6ea8ff;
+    --accent-strong: #4f8cff;
+    --accent-soft: rgba(110,168,255,0.12);
+    --gold: #e8c26a;
+    --warn-bg: #2c2410;
+    --warn-border: #4d3f14;
+    --warn-text: #f0c352;
+    --danger-bg: #2a1414;
+    --danger-border: #4d1e1e;
+    --danger-text: #ff9090;
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    background: var(--bg) var(--bg-glow) no-repeat;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 20px 90px;
+  }
+
+  /* ---------- Header ---------- */
+  header { margin-bottom: 28px; }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .brand-mark {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent-strong), #8fd0ff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 6px 18px rgba(79,140,255,0.35);
+    flex-shrink: 0;
+  }
+  header h1 {
+    font-size: 25px;
+    margin: 0;
+    letter-spacing: -0.01em;
+    font-weight: 650;
+  }
+  header .tagline {
+    color: var(--muted);
+    margin: 0;
+    font-size: 14.5px;
+    max-width: 640px;
+  }
+
+  /* ---------- Workflow strip ---------- */
+  .workflow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 22px 0 26px;
+  }
+  .workflow-step {
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--panel-border-soft);
+    border-radius: 12px;
+    padding: 14px 14px 13px;
+    position: relative;
+  }
+  .workflow-step .num {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .workflow-step .title {
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .workflow-step .desc {
+    font-size: 12px;
+    color: var(--muted-2);
+    line-height: 1.5;
+  }
+  .workflow-step:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    right: -13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted-2);
+    font-size: 13px;
+    z-index: 1;
+  }
+  @media (max-width: 720px) {
+    .workflow { grid-template-columns: 1fr 1fr; }
+    .workflow-step:not(:last-child)::after { display: none; }
+  }
+
+  /* ---------- Ask box ---------- */
+  .ask-box {
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+  textarea {
+    width: 100%;
+    min-height: 88px;
+    resize: vertical;
+    background: #090b0e;
+    color: var(--text);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 13px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: border-color 0.15s ease;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent-strong);
+  }
+  .ask-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    gap: 12px;
+  }
+  .hint { color: var(--muted-2); font-size: 12.5px; }
+  button {
+    background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+    color: #05101f;
+    border: none;
+    border-radius: 9px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 14px rgba(79,140,255,0.28);
+  }
+  button:hover:not(:disabled) { transform: translateY(-1px); }
+  button:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+  button.secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--panel-border);
+    font-weight: 500;
+    box-shadow: none;
+    margin-right: 8px;
+  }
+  button.secondary:hover:not(:disabled) { transform: none; border-color: var(--muted-2); }
+
+  /* ---------- Algorithm tips ---------- */
+  .algo-tips {
+    margin-top: 12px;
+    border-top: 1px solid var(--panel-border-soft);
+    padding-top: 10px;
+  }
+  .algo-tips summary {
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--muted);
+    list-style: none;
+    user-select: none;
+  }
+  .algo-tips summary::-webkit-details-marker { display: none; }
+  .algo-tips summary:hover { color: var(--accent); }
+  .algo-tips[open] summary { color: var(--accent); margin-bottom: 10px; }
+  .algo-tips-body p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0 0 10px;
+  }
+  .algo-tips-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+  .algo-tips-table td {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--panel-border-soft);
+    font-size: 12.5px;
+    color: var(--muted);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  .algo-tips-table tr:last-child td { border-bottom: none; }
+  .algo-tips-table .algo-name {
+    width: 150px;
+    padding-right: 16px;
+    color: var(--text);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .algo-tips-table .algo-tag {
+    display: block;
+    margin-top: 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .algo-tips-body strong { color: var(--gold); font-weight: 650; }
+  .algo-tips-footnote {
+    font-size: 12px !important;
+    color: var(--muted-2) !important;
+    margin: 0 !important;
+  }
+
+  /* ---------- Loading ---------- */
+  #status-line { margin-top: 18px; display: none; }
+  #status-line.show { display: block; }
+  .progress-track {
+    height: 3px;
+    border-radius: 3px;
+    background: var(--panel-border);
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 40%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: slide 1.3s ease-in-out infinite;
+  }
+  @keyframes slide {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(340%); }
+  }
+  /* 确定进度模式：显示真实百分比（RL epoch / LLM 调用次数） */
+  .progress-bar.determinate {
+    animation: none;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-strong), var(--accent));
+    transition: width 0.5s ease;
+  }
+  #status-text { color: var(--muted); font-size: 13.5px; }
+
+  /* ---------- 仿真进度（run-section 内，紧挨按钮，用户点了就能看到） ---------- */
+  #run-progress { margin-top: 4px; }
+  #run-progress .progress-track { height: 8px; margin-bottom: 0; }
+  .run-progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  #run-progress-pct { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .run-progress-sub { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+
+  /* ---------- Sections ---------- */
+  .section {
+    margin-top: 20px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border-soft);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+  }
+  .section h2 {
+    font-size: 12.5px;
+    margin: 0 0 14px;
+    color: var(--muted-2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+  .reasoning {
+    font-size: 13.5px;
+    color: var(--muted);
+    border-left: 2px solid var(--accent-soft);
+    padding-left: 13px;
+  }
+
+  .box-warn {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    color: var(--warn-text);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+  .box-danger {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    color: var(--danger-text);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 14px;
+  }
+  .config-card {
+    background: var(--panel-2);
+    border: 1px solid var(--panel-border-soft);
+    border-radius: 11px;
+    padding: 15px 17px;
+  }
+  .config-card h3 {
+    margin: 0 0 11px;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 650;
+  }
+  .config-card h3 .scene-id {
+    color: var(--muted-2);
+    font-weight: 400;
+    font-size: 12px;
+  }
+  .config-card table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .config-card td { padding: 4px 0; vertical-align: top; }
+  .config-card td.k { color: var(--muted-2); width: 50%; padding-right: 8px; }
+  .config-card td.v { color: var(--text); font-weight: 500; }
+  .config-card .group-label {
+    color: var(--muted-2);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-top: 10px;
+    display: block;
+  }
+  .config-card .group-label:first-child { padding-top: 0; }
+
+  table.results {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.results th, table.results td {
+    text-align: left;
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--panel-border-soft);
+    white-space: nowrap;
+  }
+  table.results th {
+    color: var(--muted-2);
+    font-weight: 600;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    position: sticky;
+    top: 0;
+    background: var(--panel);
+  }
+  table.results tbody tr:hover { background: var(--panel-2); }
+  .results-scroll { max-height: 440px; overflow-y: auto; border-radius: 8px; }
+
+  .narrative p { margin: 0 0 11px; font-size: 14.5px; color: var(--text); }
+  .narrative ul { margin: 0 0 11px; padding-left: 20px; }
+  .narrative li { margin-bottom: 4px; font-size: 14.5px; }
+  .narrative strong { color: var(--gold); font-weight: 650; }
+
+  .caveats { list-style: none; margin: 0; padding: 0; }
+  .caveats li {
+    padding: 7px 0 7px 22px;
+    position: relative;
+    font-size: 13.5px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--panel-border-soft);
+  }
+  .caveats li:last-child { border-bottom: none; }
+  .caveats li::before {
+    content: "!";
+    position: absolute;
+    left: 2px;
+    top: 6px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--warn-border);
+    color: var(--warn-text);
+    font-size: 10px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .run-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  /* ---- 配置编辑模式 ---- */
+  .config-card.editing select,
+  .config-card.editing input[type="number"] {
+    width: 100%;
+    background: #090b0e;
+    color: var(--text);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12.5px;
+    font-family: inherit;
+  }
+  .config-card.editing select:focus,
+  .config-card.editing input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent-strong);
+  }
+  .config-card.editing td.v { padding: 3px 0; }
+  .mini-btn {
+    background: transparent;
+    color: var(--danger-text);
+    border: 1px solid var(--danger-border);
+    border-radius: 6px;
+    padding: 1px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: none;
+    margin-left: 8px;
+  }
+  .mini-btn.add {
+    color: var(--accent);
+    border-color: rgba(110,168,255,0.35);
+  }
+  .mini-btn:hover:not(:disabled) { transform: none; }
+  .add-gov-select {
+    background: #090b0e;
+    color: var(--text);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 3px 6px;
+    font-size: 11.5px;
+  }
+  .run-estimate {
+    font-size: 13.5px;
+    color: var(--muted);
+    flex: 1;
+    min-width: 220px;
+  }
+  .run-estimate .eta-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    border: 1px solid var(--warn-border);
+    background: var(--warn-bg);
+    border-radius: 6px;
+    padding: 1px 8px;
+    margin-right: 8px;
+    vertical-align: 1px;
+  }
+  #run-btn { white-space: nowrap; }
+
+  #clarify-box { display: none; margin-top: 14px; }
+  #clarify-box.show { display: block; }
+  #clarify-question {
+    font-size: 14px;
+    background: var(--accent-soft);
+    border: 1px solid rgba(110,168,255,0.25);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  #results { display: none; }
+  #results.show { display: block; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">🧭</div>
+        <h1>EconGym 经济仿真平台</h1>
+      </div>
+      <p class="tagline">用自然语言描述一个经济学问题，平台自动判断能否建模、生成场景配置、运行真实仿真，并给出忠实于仿真数据的解读——所有数字均来自仿真的真实输出，绝不编造。</p>
+    </header>
+
+    <div class="workflow">
+      <div class="workflow-step">
+        <span class="num">01</span>
+        <div class="title">理解问题</div>
+        <div class="desc">解析问题，匹配对应的经济主体（家庭 / 政府 / 市场 / 银行）建模方案</div>
+      </div>
+      <div class="workflow-step">
+        <span class="num">02</span>
+        <div class="title">构建仿真环境</div>
+        <div class="desc">生成结构化场景配置，校验参数合法性与有效性</div>
+      </div>
+      <div class="workflow-step">
+        <span class="num">03</span>
+        <div class="title">智能体决策驱动</div>
+        <div class="desc">各经济主体的智能体逐期决策，驱动经济活动真实运行</div>
+      </div>
+      <div class="workflow-step">
+        <span class="num">04</span>
+        <div class="title">生成结果与解读</div>
+        <div class="desc">汇总仿真产出的量化指标，转成忠实于数据的自然语言解读</div>
+      </div>
+    </div>
+
+    <div class="ask-box">
+      <textarea id="question" placeholder="例如：把退休年龄延迟到70岁，相比现状（65岁左右），对养老金体系和GDP有什么影响？"></textarea>
+      <div id="clarify-box">
+        <div id="clarify-question"></div>
+      </div>
+      <div class="ask-row">
+        <span class="hint">Enter 换行，点击按钮提交</span>
+        <div>
+          <button class="secondary" id="reset-btn" style="display:none;">重新提问</button>
+          <button id="ask-btn">提问</button>
+        </div>
+      </div>
+
+      <details class="algo-tips">
+        <summary>💡 想指定用行为克隆 / 强化学习 / LLM 推理决策？点这里看怎么问</summary>
+        <div class="algo-tips-body">
+          <p>平台会自动判断每个经济主体该用哪种"决策算法"，你也可以通过<strong>问题的措辞</strong>主动引导：</p>
+          <table class="algo-tips-table">
+            <tr>
+              <td class="algo-name">不特别说明<span class="algo-tag">默认</span></td>
+              <td>家庭用「行为克隆 bc」（基于真实美国家庭数据，秒级出结果）；政府/企业/银行用「规则驱动 rule_based」（固定公式，同样秒级、确定性强）。</td>
+            </tr>
+            <tr>
+              <td class="algo-name">"最优 / 自适应"决策<span class="algo-tag">强化学习</span></td>
+              <td>试试："如果政府采取<strong>最优</strong>的税收策略……"、"家庭<strong>学习/优化</strong>自己的储蓄决策……"、"找到能<strong>最大化</strong>GDP的政策……" 会触发 PPO/DDPG/SAC 强化学习——需要现场训练，通常<strong>几分钟起</strong>，且训练量不够可能未收敛。</td>
+            </tr>
+            <tr>
+              <td class="algo-name">"像专家一样推理"决策<span class="algo-tag">LLM</span></td>
+              <td>试试："如果政府<strong>像一个会推理判断的决策者</strong>一样动态调整……"、"让 AI <strong>自主实时</strong>决定利率……"（仅支持政府/银行/企业，不支持家庭）会触发 LLM 逐期决策——每一步都是真实调用，通常要<strong>几分钟到十几分钟</strong>，且平台会自动把仿真时长/评估次数调小以控制成本。</td>
+            </tr>
+          </table>
+          <p class="algo-tips-footnote">越"聪明"的算法通常越慢：规则驱动 / 行为克隆是秒级；强化学习和 LLM 推理决策会明显更慢，请耐心等待。</p>
+        </div>
+      </details>
+
+      <div id="status-line">
+        <div class="progress-track"><div class="progress-bar"></div></div>
+        <span id="status-text">正在理解问题，匹配经济主体...</span>
+      </div>
+    </div>
+
+    <div id="results">
+      <div class="section" id="reasoning-section">
+        <h2>Planner 推理</h2>
+        <div class="reasoning" id="reasoning-text"></div>
+      </div>
+
+      <div class="section" id="infeasible-section" style="display:none;">
+        <h2>无法建模</h2>
+        <div class="box-danger" id="infeasible-text"></div>
+      </div>
+
+      <div class="section" id="validation-section" style="display:none;">
+        <h2>配置校验失败</h2>
+        <div class="box-warn"><ul id="errors-list"></ul></div>
+      </div>
+
+      <div class="section" id="config-section" style="display:none;">
+        <h2>经济主体建模 / 场景配置</h2>
+        <div class="config-grid" id="config-grid"></div>
+      </div>
+
+      <div class="section" id="run-section" style="display:none;">
+        <h2>确认并开始仿真</h2>
+        <div class="run-row" id="run-row">
+          <div class="run-estimate" id="run-estimate"></div>
+          <div>
+            <button class="secondary" id="edit-btn">修改配置</button>
+            <button class="secondary" id="cancel-edit-btn" style="display:none;">取消修改</button>
+            <button id="apply-edit-btn" style="display:none;">应用修改 ✓</button>
+            <button id="run-btn">确认配置，开始仿真 ▶</button>
+          </div>
+        </div>
+        <div id="run-progress" style="display:none;">
+          <div class="run-progress-head">
+            <span id="run-progress-label">正在启动仿真...</span>
+            <span id="run-progress-pct"></span>
+          </div>
+          <div class="progress-track"><div class="progress-bar" id="run-progress-bar"></div></div>
+          <div class="run-progress-sub" id="run-progress-sub"></div>
+        </div>
+        <div class="box-danger" id="run-error" style="display:none; margin-top:12px; white-space:pre-line;"></div>
+      </div>
+
+      <div class="section" id="results-table-section" style="display:none;">
+        <h2>仿真结果（原始数值）</h2>
+        <div class="results-scroll">
+          <table class="results" id="results-table"></table>
+        </div>
+      </div>
+
+      <div class="section" id="narrative-section" style="display:none;">
+        <h2>解读</h2>
+        <div class="narrative" id="narrative-text"></div>
+      </div>
+
+      <div class="section" id="caveats-section" style="display:none;">
+        <h2>注意事项</h2>
+        <ul class="caveats" id="caveats-list"></ul>
+      </div>
+    </div>
+  </div>
+
+<script>
+const questionEl = document.getElementById('question');
+const askBtn = document.getElementById('ask-btn');
+const resetBtn = document.getElementById('reset-btn');
+const statusLine = document.getElementById('status-line');
+const statusText = document.getElementById('status-text');
+const clarifyBox = document.getElementById('clarify-box');
+const clarifyQuestionEl = document.getElementById('clarify-question');
+const resultsEl = document.getElementById('results');
+
+let pendingOriginalQuestion = null;
+let statusTimer = null;
+let currentPlan = null;   // {question, configs, labels}，阶段一的产物，等用户确认后交给阶段二
+let currentJobId = null;  // 当前正在轮询的仿真任务 id；重置/新提问会清空以取消旧轮询
+
+const PLAN_PHASES = [
+  '正在理解问题，匹配经济主体...',
+  '正在生成场景配置，校验参数...',
+];
+const RUN_PHASES = [
+  '正在构建仿真环境...',
+  '正在驱动智能体决策，运行仿真...',
+  '正在汇总结果，生成解读...',
+];
+
+function startLoadingAnimation(phases) {
+  let i = 0;
+  statusText.textContent = phases[0];
+  statusTimer = setInterval(() => {
+    i = Math.min(i + 1, phases.length - 1);  // 停在最后一个阶段，不循环（循环会误导进度）
+    statusText.textContent = phases[i];
+  }, 4000);
+}
+function stopLoadingAnimation() {
+  if (statusTimer) { clearInterval(statusTimer); statusTimer = null; }
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function formatNarrative(text) {
+  const escaped = escapeHtml(text);
+  const lines = escaped.split(/\n/);
+  let html = '';
+  let inList = false;
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (line.startsWith('- ') || line.startsWith('* ')) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += `<li>${boldify(line.slice(2))}</li>`;
+    } else {
+      if (inList) { html += '</ul>'; inList = false; }
+      if (line.length === 0) continue;
+      html += `<p>${boldify(line)}</p>`;
+    }
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+
+function boldify(s) {
+  return s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+function fmtNumber(v) {
+  if (typeof v !== 'number') return String(v);
+  if (Number.isInteger(v)) return v.toString();
+  const abs = Math.abs(v);
+  if (abs >= 1000) return v.toLocaleString(undefined, {maximumFractionDigits: 2});
+  return v.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+}
+
+// ---- 友好标签映射：把内部字段名/取值翻译成更好读的中文 ----
+const FIELD_LABELS = {
+  episode_length: '仿真时长（年）',
+  eval_episodes: '评估重复次数',
+  type: '类型',
+  households_n: '家庭数量',
+  CRRA: '风险厌恶系数 (CRRA)',
+  IFE: '跨期替代弹性倒数 (IFE)',
+  stock_alpha: '股价敏感度',
+  birth_rate: '年出生率',
+  initial_working_age: '初始工作年龄',
+  gov_task: '政策目标',
+  tax_type: '税制类型',
+  consumption_tax_rate: '消费税率',
+  estate_tax_rate: '遗产税率',
+  estate_tax_exemption: '遗产税免征额',
+  retire_age: '退休年龄',
+  contribution_rate: '养老金缴费率',
+  firm_n: '企业数量',
+  house_alg: '家庭决策算法',
+  gov_alg: '政府决策算法',
+  firm_alg: '企业决策算法',
+  bank_alg: '银行决策算法',
+  n_epochs: '训练轮数',
+  alg: '该政府的决策算法',
+};
+const VALUE_LABELS = {
+  ramsey: 'Ramsey（无限期家庭）',
+  OLG: 'OLG（世代交叠）',
+  ramsey_risk_invest: 'Ramsey + 风险投资',
+  OLG_risk_invest: 'OLG + 风险投资',
+  tax: '财政当局',
+  pension: '养老金当局',
+  central_bank: '央行',
+  perfect: '完全竞争',
+  monopoly: '垄断',
+  oligopoly: '寡头竞争',
+  monopolistic_competition: '垄断竞争',
+  non_profit: '非营利平台',
+  commercial: '商业银行',
+  rule_based: '规则驱动',
+  bc: '行为克隆',
+  ppo: '强化学习 (PPO)',
+  ddpg: '强化学习 (DDPG)',
+  sac: '强化学习 (SAC)',
+  llm: 'LLM 决策',
+  data_based: '真实数据驱动',
+  gdp: 'GDP 增长',
+  gini: '降低不平等',
+  social_welfare: '社会福利最大化',
+  mean_welfare: '平均福利最大化',
+  gdp_gini: 'GDP 与公平兼顾',
+  ai_agent: 'AI 税制',
+  us_federal: '美国联邦税制',
+  saez: 'Saez 最优税制',
+};
+function fieldLabel(k) { return FIELD_LABELS[k] || k; }
+function valueLabel(v) {
+  const s = String(v);
+  return VALUE_LABELS[s] ? `${VALUE_LABELS[s]} (${s})` : s;
+}
+
+const GROUP_LABELS = {
+  households: '家庭 Household',
+  government: '政府 Government',
+  market: '市场 Market',
+  bank: '银行 Bank',
+  algorithms: '决策算法 Algorithms',
+};
+
+function renderConfigCard(cfg) {
+  const groups = [[GROUP_LABELS.households, cfg.households]];
+  const govs = cfg.governments || (cfg.government ? [cfg.government] : []);
+  for (const g of govs) {
+    const typeName = VALUE_LABELS[g.type] || g.type;
+    const label = govs.length > 1 ? `${GROUP_LABELS.government}（${typeName}）` : GROUP_LABELS.government;
+    groups.push([label, g]);
+  }
+  groups.push([GROUP_LABELS.market, cfg.market], [GROUP_LABELS.bank, cfg.bank], [GROUP_LABELS.algorithms, cfg.algorithms]);
+
+  let rows = `<tr><td class="k">${fieldLabel('episode_length')}</td><td class="v">${cfg.episode_length}</td></tr>`;
+  rows += `<tr><td class="k">${fieldLabel('eval_episodes')}</td><td class="v">${cfg.eval_episodes}</td></tr>`;
+  for (const [label, obj] of groups) {
+    if (!obj) continue;
+    rows += `<tr><td colspan="2" class="group-label">${escapeHtml(label)}</td></tr>`;
+    for (const [k, v] of Object.entries(obj)) {
+      rows += `<tr><td class="k">${escapeHtml(fieldLabel(k))}</td><td class="v">${escapeHtml(valueLabel(v))}</td></tr>`;
+    }
+  }
+  return `<div class="config-card"><h3>${escapeHtml(cfg.label)} <span class="scene-id">(${escapeHtml(cfg.problem_scene)})</span></h3><table>${rows}</table></div>`;
+}
+
+// ==================== 配置编辑模式 ====================
+const OPTION_SETS = {
+  household_type: ['ramsey', 'OLG', 'ramsey_risk_invest', 'OLG_risk_invest'],
+  gov_type: ['tax', 'pension', 'central_bank'],
+  market_type: ['perfect', 'monopoly', 'monopolistic_competition', 'oligopoly'],
+  bank_type: ['non_profit', 'commercial'],
+  house_alg: ['bc', 'rule_based', 'data_based', 'ppo', 'ddpg', 'sac'],
+  gov_alg: ['rule_based', 'ppo', 'ddpg', 'sac', 'llm'],   // data_based 对政府角色有已知 bug，不提供
+  basic_alg: ['rule_based', 'ppo', 'ddpg', 'sac', 'llm'],
+  gov_task: ['gdp', 'gini', 'social_welfare', 'mean_welfare', 'gdp_gini', 'pension_gap'],
+  tax_type: ['ai_agent', 'us_federal', 'saez'],
+};
+const EDIT_SPECS = {
+  top: [
+    {key: 'episode_length', type: 'int', min: 10, max: 1000},
+    {key: 'eval_episodes', type: 'int', min: 1, max: 50},
+    {key: 'n_epochs', type: 'int', min: 50, max: 1000},
+    {key: 'seed', type: 'int'},
+  ],
+  households: [
+    {key: 'type', type: 'select', options: 'household_type'},
+    {key: 'households_n', type: 'int', min: 1, max: 5000},
+    {key: 'CRRA', type: 'float', optional: true},
+    {key: 'IFE', type: 'float', optional: true},
+    {key: 'stock_alpha', type: 'float', optional: true},
+    {key: 'birth_rate', type: 'float', optional: true},
+    {key: 'initial_working_age', type: 'int', optional: true},
+  ],
+  government: [
+    {key: 'type', type: 'select', options: 'gov_type'},
+    {key: 'alg', type: 'select', options: 'gov_alg', optional: true},
+    {key: 'gov_task', type: 'select', options: 'gov_task', optional: true},
+    {key: 'tax_type', type: 'select', options: 'tax_type', optional: true},
+    {key: 'consumption_tax_rate', type: 'float', optional: true},
+    {key: 'estate_tax_rate', type: 'float', optional: true},
+    {key: 'estate_tax_exemption', type: 'float', optional: true},
+    {key: 'retire_age', type: 'int', optional: true},
+    {key: 'contribution_rate', type: 'float', optional: true},
+  ],
+  market: [
+    {key: 'type', type: 'select', options: 'market_type'},
+    {key: 'firm_n', type: 'int', min: 1, max: 20},
+  ],
+  bank: [{key: 'type', type: 'select', options: 'bank_type'}],
+  algorithms: [
+    {key: 'house_alg', type: 'select', options: 'house_alg'},
+    {key: 'gov_alg', type: 'select', options: 'gov_alg'},
+    {key: 'firm_alg', type: 'select', options: 'basic_alg'},
+    {key: 'bank_alg', type: 'select', options: 'basic_alg'},
+  ],
+};
+
+function editorInput(spec, value) {
+  const val = (value === undefined || value === null) ? '' : value;
+  if (spec.type === 'select') {
+    let html = `<select data-key="${spec.key}">`;
+    if (spec.optional) html += `<option value=""${val === '' ? ' selected' : ''}>（默认）</option>`;
+    for (const o of OPTION_SETS[spec.options]) {
+      const label = VALUE_LABELS[o] ? `${VALUE_LABELS[o]} (${o})` : o;
+      html += `<option value="${o}"${o === val ? ' selected' : ''}>${escapeHtml(label)}</option>`;
+    }
+    return html + '</select>';
+  }
+  const step = spec.type === 'int' ? '1' : 'any';
+  const minAttr = spec.min !== undefined ? ` min="${spec.min}"` : '';
+  const maxAttr = spec.max !== undefined ? ` max="${spec.max}"` : '';
+  return `<input type="number" data-key="${spec.key}" value="${val}" step="${step}"${minAttr}${maxAttr}` +
+         ` placeholder="${spec.optional ? '（默认）' : ''}">`;
+}
+
+function editorRows(specs, obj) {
+  return specs.map(s =>
+    `<tr><td class="k">${escapeHtml(fieldLabel(s.key))}</td><td class="v">${editorInput(s, obj ? obj[s.key] : undefined)}</td></tr>`
+  ).join('');
+}
+
+function governmentEditorTbody(gov) {
+  const typeName = VALUE_LABELS[gov.type] || gov.type || '';
+  return `<tbody data-group="government">` +
+    `<tr><td colspan="2" class="group-label">${escapeHtml(GROUP_LABELS.government)}（${escapeHtml(typeName)}）` +
+    `<button type="button" class="mini-btn" data-del-gov>删除</button></td></tr>` +
+    editorRows(EDIT_SPECS.government, gov) + `</tbody>`;
+}
+
+function renderConfigEditor(cfg, idx) {
+  let html = `<div class="config-card editing" data-config-idx="${idx}">` +
+    `<h3>${escapeHtml(cfg.label)} <span class="scene-id">(${escapeHtml(cfg.problem_scene)})</span></h3><table>`;
+  html += `<tbody data-group="top">` + editorRows(EDIT_SPECS.top, cfg) + `</tbody>`;
+  html += `<tbody data-group="households"><tr><td colspan="2" class="group-label">${escapeHtml(GROUP_LABELS.households)}</td></tr>` +
+          editorRows(EDIT_SPECS.households, cfg.households) + `</tbody>`;
+  for (const g of (cfg.governments || [])) html += governmentEditorTbody(g);
+  html += `<tbody data-role="add-gov"><tr><td colspan="2" class="group-label">` +
+    `<select class="add-gov-select" data-add-gov-type>` +
+    OPTION_SETS.gov_type.map(t => `<option value="${t}">${escapeHtml(VALUE_LABELS[t] || t)}</option>`).join('') +
+    `</select> <button type="button" class="mini-btn add" data-add-gov>+ 添加政府</button></td></tr></tbody>`;
+  html += `<tbody data-group="market"><tr><td colspan="2" class="group-label">${escapeHtml(GROUP_LABELS.market)}</td></tr>` +
+          editorRows(EDIT_SPECS.market, cfg.market) + `</tbody>`;
+  html += `<tbody data-group="bank"><tr><td colspan="2" class="group-label">${escapeHtml(GROUP_LABELS.bank)}</td></tr>` +
+          editorRows(EDIT_SPECS.bank, cfg.bank) + `</tbody>`;
+  html += `<tbody data-group="algorithms"><tr><td colspan="2" class="group-label">${escapeHtml(GROUP_LABELS.algorithms)}</td></tr>` +
+          editorRows(EDIT_SPECS.algorithms, cfg.algorithms) + `</tbody>`;
+  return html + '</table></div>';
+}
+
+function readGroupValues(container, specs) {
+  const byKey = Object.fromEntries(specs.map(s => [s.key, s]));
+  const out = {};
+  container.querySelectorAll('[data-key]').forEach(inp => {
+    const spec = byKey[inp.dataset.key];
+    if (!spec) return;
+    const raw = String(inp.value).trim();
+    if (raw === '') return;   // 可选字段留空 = 不设置（用默认）
+    if (spec.type === 'int') out[spec.key] = parseInt(raw, 10);
+    else if (spec.type === 'float') out[spec.key] = parseFloat(raw);
+    else out[spec.key] = raw;
+  });
+  return out;
+}
+
+function collectEditors() {
+  const configs = [];
+  document.querySelectorAll('#config-grid .config-card.editing').forEach(card => {
+    const idx = +card.dataset.configIdx;
+    const cfg = {problem_scene: currentPlan.configs[idx].problem_scene};
+    Object.assign(cfg, readGroupValues(card.querySelector('[data-group="top"]'), EDIT_SPECS.top));
+    cfg.households = readGroupValues(card.querySelector('[data-group="households"]'), EDIT_SPECS.households);
+    cfg.governments = [];
+    card.querySelectorAll('[data-group="government"]').forEach(tb => {
+      cfg.governments.push(readGroupValues(tb, EDIT_SPECS.government));
+    });
+    cfg.market = readGroupValues(card.querySelector('[data-group="market"]'), EDIT_SPECS.market);
+    cfg.bank = readGroupValues(card.querySelector('[data-group="bank"]'), EDIT_SPECS.bank);
+    cfg.algorithms = readGroupValues(card.querySelector('[data-group="algorithms"]'), EDIT_SPECS.algorithms);
+    configs.push(cfg);
+  });
+  return configs;
+}
+
+function setEditButtons(editing) {
+  document.getElementById('edit-btn').style.display = editing ? 'none' : 'inline-block';
+  document.getElementById('run-btn').style.display = editing ? 'none' : 'inline-block';
+  document.getElementById('cancel-edit-btn').style.display = editing ? 'inline-block' : 'none';
+  document.getElementById('apply-edit-btn').style.display = editing ? 'inline-block' : 'none';
+}
+
+function renderDisplayCards() {
+  document.getElementById('config-grid').innerHTML = currentPlan.configs.map(renderConfigCard).join('');
+  const est = estimateRun(currentPlan.configs);
+  document.getElementById('run-estimate').innerHTML =
+    `<span class="eta-tag">${escapeHtml(est.tag)}</span>${escapeHtml(est.text)}`;
+}
+
+function enterEditMode() {
+  if (!currentPlan) return;
+  document.getElementById('run-error').style.display = 'none';
+  document.getElementById('config-grid').innerHTML =
+    currentPlan.configs.map((cfg, i) => renderConfigEditor(cfg, i)).join('');
+  setEditButtons(true);
+}
+
+function cancelEdit() {
+  document.getElementById('run-error').style.display = 'none';
+  renderDisplayCards();
+  setEditButtons(false);
+}
+
+async function applyEdit() {
+  const applyBtn = document.getElementById('apply-edit-btn');
+  applyBtn.disabled = true;
+  document.getElementById('run-error').style.display = 'none';
+  try {
+    const configs = collectEditors();
+    const resp = await fetch('/api/validate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({configs}),
+    });
+    const data = await resp.json();
+    if (!data.ok) {
+      const errEl = document.getElementById('run-error');
+      errEl.textContent = '配置校验未通过：\n' + (data.errors || []).join('\n');
+      errEl.style.display = 'block';
+      return;
+    }
+    currentPlan.configs = data.configs.map((c, i) => ({label: currentPlan.labels[i], ...c}));
+    renderDisplayCards();
+    setEditButtons(false);
+  } catch (e) {
+    const errEl = document.getElementById('run-error');
+    errEl.textContent = `校验请求出错：${e}`;
+    errEl.style.display = 'block';
+  } finally {
+    applyBtn.disabled = false;
+  }
+}
+
+// 政府的添加/删除（事件委托，编辑卡片是动态生成的）
+document.getElementById('config-grid').addEventListener('click', (e) => {
+  const delBtn = e.target.closest('[data-del-gov]');
+  if (delBtn) {
+    delBtn.closest('tbody[data-group="government"]').remove();
+    return;
+  }
+  const addBtn = e.target.closest('[data-add-gov]');
+  if (addBtn) {
+    const card = addBtn.closest('.config-card');
+    const type = card.querySelector('[data-add-gov-type]').value;
+    const anchor = addBtn.closest('tbody[data-role="add-gov"]');
+    anchor.insertAdjacentHTML('beforebegin', governmentEditorTbody({type}));
+  }
+});
+
+function renderResultsTable(rawResults) {
+  const labels = Object.keys(rawResults);
+  if (labels.length === 0) return '';
+  const metricKeys = Object.keys(rawResults[labels[0]]);
+  let thead = '<thead><tr><th>指标</th>' + labels.map(l => `<th>${escapeHtml(l)}</th>`).join('') + '</tr></thead>';
+  let tbody = '<tbody>';
+  for (const key of metricKeys) {
+    tbody += `<tr><td>${escapeHtml(key)}</td>` + labels.map(l => `<td>${fmtNumber(rawResults[l][key])}</td>`).join('') + '</tr>';
+  }
+  tbody += '</tbody>';
+  return thead + tbody;
+}
+
+function resetUI() {
+  resultsEl.classList.remove('show');
+  clarifyBox.classList.remove('show');
+  pendingOriginalQuestion = null;
+  currentPlan = null;
+  currentJobId = null;
+  questionEl.value = '';
+  questionEl.placeholder = '例如：把退休年龄延迟到70岁，相比现状（65岁左右），对养老金体系和GDP有什么影响？';
+  askBtn.textContent = '提问';
+  resetBtn.style.display = 'none';
+  questionEl.focus();
+}
+
+// ---- 预估仿真耗时：按配置里用到的算法给用户一个明确的预期 ----
+function collectAlgs(cfg) {
+  const algs = [];
+  if (cfg.algorithms) {
+    algs.push(cfg.algorithms.house_alg, cfg.algorithms.gov_alg, cfg.algorithms.firm_alg, cfg.algorithms.bank_alg);
+  }
+  for (const g of (cfg.governments || [])) { if (g.alg) algs.push(g.alg); }
+  return algs.filter(Boolean);
+}
+function estimateRun(configs) {
+  let hasLLM = false, hasRL = false;
+  for (const c of configs) {
+    const algs = collectAlgs(c);
+    if (algs.includes('llm')) hasLLM = true;
+    if (algs.some(a => ['ppo', 'ddpg', 'sac'].includes(a))) hasRL = true;
+  }
+  if (hasLLM && hasRL) return {tag: '较慢', text: '包含强化学习训练 + LLM 逐期决策，预计需要十几分钟或更久，期间请勿关闭页面。'};
+  if (hasLLM) return {tag: '较慢', text: 'LLM 逐期决策：每一步都是一次真实的大模型调用，预计几分钟到十几分钟。'};
+  if (hasRL) return {tag: '需训练', text: '包含强化学习训练，预计几分钟起（视规模而定）。'};
+  return {tag: '快速', text: '规则驱动 / 行为克隆，预计几秒到几十秒完成。'};
+}
+
+// ---- 阶段一：提问 -> 生成配置并展示，等待用户确认 ----
+async function submitQuestion() {
+  const userInput = questionEl.value.trim();
+  if (!userInput) return;
+
+  const question = pendingOriginalQuestion
+    ? `原问题：${pendingOriginalQuestion}\n用户补充：${userInput}`
+    : userInput;
+
+  askBtn.disabled = true;
+  statusLine.classList.add('show');
+  startLoadingAnimation(PLAN_PHASES);
+  resultsEl.classList.remove('show');
+  clarifyBox.classList.remove('show');
+  currentPlan = null;
+  currentJobId = null;   // 取消任何仍在轮询的旧仿真
+
+  try {
+    const resp = await fetch('/api/plan', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({question}),
+    });
+    const data = await resp.json();
+    renderPlanResult(data, userInput, question);
+  } catch (e) {
+    renderPlanResult({status: 'error', message: String(e)});
+  } finally {
+    askBtn.disabled = false;
+    stopLoadingAnimation();
+    statusLine.classList.remove('show');
+  }
+}
+
+function hideAllSections() {
+  for (const id of ['infeasible-section', 'validation-section', 'config-section',
+                    'run-section', 'results-table-section', 'narrative-section', 'caveats-section']) {
+    document.getElementById(id).style.display = 'none';
+  }
+}
+
+function renderPlanResult(data, lastUserInput, fullQuestion) {
+  resultsEl.classList.add('show');
+  hideAllSections();
+
+  if (data.status === 'error') {
+    clarifyBox.classList.remove('show');
+    pendingOriginalQuestion = null;
+    document.getElementById('reasoning-text').textContent = '';
+    document.getElementById('infeasible-section').style.display = 'block';
+    document.getElementById('infeasible-text').textContent = `请求出错：${data.message}`;
+    return;
+  }
+
+  document.getElementById('reasoning-text').textContent = data.reasoning || '';
+
+  if (data.status === 'needs_clarification') {
+    pendingOriginalQuestion = pendingOriginalQuestion || lastUserInput;
+    clarifyBox.classList.add('show');
+    clarifyQuestionEl.innerHTML = `<strong>需要澄清：</strong>${escapeHtml(data.clarifying_question || '')}`;
+    questionEl.value = '';
+    questionEl.placeholder = '请在这里补充信息...';
+    askBtn.textContent = '补充并重新提交';
+    resetBtn.style.display = 'inline-block';
+    questionEl.focus();
+    return;
+  }
+
+  clarifyBox.classList.remove('show');
+  pendingOriginalQuestion = null;
+  askBtn.textContent = '提问';
+  resetBtn.style.display = 'inline-block';
+
+  if (data.status === 'infeasible') {
+    document.getElementById('infeasible-section').style.display = 'block';
+    document.getElementById('infeasible-text').textContent = data.infeasible_reason || '';
+    return;
+  }
+
+  if (data.status === 'validation_failed') {
+    document.getElementById('validation-section').style.display = 'block';
+    const list = document.getElementById('errors-list');
+    list.innerHTML = '';
+    (data.errors || []).forEach(e => {
+      const li = document.createElement('li');
+      li.textContent = e;
+      list.appendChild(li);
+    });
+    return;
+  }
+
+  // status === 'planned'：展示配置 + 确认按钮，等用户确认后再开始（可能很慢的）仿真
+  currentPlan = {question: fullQuestion, configs: data.configs, labels: data.labels};
+
+  document.getElementById('config-section').style.display = 'block';
+  renderDisplayCards();
+  setEditButtons(false);
+  document.getElementById('run-error').style.display = 'none';
+  document.getElementById('run-btn').disabled = false;
+  document.getElementById('edit-btn').disabled = false;
+  document.getElementById('run-section').style.display = 'block';
+  document.getElementById('run-section').scrollIntoView({behavior: 'smooth', block: 'nearest'});
+}
+
+// ---- 阶段二：用户确认后 -> 后台启动仿真 + 轮询进度 -> 展示结果与解读 ----
+function showRunProgress() {
+  document.getElementById('run-row').style.display = 'none';
+  document.getElementById('run-error').style.display = 'none';
+  const bar = document.getElementById('run-progress-bar');
+  bar.classList.remove('determinate');   // 起步用不确定动画
+  bar.style.width = '';
+  document.getElementById('run-progress-label').textContent = '正在启动仿真...';
+  document.getElementById('run-progress-pct').textContent = '';
+  document.getElementById('run-progress-sub').textContent = '';
+  document.getElementById('run-progress').style.display = 'block';
+}
+function restoreRunControls() {
+  document.getElementById('run-progress').style.display = 'none';
+  document.getElementById('run-row').style.display = 'flex';
+  document.getElementById('run-btn').disabled = false;
+  document.getElementById('edit-btn').disabled = false;
+}
+
+function updateRunProgress(p) {
+  const label = document.getElementById('run-progress-label');
+  const sub = document.getElementById('run-progress-sub');
+  const pct = document.getElementById('run-progress-pct');
+  const bar = document.getElementById('run-progress-bar');
+
+  const setIndeterminate = () => { bar.classList.remove('determinate'); bar.style.width = ''; pct.textContent = ''; };
+
+  if (!p || p.phase === 'starting') {
+    label.textContent = '正在启动仿真...'; sub.textContent = ''; setIndeterminate(); return;
+  }
+  if (p.phase === 'narrating') {
+    label.textContent = '仿真完成，正在生成解读...';
+    sub.textContent = '正在把仿真的真实数值整理成自然语言解读';
+    setIndeterminate(); return;
+  }
+  // phase === 'running'
+  const ct = p.config_total || 1, ci = p.config_index || 0;
+  label.textContent = ct > 1
+    ? `正在运行配置 ${ci + 1} / ${ct}：${p.config_label || ''}`
+    : `正在运行仿真：${p.config_label || ''}`;
+
+  if (p.step_total > 0) {
+    const intra = Math.min(p.step_current / p.step_total, 1);
+    const overall = Math.min(((ci + intra) / ct) * 100, 99);  // 收尾留给 done 状态，避免提前显示100%
+    bar.classList.add('determinate');
+    bar.style.width = overall.toFixed(1) + '%';
+    pct.textContent = overall.toFixed(0) + '%';
+    sub.textContent = p.step_kind === 'epoch'
+      ? `强化学习训练 ${p.step_current} / ${p.step_total} 轮`
+      : p.step_kind === 'llm_call'
+      ? `LLM 逐期决策调用 ${p.step_current} / ~${p.step_total} 次`
+      : `${p.step_current} / ${p.step_total}`;
+  } else {
+    setIndeterminate();
+    sub.textContent = '运行中（此配置无中间进度可报告，请稍候）...';
+  }
+}
+
+async function runSimulation() {
+  if (!currentPlan) return;
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('edit-btn').disabled = true;
+  showRunProgress();
+
+  try {
+    // 发回 /api/run 之前把前端附加的 label 字段剥掉，只传配置本体
+    const configs = currentPlan.configs.map(({label, ...cfg}) => cfg);
+    const resp = await fetch('/api/run', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({question: currentPlan.question, configs, labels: currentPlan.labels}),
+    });
+    const data = await resp.json();
+    if (!data.job_id) throw new Error(data.message || '启动仿真失败');
+    currentJobId = data.job_id;
+    pollRunStatus(data.job_id);
+  } catch (e) {
+    restoreRunControls();
+    showRunError(String(e));
+  }
+}
+
+function pollRunStatus(jobId) {
+  const tick = async () => {
+    if (jobId !== currentJobId) return;  // 已被重置/取消
+    let data;
+    try {
+      const resp = await fetch('/api/run_status?job_id=' + encodeURIComponent(jobId));
+      data = await resp.json();
+    } catch (e) {
+      setTimeout(tick, 1500);  // 网络抖动，继续轮询
+      return;
+    }
+    if (jobId !== currentJobId) return;
+
+    if (data.status === 'running') {
+      updateRunProgress(data.progress);
+      setTimeout(tick, 1000);
+    } else if (data.status === 'done') {
+      currentJobId = null;
+      renderRunResult({status: 'answered', ...(data.result || {})});
+    } else {
+      currentJobId = null;
+      restoreRunControls();
+      showRunError(data.error || '仿真失败');
+    }
+  };
+  tick();
+}
+
+function showRunError(msg) {
+  const errEl = document.getElementById('run-error');
+  errEl.textContent = `仿真失败：${msg}`;
+  errEl.style.display = 'block';
+}
+
+function renderRunResult(data) {
+  if (data.status !== 'answered') {
+    restoreRunControls();
+    showRunError(data.message || (data.errors || []).join('；') || '未知错误');
+    return;
+  }
+
+  document.getElementById('run-section').style.display = 'none';  // 已完成，收起确认区
+
+  if (data.raw_results) {
+    document.getElementById('results-table-section').style.display = 'block';
+    document.getElementById('results-table').innerHTML = renderResultsTable(data.raw_results);
+  }
+  if (data.narrative) {
+    document.getElementById('narrative-section').style.display = 'block';
+    document.getElementById('narrative-text').innerHTML = formatNarrative(data.narrative);
+  }
+  if (data.caveats && data.caveats.length) {
+    document.getElementById('caveats-section').style.display = 'block';
+    const list = document.getElementById('caveats-list');
+    list.innerHTML = '';
+    data.caveats.forEach(c => {
+      const li = document.createElement('li');
+      li.textContent = c;
+      list.appendChild(li);
+    });
+  }
+  document.getElementById('narrative-section').scrollIntoView({behavior: 'smooth', block: 'nearest'});
+}
+
+askBtn.addEventListener('click', submitQuestion);
+resetBtn.addEventListener('click', resetUI);
+document.getElementById('run-btn').addEventListener('click', runSimulation);
+document.getElementById('edit-btn').addEventListener('click', enterEditMode);
+document.getElementById('cancel-edit-btn').addEventListener('click', cancelEdit);
+document.getElementById('apply-edit-btn').addEventListener('click', applyEdit);
+questionEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    submitQuestion();
+  }
+});
+</script>
+</body>
+</html>

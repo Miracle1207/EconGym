@@ -1,0 +1,15 @@
+/.idea
+/__pycache__
+/agents/__pycache__
+/agents/behavior_cloning/__pycache__
+/agents/llm/__pycache__
+/agents/rl/__pycache__
+/utils/__pycache__
+/nl_agent/__pycache__
+/env/__pycache__
+/entities/__pycache__
+/agents/rule_based/__pycache__
+/agents/real_data/__pycache__
+.env
+/viz/data
+/agents/models

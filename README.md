@@ -412,6 +412,180 @@ EconGym/
 
 ```
 
+## 🤖 Natural-Language Interaction Layer (`nl_agent/`)
+
+`nl_agent/` is a thin layer on top of EconGym that lets you drive simulations in plain
+language. Given a natural-language economic question, an LLM decides whether EconGym can
+model it, produces a structured scenario configuration, validates it, runs the real
+simulation, and explains the resulting numbers back in natural language.
+
+The layer **does not modify the EconGym core**. It only calls existing entry points
+(`utils.config.load_config`, `main.py`'s `select_agent` / `setup_government_agents`,
+`env.env_core.EconomicSociety`, and `runner.Runner`) from the outside.
+
+### Architecture
+
+A question flows through four stages:
+
+1. **Planner** (LLM) — turns the question into one or more `ScenarioConfig` objects.
+   Comparison questions (e.g. *"what happens if we raise X?"*) automatically yield a
+   *baseline* plus one or more *treatment* configs. If the question is ambiguous, the
+   Planner asks a clarifying question instead of guessing; if EconGym cannot model it,
+   the Planner explains which capability boundary it hits.
+2. **Validation** (pure Python) — checks value ranges, required role combinations, and
+   whether each parameter is actually effective under the chosen algorithm. On failure,
+   the concrete errors are fed back to the Planner for up to two repair attempts.
+3. **Config & run** — each `ScenarioConfig` is merged with `cfg/base_config.yaml` into a
+   full config (`build_full_config`; multi-government safe, and a human-readable scene
+   diff is also written to `cfg/generated/`), then executed via `EconomicSociety` +
+   `Runner`.
+4. **Narrator** (LLM) — writes the explanation using **only** the real values returned by
+   the simulation (deltas and percentage changes are precomputed in Python), and always
+   lists caveats such as early termination or single-seed variance.
+
+### 1. Installation
+
+In addition to the core EconGym dependencies (see [Installation](#-installation) above):
+
+```bash
+conda activate EconGym
+pip install openai anthropic pydantic pyyaml
+```
+
+The `openai` SDK also backs the OpenRouter provider (an OpenAI-compatible API reached by
+changing the `base_url`); `anthropic` is only needed for the native Anthropic API.
+
+### 2. Configuration
+
+The default provider is **OpenRouter** with the model `anthropic/claude-sonnet-4.5`.
+Create a `.env` file in the repository root (kept local, not committed):
+
+```
+OPENROUTER_API_KEY=your_key_here
+```
+
+To use the native Anthropic API instead, set both variables:
+
+```
+ANTHROPIC_API_KEY=your_key_here
+LLM_PROVIDER=anthropic
+```
+
+`LLM_PROVIDER` accepts `openrouter` (default) or `anthropic`. Both implement the same
+`LLMClient` protocol, so the Planner and Narrator code is unchanged either way.
+
+### 3. Usage
+
+#### Web UI (recommended)
+
+```bash
+conda activate EconGym
+python nl_agent/webapp.py     # then open http://127.0.0.1:5050
+```
+
+The web UI is a two-step workflow:
+
+1. **Plan.** After you submit a question, the Planner returns the proposed economic-agent
+   setup, parameters, and per-agent algorithms within a few seconds, along with an
+   estimated runtime (rule-based / behavior-cloning = seconds; reinforcement learning =
+   minutes; per-step LLM decisions = several minutes). Nothing is simulated yet.
+2. **Run.** Click **"确认配置，开始仿真" (Confirm & Run)** to launch the simulation. It runs
+   in a background thread while the page polls `GET /api/run_status` to display a live
+   **progress bar** — training epochs (`X / n_epochs`) for RL, decision-call count for
+   LLM agents, and *config i / N* across comparison runs — so long jobs never look frozen.
+
+If the proposed setup is not what you want, click **"修改配置" (Edit)** to change any field
+(entity types, parameters, and algorithms as dropdowns or number inputs; governments can be
+added or removed). **"应用修改" (Apply)** re-validates the edited config (schema + semantic
+rules) before accepting it.
+
+Backend endpoints: `POST /api/plan`, `POST /api/validate`, `POST /api/run` (returns a
+`job_id`), and `GET /api/run_status`.
+
+#### Command line
+
+```bash
+python nl_agent/cli.py                # interactive REPL
+python nl_agent/cli.py --plan-only    # show the generated config without running
+```
+
+The REPL keeps a conversation open: ambiguous questions trigger a follow-up prompt, and the
+output includes the explanation, caveats, the exact scenario config used, and the raw
+numbers (so you can verify the explanation against the source data).
+
+#### Python API
+
+```python
+from nl_agent.pipeline import answer_question
+
+result = answer_question(
+    "How would raising the retirement age to 70 affect the pension system and GDP?"
+)
+print(result.status)
+print(result.narrator_output.narrative)
+for caveat in result.narrator_output.caveats:
+    print("-", caveat)
+```
+
+### 4. Package layout
+
+```
+nl_agent/
+├── schema.py               # Config schema: ScenarioConfig / HouseholdConfig / GovernmentConfig / ...
+├── capability_manifest.py  # Hand-maintained manifest of what EconGym can model (fed to the Planner)
+├── planner.py              # Natural language  -> ScenarioConfig (PlannerOutput)
+├── validation.py           # Semantic rules (e.g. pension requires OLG; parameter-effectiveness checks)
+├── config_layer.py         # ScenarioConfig -> full EconGym config (build_full_config)
+├── run_scenario.py         # Build EconomicSociety, assemble agents, run Runner, return metrics
+├── narrator.py             # Real metrics -> natural-language explanation (NarratorOutput)
+├── pipeline.py             # Orchestration entry points: plan_question / run_and_narrate / answer_question
+├── llm_client.py           # Provider-agnostic structured-output client (OpenRouter / Anthropic)
+├── webapp.py               # Flask web UI
+├── cli.py                  # Interactive CLI
+└── scenarios.py            # Hand-written example scenarios (no LLM)
+```
+
+### 5. Notes and limitations
+
+- **Providers.** OpenRouter (default; structured output via `json_object` + validated
+  retries) and the native Anthropic API (structured output via `tool_use`) are supported
+  and switched with `LLM_PROVIDER`. OpenAI/DeepSeek extension points are in place — adding
+  one is a single new `LLMClient` implementation.
+- **Non-determinism.** Planner output is sampled, so the same question may yield slightly
+  different parameters (e.g. household count) across calls, changing the absolute
+  magnitudes. Directional conclusions (higher/lower) are generally stable.
+- **Execution modes.** Non-RL / non-LLM configs use `runner.test()` (seconds). RL configs
+  (`ppo`/`ddpg`/`sac`) train via `runner.run()` and are then evaluated once (minutes or
+  more at realistic scale). `llm` government/bank/market roles use EconGym's built-in
+  `agents/llm/llm_agent.py`, making one real API call per step; validation caps
+  `episode_length × eval_episodes ≤ 150` to keep cost bounded.
+- **Default algorithms.** Households default to `bc` (behavior cloning on real U.S. SCF
+  data, no training cost); government/firm/bank default to `rule_based`. The Planner
+  upgrades to more expensive algorithms per question type — `ppo`/`ddpg`/`sac` for
+  optimal/adaptive-behavior questions, `llm` for "reason like an expert decision-maker"
+  questions. See `capability_manifest.py` §5.
+- **Multi-government coordination.** `ScenarioConfig.governments` is a list of 1–3 distinct
+  government types, enabling fiscal + central-bank (cf. the built-in `dbl_government` task)
+  or fiscal + central-bank + pension (`tre_government`). Each government may set its own
+  `alg`. The first government is the `main_gov` (households' taxes/pensions and macro
+  metrics resolve against it). Multi-government merging is handled by `build_full_config`
+  rather than `utils.config.load_config`, whose `deep_merge_entities` collapses entities by
+  name and would drop duplicate `government` entries.
+- **Parameter effectiveness.** Many YAML parameters only take effect under specific
+  algorithms — e.g. tax parameters (`tau`/`xi`) are overridden by hardcoded values under
+  `gov_alg=rule_based`, and `CRRA`/`IFE` do not affect decisions under non-RL household
+  algorithms. The full mapping lives in `capability_manifest.py`.
+- **Degenerate Gini values.** When an aggressive policy (e.g. a heavy wealth tax chosen by
+  an `llm`/`ppo` government) drives the economy toward collapse, EconGym's `gini_coef()`
+  may return values slightly outside `[0, 1]` (or negative). This is a numerical edge case
+  in EconGym itself, not a bug in this layer; such values must not be read as "more equal."
+- **`agents/llm/llm_agent.py`.** Originally keyed on `OPENAI_API_KEY`; it now routes through
+  OpenRouter (`OPENROUTER_API_KEY`) when `llm_name` contains a `/` (e.g.
+  `anthropic/claude-sonnet-4.5`), without affecting existing OpenAI/DeepSeek usage. It
+  still supports government/bank/market roles only, not households.
+
+---
+
 ## Citation and Acknowledgments
 
 We would like to express our sincere gratitude to [Prof. Bo Li](https://liboecon.com/) from Peking University for his invaluable discussions and feedback throughout the development of this project. As a distinguished economist, Prof. Li provided critical insights into the theoretical foundations of the economic models in EconGym, significantly enhancing the platform’s rigor and realism.

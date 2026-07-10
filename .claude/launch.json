@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "nl_agent_webapp",
+      "runtimeExecutable": "/Users/rice/anaconda3/envs/EconGym/bin/python",
+      "runtimeArgs": ["nl_agent/webapp.py"],
+      "port": 5050,
+      "autoPort": true
+    }
+  ]
+}

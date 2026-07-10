@@ -59,22 +59,31 @@ class llm_agent:
         self.obs_dim = obs_shape[0] if len(obs_shape) > 0 else obs_shape
         self.action_dim = agent.action_space.shape[-1]
 
-        # Get API key: prefer environment variable
-        api_key = os.environ.get("OPENAI_API_KEY") or getattr(args, "api_key", None)
-        if not api_key:
-            raise ValueError("API key not found. Please set `self.api_key` or `OPENAI_API_KEY` environment variable.")
-
         # Choose client based on LLM name
         llm_name = self.llm_name.lower()
-        if "deepseek" in llm_name:
-            # DeepSeek uses its own API endpoint
-            self.client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
-        elif "gpt" in llm_name:
-            # GPT series uses default OpenAI endpoint
-            self.client = OpenAI(api_key=api_key)
+        if "/" in llm_name:
+            # OpenRouter model strings look like "anthropic/claude-sonnet-4.5", "openai/gpt-4o-mini", etc.
+            # OpenRouter is an OpenAI-compatible API; swapping base_url routes to many providers with one key.
+            api_key = os.environ.get("OPENROUTER_API_KEY") or getattr(args, "api_key", None)
+            if not api_key:
+                raise ValueError("API key not found. Please set `OPENROUTER_API_KEY` environment variable.")
+            self.client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
         else:
-            # Other LLMs need to be configured manually
-            raise ValueError(f"Unsupported LLM name '{self.llm_name}'. Please configure your own client.")
+            # Get API key: prefer environment variable
+            api_key = os.environ.get("OPENAI_API_KEY") or getattr(args, "api_key", None)
+            if not api_key:
+                raise ValueError(
+                    "API key not found. Please set `self.api_key` or `OPENAI_API_KEY` environment variable.")
+
+            if "deepseek" in llm_name:
+                # DeepSeek uses its own API endpoint
+                self.client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
+            elif "gpt" in llm_name:
+                # GPT series uses default OpenAI endpoint
+                self.client = OpenAI(api_key=api_key)
+            else:
+                # Other LLMs need to be configured manually
+                raise ValueError(f"Unsupported LLM name '{self.llm_name}'. Please configure your own client.")
 
 
     def build_prompt(self, agent_name, agent_type, obs_np):
