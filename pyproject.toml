@@ -1,0 +1,20 @@
+[project]
+name = "econgym-multibank"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "flask==3.1.2",
+    "gymnasium>=1.4.0",
+    "matplotlib==3.10.6",
+    "numba==0.61.2",
+    "numpy>=2.2.6",
+    "omegaconf==2.3.0",
+    "openai==1.109.1",
+    "pandas==2.3.2",
+    "pyecharts==2.0.4",
+    "scipy>=1.17.1",
+    "swanlab==0.6.10",
+    "torch>=2.15.0",
+    "tqdm==4.67.1",
+    "werkzeug==3.1.3",
+]
