@@ -13,5 +13,4 @@ Necesitas [uv](https://docs.astral.sh/uv/).
 ```bash
 uv sync                     # crea .venv e instala dependencias (Python 3.11)
 cd EconGym-original
-uv run python main.py --problem_scene "optimal_monetary"
 ```
