@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .ipynb_checkpoints/
+.pytest_cache/
 
 # Entorno uv
 .venv/
@@ -13,11 +14,17 @@ __pycache__/
 **/viz/models/
 swanlog/
 
+# Generado por nuestro código (se regenera al ejecutarlo)
+our-work/viz/simulacion.html
+our-work/runs/
+our-work/modelos/
+
 # Secretos / config local
 .env
 
 # Herramientas de IA (Claude, Cursor, Copilot...)
 .claude/
+.playwright-mcp/
 CLAUDE.md
 CLAUDE.local.md
 .cursor/
@@ -31,3 +38,6 @@ AGENTS.md
 .DS_Store
 .idea/
 .vscode/
+
+MultiBank-propuesta.pdf
+*pdf

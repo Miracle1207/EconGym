@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MultiBank: plano de la economía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul: #173a6e; --azul-hondo: #0f2b55; --trazo: #e9f0ff; --tenue: #9fb3d6; --rejilla: #ffffff10;
+    --coral: #ff7a66; --menta: #6fd6b0;
+    --cond: "Barlow Condensed", "Arial Narrow", sans-serif; --texto: "Barlow", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--azul); color: var(--trazo); font: 15px/1.45 var(--texto); min-height: 100vh;
+    background-image: linear-gradient(var(--rejilla) 1px, transparent 1px), linear-gradient(90deg, var(--rejilla) 1px, transparent 1px);
+    background-size: 24px 24px; display: grid; grid-template-rows: auto 1fr auto;
+  }
+  button, select { font: 500 15px var(--cond); color: var(--trazo); background: transparent; border: 1.5px solid var(--trazo); border-radius: 3px; padding: 6px 14px; cursor: pointer; }
+  button:hover, select:hover { background: #ffffff14; }
+  :focus-visible { outline: 2px solid #f4c95d; outline-offset: 2px; }
+  select option { background: var(--azul-hondo); }
+
+  header { display: flex; align-items: baseline; gap: 20px; padding: 14px 24px 2px; flex-wrap: wrap; }
+  header h1 { font: 600 26px/1 var(--cond); margin: 0; }
+  header p { margin: 0; color: var(--tenue); font-size: 14px; }
+
+  .cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 8px 22px; padding: 0 24px; }
+  #mapa { width: 100%; height: auto; display: block; }
+  .edificio { fill: var(--azul); stroke: var(--trazo); stroke-width: 1.6; }
+  .etiqueta { font: 600 22px var(--cond); fill: var(--trazo); text-anchor: middle; }
+  .dato { font: 400 16px var(--cond); fill: var(--tenue); text-anchor: middle; }
+  .tubo-base { fill: none; stroke: #ffffff18; stroke-linecap: round; }
+  .tubo { fill: none; stroke-linecap: round; stroke-dasharray: 2 13; animation: fluir 1.3s linear infinite; }
+  @keyframes fluir { to { stroke-dashoffset: -30; } }
+  .senal { fill: none; stroke: var(--tenue); stroke-width: 1.2; stroke-dasharray: 5 5; }
+  .cliente { cursor: pointer; }
+  .cliente:hover { stroke: #fff !important; stroke-width: 2 !important; }
+
+  aside { display: flex; flex-direction: column; gap: 16px; padding-bottom: 8px; min-width: 0; }
+  aside h2 { font: 600 19px/1.1 var(--cond); margin: 0 0 8px; }
+  .banco { border: 1.5px solid var(--trazo); border-radius: 3px; background: var(--azul-hondo); padding: 9px 12px; margin-bottom: 8px; }
+  .banco.caido { opacity: .5; }
+  .banco .cab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .banco .nombre { font: 600 17px var(--cond); }
+  .banco .nombre i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 6px; vertical-align: 0; }
+  .banco .benef { font: 600 18px var(--cond); font-variant-numeric: tabular-nums; }
+  .banco .lin { display: flex; justify-content: space-between; gap: 8px; color: var(--tenue); font-size: 13px; }
+  .banco .lin b { color: var(--trazo); font: 500 14px var(--cond); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .regla { position: relative; height: 8px; background: #ffffff14; border-radius: 2px; margin: 6px 0 2px; }
+  .regla .lleno { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; }
+  .regla .minimo { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--coral); }
+  #sucesos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow: auto; }
+  #sucesos button { border: 0; padding: 3px 0; text-align: left; width: 100%; display: grid; grid-template-columns: 56px 1fr; gap: 8px; font: 400 14px var(--texto); }
+  #sucesos button span:first-child { font: 500 14px var(--cond); color: var(--tenue); }
+  #sucesos button:not(.pasado) { opacity: .4; }
+  #detalle { font-size: 14px; color: var(--tenue); min-height: 3.2em; }
+  #detalle b { color: var(--trazo); font-weight: 500; }
+  .leyenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--tenue); padding: 4px 0; }
+  .leyenda i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+  footer { padding: 6px 24px 16px; display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; }
+  #anio { font: 500 16px var(--cond); white-space: nowrap; min-width: 96px; }
+  #tiempo { width: 100%; height: 84px; display: block; cursor: pointer; touch-action: none; }
+  .controles { display: flex; gap: 8px; }
+  #tip { position: fixed; pointer-events: none; background: var(--azul-hondo); border: 1.5px solid var(--trazo); border-radius: 3px; padding: 6px 10px; font-size: 13px; display: none; z-index: 2; max-width: 280px; }
+
+  @media (max-width: 1000px) { .cuerpo { grid-template-columns: 1fr; } footer { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .tubo { animation: none; stroke-dasharray: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Plano de la economía</h1>
+  <p id="resumen"></p>
+</header>
+
+<div class="cuerpo">
+  <div>
+    <svg id="mapa" viewBox="0 0 1200 800" role="img" aria-label="Mapa de la economía simulada"></svg>
+    <div class="leyenda" id="leyenda"></div>
+  </div>
+  <aside>
+    <section><h2>Bancos</h2><div id="bancos"></div></section>
+    <section><h2>Qué ha pasado</h2><ul id="sucesos"></ul></section>
+    <section><h2>Detalle</h2><div id="detalle">Pasa el ratón por un hogar o una empresa.</div></section>
+  </aside>
+</div>
+
+<footer>
+  <div class="controles">
+    <button id="play">Reproducir</button>
+    <select id="vel" aria-label="Velocidad"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+  </div>
+  <svg id="tiempo" preserveAspectRatio="none" aria-label="Línea de tiempo"></svg>
+  <div id="anio"></div>
+</footer>
+<div id="tip"></div>
+
+<script>
+const D = __DATOS__;
+const H = D.historia, N = H.length, NB = D.politicas.length, NF = D.n_empresas, NH = D.n_hogares;
+const COLORES = ["#f4c95d", "#7cc4ff", "#c9a7ff", "#ffa36c", "#9be37a"];
+const col = b => b < 0 ? "transparent" : COLORES[b % COLORES.length];
+const $ = id => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs = {}, padre) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (padre) padre.appendChild(e); return e; };
+const dinero = v => { const a = Math.abs(v), s = v < 0 ? "−" : ""; const f = (x, u) => s + x.toLocaleString("es-ES", { maximumFractionDigits: 1 }) + u; return a >= 1e9 ? f(a / 1e9, " mil M") : a >= 1e6 ? f(a / 1e6, " M") : a >= 1e3 ? f(a / 1e3, " k") : f(a, ""); };
+const pct = v => (v * 100).toLocaleString("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " %";
+const nombreBanco = b => `Banco ${b + 1}`;
+
+$("resumen").textContent = `${NB} bancos · ${NF} empresas · ${NH} hogares · ${N} años · semilla ${D.semilla} · ${D.fin}`;
+$("leyenda").innerHTML = D.politicas.map((p, b) => `<span><i style="background:${col(b)}"></i>${nombreBanco(b)}: ${p}</span>`).join("")
+  + `<span><i style="background:var(--coral)"></i>no paga este año</span><span><i style="border:1.5px solid var(--coral)"></i>en la lista de morosos</span>`;
+
+/* ---------------- mapa ---------------- */
+const svg = $("mapa");
+const gTubos = el("g", {}, svg), gEdif = el("g", {}, svg), gEmp = el("g", {}, svg), gHog = el("g", {}, svg);
+const CB = [600, 62];
+const xBanco = b => NB === 1 ? 600 : 390 + 420 * b / (NB - 1);
+const YB = 250;
+const ZONA_EMP = { x0: 30, x1: 250, y0: 150, y1: 410 };
+const ZONA_HOG = { x0: 40, x1: 1160, y0: 500, y1: 790 };
+const GOB = [1090, 260];
+
+// banco central
+el("path", { class: "edificio", d: `M${CB[0]-64},${CB[1]+18} L${CB[0]},${CB[1]-20} L${CB[0]+64},${CB[1]+18} Z` }, gEdif);
+el("rect", { class: "edificio", x: CB[0] - 56, y: CB[1] + 18, width: 112, height: 40 }, gEdif);
+for (let i = 0; i < 5; i++) el("line", { x1: CB[0] - 44 + i * 22, x2: CB[0] - 44 + i * 22, y1: CB[1] + 22, y2: CB[1] + 54, stroke: "var(--trazo)", "stroke-width": 1.1 }, gEdif);
+el("text", { class: "etiqueta", x: CB[0] + 78, y: CB[1] + 20, style: "text-anchor:start" }, gEdif).textContent = "Banco central";
+const tBase = el("text", { class: "dato", x: CB[0] + 78, y: CB[1] + 42, style: "text-anchor:start" }, gEdif);
+
+// gobierno
+el("path", { class: "edificio", d: `M${GOB[0]-28},${GOB[1]-10} A28,28 0 0 1 ${GOB[0]+28},${GOB[1]-10} Z` }, gEdif);
+el("rect", { class: "edificio", x: GOB[0] - 50, y: GOB[1] - 10, width: 100, height: 48 }, gEdif);
+el("text", { class: "etiqueta", x: GOB[0], y: GOB[1] - 50 }, gEdif).textContent = "Gobierno";
+el("text", { class: "dato", x: GOB[0], y: GOB[1] + 58 }, gEdif).textContent = "siempre paga";
+
+// bancos
+const bancosSvg = [];
+for (let b = 0; b < NB; b++) {
+  const x = xBanco(b), g = el("g", {}, gEdif);
+  el("path", { class: "senal", d: `M${CB[0]},${CB[1]+58} C${CB[0]},${YB-90} ${x},${YB-110} ${x},${YB-62}` }, gTubos);
+  el("path", { class: "edificio", d: `M${x-80},${YB-50} L${x+80},${YB-50} L${x+70},${YB-64} L${x-70},${YB-64} Z`, style: `stroke:${col(b)}` }, g);
+  el("rect", { class: "edificio", x: x - 72, y: YB - 50, width: 144, height: 100, style: `stroke:${col(b)}` }, g);
+  // barra de capital: altura = capital / préstamos (escala 0–30 %); línea roja = mínimo
+  el("rect", { x: x + 50, y: YB - 40, width: 12, height: 76, fill: "#ffffff12" }, g);
+  const barra = el("rect", { x: x + 50, y: YB + 36, width: 12, height: 0, fill: col(b) }, g);
+  const yMin = YB + 36 - 76 * D.capital_minimo / 0.3;
+  el("line", { x1: x + 46, x2: x + 66, y1: yMin, y2: yMin, stroke: "var(--coral)", "stroke-width": 2 }, g);
+  el("text", { class: "etiqueta", x, y: YB - 74, style: `fill:${col(b)}` }, g).textContent = nombreBanco(b);
+  const t1 = el("text", { class: "dato", x: x - 10, y: YB - 22 }, g);
+  const t2 = el("text", { class: "dato", x: x - 10, y: YB - 2 }, g);
+  const t3 = el("text", { class: "dato", x: x - 10, y: YB + 18 }, g);
+  const t4 = el("text", { class: "dato", x: x - 10, y: YB + 38 }, g);
+  const cruz = el("g", { opacity: 0 }, g);
+  el("path", { d: `M${x-68},${YB-46} L${x+68},${YB+46} M${x+68},${YB-46} L${x-68},${YB+46}`, stroke: "var(--coral)", "stroke-width": 3 }, cruz);
+  el("text", { class: "etiqueta", x, y: YB + 66, style: "fill:var(--coral)" }, cruz).textContent = "Quebrado";
+  const mk = (d, c) => ({ base: el("path", { class: "tubo-base", d }, gTubos), flujo: el("path", { class: "tubo", d, stroke: c }, gTubos) });
+  const aEmp = mk(`M${x-72},${YB+10} C${x-140},${YB+10} ${330},${YB+30} ${ZONA_EMP.x1+8},${(ZONA_EMP.y0+ZONA_EMP.y1)/2}`, col(b));
+  const aHog = mk(`M${x},${YB+50} C${x},${YB+120} ${x},${ZONA_HOG.y0-70} ${x},${ZONA_HOG.y0-36}`, col(b));
+  const aGob = mk(`M${x+72},${YB+20} C${x+140},${YB+40} ${GOB[0]-120},${GOB[1]+30} ${GOB[0]-52},${GOB[1]+14}`, col(b));
+  bancosSvg.push({ g, barra, t1, t2, t3, t4, cruz, aEmp, aHog, aGob });
+}
+
+// empresas: una fábrica por empresa, tamaño según su peso en la economía
+el("text", { class: "etiqueta", x: (ZONA_EMP.x0 + ZONA_EMP.x1) / 2, y: ZONA_EMP.y0 - 14 }, gEmp).textContent = "Empresas";
+const empresas = [];
+{
+  const cols = Math.ceil(Math.sqrt(NF * (ZONA_EMP.x1 - ZONA_EMP.x0) / (ZONA_EMP.y1 - ZONA_EMP.y0)));
+  const filas = Math.ceil(NF / cols), dx = (ZONA_EMP.x1 - ZONA_EMP.x0) / cols, dy = (ZONA_EMP.y1 - ZONA_EMP.y0) / filas;
+  const maxP = Math.max(...D.empresa_peso);
+  for (let j = 0; j < NF; j++) {
+    const cx = ZONA_EMP.x0 + dx * (j % cols + .5), cy = ZONA_EMP.y0 + dy * (Math.floor(j / cols) + .5);
+    const s = Math.min(dx, dy) * (0.35 + 0.55 * Math.sqrt(D.empresa_peso[j] / maxP)) / 2;
+    const d = `M${cx-s},${cy+s} L${cx-s},${cy-s*0.1} L${cx-s*0.4},${cy-s*0.6} L${cx-s*0.4},${cy-s*0.1} L${cx+s*0.2},${cy-s*0.6} L${cx+s*0.2},${cy-s*0.1} L${cx+s},${cy-s*0.1} L${cx+s},${cy+s} Z`;
+    const f = el("path", { class: "cliente", d, "stroke-width": 1.4 }, gEmp);
+    f.addEventListener("mousemove", e => verEmpresa(e, j)); f.addEventListener("mouseleave", ocultar);
+    empresas.push(f);
+  }
+}
+
+// hogares: una casita por hogar
+const hogares = [];
+{
+  const cols = NH >= 500 ? 50 : 20, filas = Math.ceil(NH / cols);
+  const dx = (ZONA_HOG.x1 - ZONA_HOG.x0) / cols, dy = (ZONA_HOG.y1 - ZONA_HOG.y0) / filas, lado = Math.min(dx, dy) * 0.72;
+  for (let i = 0; i < NH; i++) {
+    const cx = ZONA_HOG.x0 + dx * (i % cols + .5), cy = ZONA_HOG.y0 + dy * (Math.floor(i / cols) + .5);
+    const w = lado, h = lado, d = `M${cx-w/2},${cy+h/2} L${cx-w/2},${cy-h*0.08} L${cx},${cy-h/2} L${cx+w/2},${cy-h*0.08} L${cx+w/2},${cy+h/2} Z`;
+    const c = el("path", { class: "cliente", d, "stroke-width": NH >= 500 ? 0.8 : 1.2 }, gHog);
+    c.addEventListener("mousemove", e => verHogar(e, i)); c.addEventListener("mouseleave", ocultar);
+    hogares.push(c);
+  }
+}
+el("text", { class: "etiqueta", x: ZONA_HOG.x0, y: ZONA_HOG.y0 - 22, style: "text-anchor:start" }, gHog).textContent = "Hogares";
+el("text", { class: "dato", x: ZONA_HOG.x0 + 92, y: ZONA_HOG.y0 - 22, style: "text-anchor:start" }, gHog).textContent = "color = el banco que le presta · más intenso = más deuda frente a su ingreso";
+
+/* ---------------- escalas ---------------- */
+const maxTubo = Math.max(1, ...H.flatMap(s => s.bancos.flatMap(b => [b.p_emp, b.p_hog, b.bonos])));
+const grosor = v => v <= 0 ? 0 : 1 + 14 * Math.sqrt(v / maxTubo);
+
+/* ---------------- panel de bancos ---------------- */
+$("bancos").innerHTML = D.politicas.map((p, b) => `
+  <div class="banco" id="pb${b}">
+    <div class="cab"><span class="nombre"><i style="background:${col(b)}"></i>${nombreBanco(b)} · ${p}</span><span class="benef" id="pb${b}-benef"></span></div>
+    <div class="lin"><span>Cobra a empresas / hogares</span><b id="pb${b}-tipos"></b></div>
+    <div class="lin"><span>Extra al cliente endeudado (por cada vez más que el típico)</span><b id="pb${b}-prima"></b></div>
+    <div class="lin"><span>Paga por los depósitos</span><b id="pb${b}-dep"></b></div>
+    <div class="lin"><span>Acepta hogares que deban hasta</span><b id="pb${b}-umbral"></b></div>
+    <div class="lin"><span>Capital / préstamos (mínimo ${pct(D.capital_minimo)})</span><b id="pb${b}-ratio"></b></div>
+    <div class="regla"><div class="lleno" id="pb${b}-barra" style="background:${col(b)}"></div><div class="minimo" style="left:${100 * D.capital_minimo / 0.3}%"></div></div>
+    <div class="lin"><span>Cuota de préstamos (empresas / hogares)</span><b id="pb${b}-cuota"></b></div>
+    <div class="lin"><span>Pierde por impagos este año</span><b id="pb${b}-perd"></b></div>
+    <div class="lin"><span>Clientes en su lista de morosos</span><b id="pb${b}-mor"></b></div>
+  </div>`).join("");
+
+/* ---------------- sucesos ---------------- */
+const sucesos = [];
+const impagosAnio = H.map(s => s.empresas.impaga.reduce((a, b) => a + b, 0) + s.hogares.impaga.reduce((a, b) => a + b, 0));
+(function () {
+  const minimoRoto = Array(NB).fill(false), quebrado = Array(NB).fill(false);
+  const media = impagosAnio.reduce((a, b) => a + b, 0) / N;
+  H.forEach((s, t) => {
+    s.bancos.forEach((b, k) => {
+      if (b.quebrado && !quebrado[k]) { quebrado[k] = true; sucesos.push([t, `Quiebra el ${nombreBanco(k)} (${D.politicas[k]})`]); }
+      if (!b.quebrado && b.ratio < D.capital_minimo && !minimoRoto[k]) { minimoRoto[k] = true; sucesos.push([t, `El ${nombreBanco(k)} baja del capital mínimo: no puede prestar más`]); }
+    });
+    s.empresas.impaga.forEach((x, j) => { if (x && D.empresa_peso[j] > 0.1) sucesos.push([t, `No paga una empresa grande (${pct(D.empresa_peso[j])} de la economía)`]); });
+    if (t > 0 && impagosAnio[t] > Math.max(3, 2 * media)) sucesos.push([t, `Ola de impagos: ${impagosAnio[t]} clientes no pagan`]);
+  });
+  sucesos.push([N - 1, "Fin: " + D.fin]);
+  sucesos.sort((a, b) => a[0] - b[0]);
+  for (const [t, txt] of sucesos) {
+    const li = document.createElement("li"), btn = document.createElement("button");
+    btn.innerHTML = `<span>año ${t + 1}</span><span></span>`; btn.lastChild.textContent = txt;
+    btn.onclick = () => { parar(); ir(t); };
+    li.appendChild(btn); $("sucesos").appendChild(li);
+  }
+})();
+
+/* ---------------- línea de tiempo ---------------- */
+let cabezal, X;
+function tiempo() {
+  const s = $("tiempo"); s.innerHTML = "";
+  const W = s.clientWidth || 800, Ht = 84; s.setAttribute("viewBox", `0 0 ${W} ${Ht}`);
+  X = i => 6 + (W - 12) * i / Math.max(1, N - 1);
+  const Y = v => Ht - 10 - (Ht - 24) * Math.max(0, Math.min(1, v / 0.3));
+  const maxImp = Math.max(1, ...impagosAnio);
+  impagosAnio.forEach((v, i) => el("rect", { x: X(i) - 2, y: Ht - 10 - 22 * v / maxImp, width: 4, height: 22 * v / maxImp, fill: "#ff7a6688" }, s));
+  el("line", { x1: 0, x2: W, y1: Y(D.capital_minimo), y2: Y(D.capital_minimo), stroke: "var(--coral)", "stroke-dasharray": "4 4" }, s);
+  for (let b = 0; b < NB; b++) el("path", { d: H.map((st, i) => `${i ? "L" : "M"}${X(i)},${Y(st.bancos[b].ratio)}`).join(" "), fill: "none", stroke: col(b), "stroke-width": 1.8 }, s);
+  for (const [i] of sucesos) el("circle", { cx: X(i), cy: 6, r: 3, fill: "var(--trazo)" }, s);
+  el("text", { x: W - 6, y: 16, "text-anchor": "end", fill: "var(--tenue)", "font-size": 12, "font-family": "Barlow Condensed" }, s).textContent = "capital / préstamos de cada banco · barras: impagos por año · línea roja: mínimo";
+  cabezal = el("line", { y1: 0, y2: Ht, stroke: "var(--trazo)", "stroke-width": 2 }, s);
+}
+const desde = e => { const r = $("tiempo").getBoundingClientRect(); return Math.round((e.clientX - r.left - 6) / (r.width - 12) * (N - 1)); };
+let arr = false;
+$("tiempo").addEventListener("pointerdown", e => { arr = true; parar(); ir(desde(e)); $("tiempo").setPointerCapture(e.pointerId); });
+$("tiempo").addEventListener("pointermove", e => { if (arr) ir(desde(e)); });
+$("tiempo").addEventListener("pointerup", () => arr = false);
+
+/* ---------------- pintar un año ---------------- */
+let t = 0;
+function pintar() {
+  const s = H[t];
+  tBase.textContent = `tipo base ${pct(s.base)} · inflación ${pct(s.inflacion)}`;
+  s.bancos.forEach((b, k) => {
+    const v = bancosSvg[k], alto = 76 * Math.max(0, Math.min(1, b.ratio / 0.3));
+    v.barra.setAttribute("height", alto); v.barra.setAttribute("y", YB + 36 - alto);
+    v.t1.textContent = `empresas ${pct(b.emp)}`; v.t2.textContent = `hogares ${pct(b.hog)}`;
+    v.t3.textContent = `depósito ${pct(b.dep)}`; v.t4.textContent = `umbral ${b.umbral.toFixed(1)}×`;
+    v.cruz.setAttribute("opacity", b.quebrado ? 1 : 0); v.g.style.opacity = b.quebrado ? .55 : 1;
+    for (const [tubo, val] of [[v.aEmp, b.p_emp], [v.aHog, b.p_hog], [v.aGob, b.bonos]]) {
+      const w = grosor(val); tubo.flujo.setAttribute("stroke-width", w); tubo.base.setAttribute("stroke-width", w ? w + 4 : 0);
+    }
+    $(`pb${k}`).classList.toggle("caido", b.quebrado);
+    const be = $(`pb${k}-benef`); be.textContent = (b.beneficio >= 0 ? "+" : "") + dinero(b.beneficio); be.style.color = b.beneficio < 0 ? "var(--coral)" : "var(--menta)";
+    $(`pb${k}-tipos`).textContent = `${pct(b.emp)} / ${pct(b.hog)}`;
+    $(`pb${k}-dep`).textContent = pct(b.dep);
+    $(`pb${k}-prima`).textContent = "+" + pct(b.prima);
+    $(`pb${k}-umbral`).textContent = `${b.umbral.toFixed(1)} años de ingreso`;
+    $(`pb${k}-ratio`).textContent = b.quebrado ? "quebrado" : b.ratio > 1 ? "más de 100 % (casi no presta)" : pct(b.ratio);
+    $(`pb${k}-barra`).style.width = 100 * Math.max(0, Math.min(1, b.ratio / 0.3)) + "%";
+    $(`pb${k}-cuota`).textContent = `${pct(b.cuota_emp)} / ${pct(b.cuota_hog)}`;
+    $(`pb${k}-perd`).textContent = dinero(b.perdida);
+    $(`pb${k}-mor`).textContent = b.morosos;
+  });
+  const e = s.empresas;
+  empresas.forEach((f, j) => {
+    f.setAttribute("fill", e.impaga[j] ? "var(--coral)" : (e.banco[j] >= 0 ? col(e.banco[j]) + "55" : "transparent"));
+    f.setAttribute("stroke", e.moroso[j] ? "var(--coral)" : e.banco[j] < 0 ? "var(--tenue)" : col(e.banco[j]));
+  });
+  const h = s.hogares;
+  hogares.forEach((c, i) => {
+    const dti = h.deuda[i] / Math.max(h.ingreso[i], 5000);
+    if (h.impaga[i]) { c.setAttribute("fill", "var(--coral)"); c.setAttribute("fill-opacity", 1); }
+    else if (h.banco[i] >= 0) { c.setAttribute("fill", col(h.banco[i])); c.setAttribute("fill-opacity", 0.2 + 0.8 * Math.min(1, dti / 3)); }
+    else { c.setAttribute("fill", "transparent"); }
+    c.setAttribute("stroke", h.moroso[i] ? "var(--coral)" : "#9fb3d655");
+  });
+  $("anio").textContent = `Año ${t + 1} de ${N}`;
+  if (cabezal) { cabezal.setAttribute("x1", X(t)); cabezal.setAttribute("x2", X(t)); }
+  document.querySelectorAll("#sucesos button").forEach((btn, k) => btn.classList.toggle("pasado", sucesos[k][0] <= t));
+}
+
+/* ---------------- detalle ---------------- */
+const tip = $("tip");
+function mover(ev, html) { tip.style.display = "block"; tip.style.left = ev.clientX + 14 + "px"; tip.style.top = ev.clientY + 14 + "px"; tip.innerHTML = html; $("detalle").innerHTML = html; }
+function ocultar() { tip.style.display = "none"; }
+function verHogar(ev, i) {
+  const h = H[t].hogares, banco = h.banco[i] >= 0 ? nombreBanco(h.banco[i]) : "sin préstamo";
+  mover(ev, `<b>Hogar ${i + 1}</b>, ${h.edad[i]} años<br>debe <b>${dinero(h.deuda[i])}</b> (${(h.deuda[i] / Math.max(h.ingreso[i], 5000)).toFixed(1)}× su ingreso) · ${banco}<br>paga un tipo del <b>${pct(h.tipo[i])}</b><br>ingreso ${dinero(h.ingreso[i])} · riqueza ${dinero(h.riqueza[i])}` + (h.impaga[i] ? "<br><b style='color:var(--coral)'>No ha pagado este año</b>" : h.moroso[i] ? "<br>En la lista de morosos" : ""));
+}
+function verEmpresa(ev, j) {
+  const e = H[t].empresas, banco = e.banco[j] >= 0 ? nombreBanco(e.banco[j]) : "sin préstamo";
+  mover(ev, `<b>Empresa ${j + 1}</b> (${pct(D.empresa_peso[j])} de la economía)<br>debe <b>${dinero(e.deuda[j])}</b> · banco principal: ${banco}<br>paga un tipo del <b>${pct(e.tipo[j])}</b><br>probabilidad de impago este año: ${pct(e.p[j])}` + (e.racionado[j] > 0 ? `<br>le falta crédito: ${dinero(e.racionado[j])}` : "") + (e.impaga[j] ? "<br><b style='color:var(--coral)'>No ha pagado este año</b>" : e.moroso[j] ? "<br>En la lista de morosos" : ""));
+}
+
+/* ---------------- reproducción ---------------- */
+let jugando = false, acum = 0, ultimo = 0;
+function ir(n) { t = Math.max(0, Math.min(N - 1, n)); pintar(); }
+function parar() { jugando = false; $("play").textContent = "Reproducir"; }
+$("play").onclick = () => { if (jugando) return parar(); if (t >= N - 1) t = 0; jugando = true; $("play").textContent = "Pausa"; ultimo = performance.now(); requestAnimationFrame(bucle); };
+function bucle(ahora) {
+  if (!jugando) return;
+  acum += (ahora - ultimo) / 1000 * 1.5 * +$("vel").value; ultimo = ahora;
+  if (acum >= 1) { acum = 0; if (t >= N - 1) return parar(); ir(t + 1); }
+  requestAnimationFrame(bucle);
+}
+addEventListener("keydown", e => {
+  if (e.target.tagName === "SELECT") return;
+  if (e.code === "Space") { e.preventDefault(); $("play").click(); }
+  if (e.code === "ArrowRight") { parar(); ir(t + 1); }
+  if (e.code === "ArrowLeft") { parar(); ir(t - 1); }
+});
+addEventListener("resize", () => { tiempo(); pintar(); });
+tiempo(); ir(0);
+</script>
+</body>
+</html>
