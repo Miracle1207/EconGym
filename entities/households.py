@@ -348,15 +348,16 @@ class Household(BaseEntity):
 
         return newborn_e_array, newborn_accumulated_pension_account
 
-    def OLG_step(self, society, t):
-        """Calculate households' income, assets, and consumption."""
-        # Classify households as young or old based on age
-        government_agent = society.main_gov
-        retire_age = government_agent.retire_age
-
+    def apply_retirement_hours(self, retire_age):
         self.is_old = self.age >= retire_age
         self.old_n = np.sum(self.is_old)
         self.ht[self.is_old] = 0
+
+    def OLG_step(self, society, t):
+        """Calculate households' income, assets, and consumption."""
+        government_agent = society.main_gov
+        retire_age = government_agent.retire_age
+        self.apply_retirement_hours(retire_age)
 
         # Labor income: effort * effective hours * wage rate
         labor_income = self.e * np.dot(self.ht * self.h_ij_ratio, society.market.WageRate)
@@ -426,6 +427,10 @@ class Household(BaseEntity):
         self.age_write = copy.copy(self.age)
         self.e_write = copy.copy(self.e)
 
+        # Keep current-period totals before removing households.
+        self.net_pension_before_turnover = self.pension.sum()
+        self.goods_consumed_before_turnover = self.final_consumption.sum(axis=0)[:, np.newaxis]
+
         # Age update
         self.age += 1
         if t != 0:
@@ -447,7 +452,7 @@ class Household(BaseEntity):
             # born_n = born_n + die_total - die_n
 
             if die_total > 0:
-                total_wealth_deceased, self.estate_tax = self.compute_estate_tax(die_total, society)
+                total_wealth_deceased, self.estate_tax = self.compute_estate_tax(all_eliminate_indices, society)
                 deceased_stock_value = np.sum(self.stock_holdings[all_eliminate_indices] * self.stock_price)
                 for var in self.variables_to_sort:
                     current_values = getattr(self, var)
@@ -550,9 +555,9 @@ class Household(BaseEntity):
 
         return die_total, all_eliminate_indices
 
-    def compute_estate_tax(self, die_n, society):
+    def compute_estate_tax(self, deceased_indices, society):
         """Compute inheritance received and estate tax based on exemption and tax rate."""
-        at_die = self.at[:die_n]
+        at_die = self.at[deceased_indices]
         total_inherited = np.sum(
             np.where(
                 at_die <= society.estate_tax_exemption,
