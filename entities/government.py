@@ -91,10 +91,15 @@ class Government(BaseEntity):
         self.tax_array = (households.income_tax + households.asset_tax + np.dot(households.final_consumption,
                                                                                 society.market.price) * society.consumption_tax_rate) + households.estate_tax
         self.gov_spending = self.Gt_prob_j * society.market.Yt_j
-        # BUI is the amount of money distributed.
+        # In work_hard, households buy first; only delivered goods are expensed.
+        if society.settle_goods_purchases():
+            remaining_goods = np.maximum(society.market.Yt_j - society.goods_consumed(), 0)
+            self.gov_spending = np.minimum(self.gov_spending, remaining_goods)
+        # Keep the transfer path unchanged.
         if hasattr(households, 'BUI'):
             self.gov_spending += households.households_n * households.BUI
-        self.Bt_next = ((1 + society.bank.base_interest_rate) * self.Bt + np.sum(
+        debt_rate = society.bank.policy_source(society).base_interest_rate
+        self.Bt_next = ((1 + debt_rate) * self.Bt + np.sum(
             self.gov_spending * society.market.price) - np.sum(self.tax_array))
 
         self.GDP = np.sum(society.market.price * society.market.Yt_j)
@@ -102,7 +107,7 @@ class Government(BaseEntity):
 
     def pension_step(self, society):
         """Update the pension fund for all households."""
-        self.current_net_households_pension = society.households.pension.sum()
+        self.current_net_households_pension = society.households.net_pension_before_turnover
         self.pension_fund = (1 + self.pension_growth_rate) * self.pension_fund - self.current_net_households_pension
 
     def calculate_pension(self, households):

@@ -189,6 +189,8 @@ class EconomicSociety:
         self.get_actions(action_dict)
     
         # === Phase 2: Entities Step Forward ===
+        if "OLG" in self.households.type:
+            self.households.apply_retirement_hours(self.main_gov.retire_age)
         self.market.step(self)
         self.households.step(self, t)
         for _, gov_agent in self.government.items():
@@ -212,6 +214,14 @@ class EconomicSociety:
             self.done,
         )
 
+    def settle_goods_purchases(self):
+        return getattr(self, "problem_scene", None) == "work_hard" and not hasattr(self.households, "BUI")
+
+    def goods_consumed(self):
+        if self.settle_goods_purchases() and "OLG" in self.households.type:
+            return self.households.goods_consumed_before_turnover
+        return self.households.final_consumption.sum(axis=0)[:, np.newaxis]
+
     def update_metrics(self):
         """Update evaluation metrics such as Gini coefficients, price index, and rewards."""
         # Compute Gini coefficients
@@ -223,7 +233,7 @@ class EconomicSociety:
                                                                                    self.last_price_index)
         
         market_supply = self.market.Yt_j
-        market_demand = self.households.final_consumption.sum(axis=0)[:, np.newaxis] + self.main_gov.gov_spending
+        market_demand = self.goods_consumed() + self.main_gov.gov_spending
         
         self.real_deals = np.minimum(market_supply, market_demand)
         
